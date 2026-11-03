@@ -1,15 +1,15 @@
-# Verification - 2026-11-02, v0.2.0 / v0.2.1 follow-up
+# Verification - 2026-11-02, v0.2.0 / v0.2.1 / v0.2.2 follow-ups
 
 ## Release gates
 
-- Core 0.2.0 installed from its public GitHub release artifact; no local file dependency.
+- Core 0.2.1 installed from its public GitHub release artifact; no local file dependency.
 - MCP TypeScript build: passed. Test suite: **30 passed**, including all 14 templates, explain_visual, deterministic PNGs, custom-only insertion and real stdio round trip.
 - Dependency audit: zero findings, including development dependencies.
-- Core/app suites: 797 passed in each of the private and sanitized public checkouts.
+- Core/app suites: 811 passed in each of the private and sanitized public checkouts.
 - Full renderer, UI, standalone, Fabric embed and Electron installer build: passed.
 - Actual packaged Electron bridge: auto-detected Desktop port 61645 by the msmdsrv process workspace port file, read 13 tables / 39 measures and returned 42 from a real DAX query.
 - Standalone core Fabric service-principal smoke: 20 tables, 97 measures, real DAX query returned 42. No credentials or model identifiers published.
-- Nine connection/auth regressions cover ambiguous ports, schemas, row bounds, read-only query surface, independent Fabric targets/401 refresh, service principals, device-code pending/slow_down, refresh-token caching, runtime credential-mode changes and ESM/CommonJS exports.
+- Twenty-three focused connection/auth and Electron handoff regressions cover ambiguous ports, schemas, row bounds, read-only query surface, independent Fabric targets/401 refresh, service principals, device-code pending/slow_down, refresh-token caching, runtime credential-mode changes and ESM/CommonJS exports.
 - Model connection code imports only @vilsem/core/connect, with no Electron, IPC, app checkout lookup or application-path environment requirement. get_schema exposes fields and relationships, not raw model/data-source definitions.
 
 ## Issues found and corrected
@@ -31,7 +31,7 @@ The public GitHub v0.2.0 package was installed in a separate directory outside t
 - Live Desktop screenshot confirms the chart's three real values and native revenue card. Clicking **Accessories** changed the native card from **$25M** to **$907K**; the native tooltip showed **906673.107**, matching the queried category value. Empty-area click restored the native card to $25M. This verifies actual host selection and deselection, not a simulated callback.
 - `validate_visuals`: the inserted Vilsem visual passed schema/spec validation. Native visuals were not validated or rewritten by MCP.
 
-Private evidence is under ignored `test-results/live-desktop-v020/`: stdio results, preview PNG, Desktop render and cross-filter PNGs, and patched schema results. No customer samples, model IDs or credentials are published here. The open project is a cache QA copy; the supplied source PBIP folder is untouched. Desktop save normalized its culture/synonym metadata; that file is backed up and restored after final verification.
+Private evidence is under ignored `test-results/live-desktop-v020/`: stdio results, preview PNG, Desktop render and cross-filter PNGs, and patched schema results. No customer samples, model IDs or credentials are published here. The open project is a cache QA copy; the supplied source PBIP folder is untouched. Desktop save normalized its culture/synonym metadata; the report was closed normally, the backed-up file restored, and all 19 model files verified byte-identical after reopening. The saved visual and native card remained visible. After reopen, the same discovery method found port 62232; the fresh GitHub v0.2.1 server reported zero schema sample errors and validated the Desktop-saved visual.
 
 ## Limits
 
@@ -46,3 +46,10 @@ Private evidence is under ignored `test-results/live-desktop-v020/`: stdio resul
 - Extracted model services; retained application registry caching and compatibility wrappers.
 - Replaced MCP checkout adapter and added explain_visual; removed application-path setup from README client examples.
 - Built and tested against the public core artifact. Tagged/pushed core-v0.2.0 in both app repositories. MCP v0.2.0 was merged, tagged and pushed; isolated GitHub install passed. v0.2.1 is the live-discovered schema-sampling correction, with a live zero-failure retest and 30 passing tests.
+
+
+## Final authentication completion
+
+Core 0.2.1 moves the remaining Electron OAuth URL/PKCE/state/redirect/code-exchange blocks and scoped OneLake service-principal token requests into headless core. BrowserWindow and IPC stay in the UI adapter. Tests cover first-login and reauth success/failure/cancel, duplicate navigation, strict redirect/state validation, scoped SP requests, and refreshing Microsoft account tokens after switching from an SP workspace. The existing reauth callback could claim completion then never resolve; its browser-close/exchange handoff is corrected and regression tested. AUTH_FAILED classification remains compatible with the app route.
+
+Final source gates: 811 tests passed in both app repository checkouts; 23 focused connection/auth/integration tests included. Final Electron directory package and actual packaged OAuth API plus Desktop DAX query returned 42 on port 62232. Core 0.2.1 is tagged/pushed and published from tested public source. MCP 0.2.2 uses that public release artifact: TypeScript build passed, all 30 tests passed, and the full dependency audit has zero findings. A real Fabric SP DAX query through installed core 0.2.1 also returned 42. The final isolated GitHub install is recorded below after publication. No live browser sign-in is claimed.

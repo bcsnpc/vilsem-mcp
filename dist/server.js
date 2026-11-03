@@ -10,7 +10,7 @@ const object = z.record(z.string(), z.unknown());
 const bindings = z.object({ dimensions: z.array(z.object({ table: z.string().min(1), column: z.string().min(1) })).max(6).default([]), measures: z.array(z.object({ table: z.string().min(1), name: z.string().min(1) })).min(1).max(3) });
 const text = (value) => ({ content: [{ type: 'text', text: JSON.stringify(value, (_key, value) => typeof value === 'function' ? '[formatter]' : value) }] });
 export function createServer(models = new Models()) {
-    const server = new McpServer({ name: 'vilsem-mcp', version: '0.2.1' });
+    const server = new McpServer({ name: 'vilsem-mcp', version: '0.2.2' });
     const tool = (name, description, schema, handler) => server.registerTool(name, { description, inputSchema: schema.shape }, async (args) => {
         try {
             return await handler(args);

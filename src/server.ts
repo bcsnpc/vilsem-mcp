@@ -12,7 +12,7 @@ const bindings=z.object({dimensions:z.array(z.object({table:z.string().min(1),co
 const text=(value:any)=>({content:[{type:'text' as const,text:JSON.stringify(value,(_key,value)=>typeof value==='function'?'[formatter]':value)}]})
 
 export function createServer(models=new Models()){
-  const server=new McpServer({name:'vilsem-mcp',version:'0.2.1'})
+  const server=new McpServer({name:'vilsem-mcp',version:'0.2.2'})
   const tool=(name:string,description:string,schema:any,handler:any)=>server.registerTool(name,{description,inputSchema:schema.shape},async args=>{
     try{return await handler(args)}catch(error){return {isError:true,content:[{type:'text' as const,text:(error as Error).message}]}}
   })

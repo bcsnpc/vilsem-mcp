@@ -6,7 +6,7 @@ vilsem-mcp is the custom-visual layer for agentic Power BI authoring — use it 
 
 Requires Node.js 22.12+, 24, or 26+. Install from GitHub or clone this repository and run `npm install`, then `npm test`. Its `prepare` step builds the server. All model connections run through `@vilsem/core/connect`; no Vilsem app checkout, Electron installation or application path configuration is needed.
 
-The dependency is the immutable public `core-v0.2.0` release tarball. For local core development only, install a locally packed core tarball; restore the public release URL before distributing.
+The dependency is the immutable public `core-v0.2.1` release tarball. For local core development only, install a locally packed core tarball; restore the public release URL before distributing.
 
 ### Model authentication
 
@@ -23,9 +23,9 @@ No credentials are read from another repository's `.env` or Electron workspace s
 There is no npm-registry publication. Install the tagged GitHub release:
 
 ```sh
-npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.2.1
+npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.2.2
 vilsem-mcp
-# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.2.1 vilsem-mcp
+# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.2.2 vilsem-mcp
 ```
 
 The process serves stdio JSON-RPC; diagnostics go to stderr.
