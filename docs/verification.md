@@ -6,6 +6,8 @@
 - `npm test`: **27 passed**. Includes all 14 shared templates, visible deterministic PNG rendering, scalar-ratio evaluation, strict spec/token/formatter/field-role errors, additive PBIR insertion and preservation of native content, custom-only validation, model connection/query contracts and real stdio tool/resource calls.
 - `npm audit`: **0 vulnerabilities** for the final server dependency tree, including development dependencies. This result does not describe Vilsem's older application dependency tree.
 - Stdio discovery: 9 tools, 14 templates, 15 resources including spec documentation.
+- GitHub `npx --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.1.0 vilsem-mcp` install/stdio smoke: passed; list_templates returned all 14 templates.
+- Actual Desktop auto-detection call returned the expected no-engine error, with instructions to open the model; no successful Desktop connection is claimed.
 
 ## Live Fabric acceptance
 Using the existing Vilsem authentication and app-configured semantic model:
