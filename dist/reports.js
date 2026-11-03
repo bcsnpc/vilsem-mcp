@@ -109,10 +109,15 @@ export async function desktopWarning(reportDir) {
         warnings.push('A .pbi state folder exists; Desktop may have this report open.');
     if (process.platform === 'win32') {
         const script = "Get-CimInstance Win32_Process -Filter \"Name='PBIDesktop.exe'\" | Select-Object CommandLine | ConvertTo-Json -Compress";
-        const { stdout } = await promisify(execFile)('powershell.exe', ['-NoProfile', '-Command', script], { windowsHide: true, timeout: 10000 });
-        // A parent PBIP path can reference a sibling report folder. Warn conservatively.
-        if (stdout.includes('.pbip') || stdout.toLowerCase().includes(root.toLowerCase().replace(/\\/g, '\\\\')))
-            warnings.push('Power BI Desktop has a project open. After this write, accept its Apply external changes / reload prompt.');
+        try {
+            const { stdout } = await promisify(execFile)('powershell.exe', ['-NoProfile', '-Command', script], { windowsHide: true, timeout: 15000 });
+            // Desktop may have opened a PBIP from its UI, leaving no path in CommandLine.
+            if (stdout.trim() && stdout.trim() !== 'null')
+                warnings.push('Power BI Desktop is running. After this write, accept its external-change reload prompt if this project is open.');
+        }
+        catch {
+            warnings.push('Could not inspect Desktop processes. If this project is open, accept its external-change reload prompt; avoid saving stale Desktop state.');
+        }
     }
     if (warnings.length)
         warnings.push('Accept the reload prompt in Desktop after the write; do not save stale Desktop state over the external changes.');

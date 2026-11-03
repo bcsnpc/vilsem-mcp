@@ -12,7 +12,7 @@ const bindings=z.object({dimensions:z.array(z.object({table:z.string().min(1),co
 const text=(value:any)=>({content:[{type:'text' as const,text:JSON.stringify(value,(_key,value)=>typeof value==='function'?'[formatter]':value)}]})
 
 export function createServer(models=new Models()){
-  const server=new McpServer({name:'vilsem-mcp',version:'0.1.0'})
+  const server=new McpServer({name:'vilsem-mcp',version:'0.2.0'})
   const tool=(name:string,description:string,schema:any,handler:any)=>server.registerTool(name,{description,inputSchema:schema.shape},async args=>{
     try{return await handler(args)}catch(error){return {isError:true,content:[{type:'text' as const,text:(error as Error).message}]}}
   })
@@ -21,6 +21,10 @@ export function createServer(models=new Models()){
   tool('run_dax','Execute a read-only DAX EVALUATE table query against a connected model. Returns at most maxRows rows, default 200. Use it to inspect data and verify visual bindings; this tool does not expose XMLA commands or persistent model changes.',z.object({connectionId:z.string().uuid(),dax:z.string().min(1).max(100000),maxRows:z.number().int().min(1).max(10000).default(200)}),async({connectionId,dax,maxRows})=>text({rows:await models.query(connectionId,dax,maxRows)}))
   tool('list_templates','List the shared Vilsem declarative visual templates with their slot and parameter contracts. Use these templates as starting points and read vilsem://docs/spec-format before changing token expressions or formatter templates.',z.object({}),async()=>text(EXAMPLE_TEMPLATES))
   tool('validate_spec','Resolve a Vilsem composition or declarative template without querying a model. Returns its empty-data ECharts option or precise validation errors. Run this before preview_visual; native Power BI visual specifications are not supported.',z.object({spec:object}),async({spec})=>text({option:validateSpec(spec)}))
+  tool('explain_visual','Explain a Vilsem custom visual spec, its field bindings, resolved empty-data ECharts option and exact DAX query before preview or commit. Does not inspect or modify native visuals or model objects.',z.object({spec:object,bindings}),async({spec,bindings})=>{
+    const option=validateSpec(spec);validateBindings(spec,bindings)
+    return text({type:spec.type || 'custom',template:(spec.template as any)?.meta?.id || null,bindings,dax:buildVisualDax({...bindings,maxRows:200}),option,interactions:['selection','cross-filter','cross-highlight','native tooltip','context menu']})
+  })
   tool('preview_visual','Validate a Vilsem spec, build DAX from bound existing fields, query the connected model and render the resolved ECharts option as a deterministic PNG. Returns PNG image content and option JSON. This previews a custom visual only and does not write a report.',z.object({connectionId:z.string().uuid(),spec:object,bindings,width:z.number().int().min(100).max(2400).default(800),height:z.number().int().min(100).max(2400).default(500)}),async({connectionId,spec,bindings,width,height})=>{
     validateSpec(spec)
     validateBindings(spec,bindings)

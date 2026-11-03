@@ -1,31 +1,37 @@
-# Verification ? 2026-11-02
+# Verification - 2026-11-02, v0.2.0
 
-## Automated results
-- `npm install` using the public core-v0.1.1 release artifact: passed.
-- `npm run build`: passed.
-- `npm test`: **27 passed**. Includes all 14 shared templates, visible deterministic PNG rendering, scalar-ratio evaluation, strict spec/token/formatter/field-role errors, additive PBIR insertion and preservation of native content, custom-only validation, model connection/query contracts and real stdio tool/resource calls.
-- `npm audit`: **0 vulnerabilities** for the final server dependency tree, including development dependencies. This result does not describe Vilsem's older application dependency tree.
-- Stdio discovery: 9 tools, 14 templates, 15 resources including spec documentation.
-- GitHub `npx --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.1.0 vilsem-mcp` install/stdio smoke: passed; list_templates returned all 14 templates.
-- Actual Desktop auto-detection call returned the expected no-engine error, with instructions to open the model; no successful Desktop connection is claimed.
+## Release gates
 
-## Live Fabric acceptance
-Using the existing Vilsem authentication and app-configured semantic model:
-- Read-only DAX execution: passed.
-- Schema: 20 tables and 97 measures.
-- Column sampling: all 79 columns passed, maximum 10 values per column, no sample failures.
-- Model-backed PNG preview: passed.
-- Qualified measure DAX and scalar PNG preview after the core patch: passed.
+- Core 0.2.0 installed from its public GitHub release artifact; no local file dependency.
+- MCP TypeScript build: passed. Test suite: **29 passed**, including all 14 templates, explain_visual, deterministic PNGs, custom-only insertion and real stdio round trip.
+- Dependency audit: zero findings, including development dependencies.
+- Core/app suites: 797 passed in each of the private and sanitized public checkouts.
+- Full renderer, UI, standalone, Fabric embed and Electron installer build: passed.
+- Actual packaged Electron bridge: auto-detected Desktop port 61645 by the msmdsrv process workspace port file, read 13 tables / 39 measures and returned 42 from a real DAX query.
+- Standalone core Fabric service-principal smoke: 20 tables, 97 measures, real DAX query returned 42. No credentials or model identifiers published.
+- Nine connection/auth regressions cover ambiguous ports, schemas, row bounds, read-only query surface, independent Fabric targets/401 refresh, service principals, device-code pending/slow_down, refresh-token caching, runtime credential-mode changes and ESM/CommonJS exports.
+- Model connection code imports only @vilsem/core/connect, with no Electron, IPC, app checkout lookup or application-path environment requirement. get_schema exposes fields and relationships, not raw model/data-source definitions.
 
-No client sample values, credentials or model identifiers are included in this document. Private run evidence and previews are under ignored `test-results/`. The older QA model returned HTTP 404; it is not counted as a passing target.
+## Issues found and corrected
 
-## Application/core integration
-Both Vilsem repository checkouts passed **788 tests**. Full renderer, UI, standalone, Fabric embed and Electron installer builds passed, including an actual Electron smoke loading core modules from the packaged application archive. Renderer 4.13.1.0 keeps the existing GUID and primitiveSpec property. Core releases 0.1.0 and 0.1.1 were tagged; 0.1.1 includes the package license, patched ZIP dependency and shared ordering/structured DAX fixes.
+- Desktop process inspection could abort report insertion on timeout. It is advisory and now returns a warning instead.
+- Concurrent SSR work exceeded the former five-second test timeout on this laptop. Integration tests use a 30-second timeout; all assertions remain.
+- Node's inferred CommonJS named exports omitted the direct connect function. Core now has explicit ESM/CommonJS entry points and a regression test.
 
-## Not verified / limitations
-- No Desktop Analysis Services engine was running. Live Desktop query, external-change reload prompt and rendered PBIR acceptance remain unverified.
-- New host-native tooltip/drill-through/bookmark/highlight interactions have renderer harness coverage, not live Service/Desktop acceptance in this cycle.
-- PNG previews show ECharts marks/options, not renderer-owned title/card chrome or the target report's existing filter context. They do not test interactions.
-- DOM-adapter visual types are outside the headless ECharts resolver and are rejected.
-- Connections require a Vilsem source checkout and its existing auth/model adapters. Service-principal auth was tested; direct reuse of Electron's encrypted GUI workspace session is not implemented.
-- The application installer remains unsigned; existing application dependency findings and broader visual-product backlog are not closed by this MCP delivery.
+## Live Desktop acceptance
+
+The released-server checklist is next: auto connect, sampled schema, explain, model-backed PNG, additive commit, actual Desktop reload prompt, real-number render and cross-filter of a native visual. Until recorded below, host acceptance is not claimed by unit tests or a successful file write.
+
+## Limits
+
+- Device-code polling and private cache behavior have automated tests; an actual browser device login has not been performed in this cycle. Windows uses user-profile ACLs; POSIX mode bits are not Windows ACLs.
+- Native tooltip, drill-through, bookmarks and cross-highlight contracts have renderer harness tests; exhaustive live host acceptance is outside the listed Desktop checklist.
+- Previews show ECharts marks/options, not renderer card chrome or existing report filter context. DOM-adapter types do not resolve through this headless API.
+- Microsoft excludes report-level report.json changes from live reload. First renderer registration may need a reopen; import/register the renderer in Desktop and save before a visual-only reload test.
+- The app installer remains unsigned and its pre-existing dependency audit has 45 findings; those are not closed by core/MCP extraction.
+
+## Work log
+
+- Extracted model services; retained application registry caching and compatibility wrappers.
+- Replaced MCP checkout adapter and added explain_visual; removed application-path setup from README client examples.
+- Built and tested against the public core artifact. Tagged/pushed core-v0.2.0 in both app repositories. MCP merge/release and isolated GitHub install are recorded after their final gates.

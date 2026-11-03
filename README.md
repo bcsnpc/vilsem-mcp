@@ -4,16 +4,28 @@ vilsem-mcp is the custom-visual layer for agentic Power BI authoring — use it 
 
 ## Install
 
-Requires Node.js 22.12+, 24, or 26+. Clone this repository and run `npm install`, then `npm test`. Its `prepare` step builds the TypeScript server. For model connections, install dependencies in a Vilsem source checkout and set `VILSEM_APP_PATH` to that checkout; the adapter reuses its Desktop bridge, Fabric introspection and authentication. Configure Fabric credentials/session using Vilsem's existing configuration. Model connection tools report missing configuration; templates, spec validation and local report tools work without a model connection.
+Requires Node.js 22.12+, 24, or 26+. Install from GitHub or clone this repository and run `npm install`, then `npm test`. Its `prepare` step builds the server. All model connections run through `@vilsem/core/connect`; no Vilsem app checkout, Electron installation or application path configuration is needed.
 
-The core dependency uses the immutable public `core-v0.1.1` release tarball. npm does not install a package from a monorepo subdirectory via a normal Git dependency URL. For local core development, replace it with `file:../semantic_app/packages/core`, build core there and run `npm install`; switch back to the release URL before distributing.
+The dependency is the immutable public `core-v0.2.0` release tarball. For local core development only, install a locally packed core tarball; restore the public release URL before distributing.
 
-There is no npm-registry publication yet. After the GitHub push, the GitHub install form is:
+### Model authentication
+
+Desktop requires Windows and a running Power BI Desktop model. Core identifies the Desktop Analysis Services process and reads its workspace port file. Pass `source.port` if multiple instances are open. ADOMD/XMLA uses your Windows identity; no cloud login is needed.
+
+For Fabric, configure these environment variables on the MCP server process:
+
+- Service principal: `AUTH_MODE=service_principal`, `FABRIC_TENANT_ID`, `FABRIC_CLIENT_ID`, `FABRIC_CLIENT_SECRET`.
+- User login: `AUTH_MODE=device_code` (default). Login instructions go to stderr; complete Microsoft's device-code login in your browser. Only the refresh token is cached under `~/.vilsem/auth/`, scoped to tenant/client/resource, in a 0700 directory and atomic 0600 file. Windows uses the user-profile ACLs; POSIX modes are not Windows ACLs.
+- Optional `FABRIC_ACCESS_TOKEN` for an externally supplied short-lived token. Refresh requires another configured credential flow.
+
+No credentials are read from another repository's `.env` or Electron workspace store. Set credentials in your MCP client's server environment. Core also preserves `setInteractiveTokens` for Electron PKCE login.
+
+There is no npm-registry publication. Install the tagged GitHub release:
 
 ```sh
-npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git
+npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.2.0
 vilsem-mcp
-# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git vilsem-mcp
+# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.2.0 vilsem-mcp
 ```
 
 The process serves stdio JSON-RPC; diagnostics go to stderr.
@@ -23,13 +35,13 @@ The process serves stdio JSON-RPC; diagnostics go to stderr.
 Add to `claude_desktop_config.json`, replacing the paths:
 
 ```json
-{"mcpServers":{"vilsem":{"command":"node","args":["D:/vilsem-mcp/dist/index.js"],"env":{"VILSEM_APP_PATH":"D:/semantic_app"}}}}
+{"mcpServers":{"vilsem":{"command":"node","args":["D:/vilsem-mcp/dist/index.js"]}}}
 ```
 
 ### Claude Code
 
 ```sh
-claude mcp add --transport stdio --env VILSEM_APP_PATH=D:/semantic_app vilsem -- node D:/vilsem-mcp/dist/index.js
+claude mcp add --transport stdio vilsem -- node D:/vilsem-mcp/dist/index.js
 ```
 
 ### Codex
@@ -41,8 +53,6 @@ Add to `~/.codex/config.toml` or a trusted project's `.codex/config.toml`:
 command = "node"
 args = ["D:/vilsem-mcp/dist/index.js"]
 
-[mcp_servers.vilsem.env]
-VILSEM_APP_PATH = "D:/semantic_app"
 ```
 
 See the [official MCP configuration documentation](https://learn.chatgpt.com/docs/extend/mcp).
@@ -53,14 +63,14 @@ In Desktop, open File → Options and settings → Options → Preview features.
 
 1. Open your semantic model in Desktop, then call `connect_model` with `source:{kind:"desktop"}`; provide a port if more than one engine is open. For Fabric, provide workspaceId and datasetId.
 2. Call `get_schema` and choose existing dimensions/measures. Use `run_dax` to verify the data.
-3. Call `list_templates`, read `vilsem://docs/spec-format`, then `validate_spec` and `preview_visual`. Check the PNG and option before writing.
+3. Call `list_templates`, read `vilsem://docs/spec-format`, then `validate_spec`, `explain_visual` and `preview_visual`. Check the PNG and option before writing.
 4. Call `list_pages`, choose a position without overlap, then `commit_visual` with the report folder, page folder name, a new visualName, spec, bindings and layout.
-5. Accept Desktop's external-change reload prompt. Avoid saving stale Desktop state over the external changes.
+5. Accept Desktop's external-change reload prompt. Avoid saving stale Desktop state over external changes. Microsoft excludes report-level `report.json` changes from live reload: first-time custom-visual registration can require reopening the project. For visual-only reload, first import the renderer package in Desktop and save the project, then commit a visual.
 6. Inspect the rendered result and call `validate_visuals`. Save the report from Desktop when satisfied.
 
 ## Tools and resources
 
-Tools: connect_model, get_schema, run_dax, list_templates, validate_spec, preview_visual, list_pages, commit_visual, validate_visuals. Resources: `vilsem://templates/<template-id>` and `vilsem://docs/spec-format`.
+Tools: connect_model, get_schema, run_dax, list_templates, validate_spec, explain_visual, preview_visual, list_pages, commit_visual, validate_visuals. Resources: `vilsem://templates/<template-id>` and `vilsem://docs/spec-format`.
 
 `list_pages` reads all visual positions to help avoid overlap. `validate_visuals` examines only the stable Vilsem Renderer GUID; it does not report native visual validation results. `commit_visual` adds one new visual, rejects collisions and updates only missing renderer resources/registration. It does not rebuild or serialize other report content.
 
@@ -75,7 +85,7 @@ Rendered Vilsem ECharts visuals cross-filter through Power BI selection IDs, acc
 - Change semantic models, measures or model metadata.
 - Read or write PBIX files. Existing enhanced PBIR report folders are required.
 
-Desktop connections require Windows and Power BI Desktop. The current model adapter requires a Vilsem source checkout; this initial release does not independently decrypt Electron's saved workspace credentials. Configure its existing Fabric authentication for the server process. Column sampling can be expensive on large models and permission failures are returned per column.
+Desktop connections require Windows and Power BI Desktop. Column sampling can be expensive on large models and permission failures are returned per column.
 
 Headless previews support the core ECharts composition types and declarative templates. DOM-adapter visual types are rejected by this resolver rather than emitted as empty or substituted charts. Previews render the chart marks and option; renderer-owned card chrome/title headers and existing report-level filters are not replayed. Fonts can differ between server PNGs and Desktop if the machines have different installed fonts. Preview data is capped at 200 rows; arbitrary DAX results default to 200 and are capped at 10,000 returned rows.
 
