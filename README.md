@@ -23,9 +23,9 @@ No credentials are read from another repository's `.env` or Electron workspace s
 There is no npm-registry publication. Install the tagged GitHub release:
 
 ```sh
-npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.2.0
+npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.2.1
 vilsem-mcp
-# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.2.0 vilsem-mcp
+# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.2.1 vilsem-mcp
 ```
 
 The process serves stdio JSON-RPC; diagnostics go to stderr.

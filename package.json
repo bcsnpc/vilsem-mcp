@@ -1,6 +1,6 @@
 {
   "name": "vilsem-mcp",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Custom-visual authoring for local Power BI projects over MCP",
   "type": "module",
   "license": "MIT",

@@ -27,7 +27,10 @@ export class Models {
     // The MCP schema contract exposes fields/relationships only, never data sources.
     const schema={tables:discovered.tables || [],measures:discovered.measures || [],relationships:discovered.relationships || []}
     const columnTasks:any[]=[]
-    for(const table of schema.tables || [])for(const column of table.columns || [])columnTasks.push({table,column})
+    for(const table of schema.tables || [])for(const column of table.columns || []){
+      if(/^RowNumber-/.test(column.name)){column.sampleValues=[];column.sampleSkipped='Internal Analysis Services row identity is not queryable';continue}
+      columnTasks.push({table,column})
+    }
     let index=0
     const quoteTable=name=>`'${String(name).replace(/'/g,"''")}'`
     const quoteColumn=name=>`[${String(name).replace(/\]/g,']]')}]`
@@ -38,7 +41,18 @@ export class Models {
         try{
           const rows=await this.adapter.query(connection,`EVALUATE TOPN(10, VALUES(${ref}), ${ref}, ASC)`,10)
           column.sampleValues=rows.slice(0,10).map(row=>Object.values(row)[0])
-        }catch(error){column.sampleValues=[];column.sampleError=(error as Error).message}
+        }catch(error){
+          // Field-parameter display columns require a row projection, not VALUES
+          // over one member of their composite key. Keep source data types intact.
+          if(/composite key/i.test((error as Error).message)){
+            try{
+              const rows=await this.adapter.query(connection,`EVALUATE SELECTCOLUMNS(TOPN(10, ${quoteTable(table.name)}, ${ref}, ASC), "__vilsem_sample", ${ref})`,10)
+              column.sampleValues=[...new Set(rows.slice(0,10).map(row=>Object.values(row)[0]))]
+              continue
+            }catch(fallback){error=fallback}
+          }
+          column.sampleValues=[];column.sampleError=(error as Error).message
+        }
       }
     }))
     return schema

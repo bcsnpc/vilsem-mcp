@@ -119,6 +119,16 @@ describe('MCP end-to-end contracts',()=>{
     expect(collision.isError).toBe(true)
     expect(await fs.readFile(native)).toEqual(before)
   },20000)
+  it('skips engine row identities and samples field-parameter composite keys through row projection',async()=>{
+    const model=adapter();model.schema.mockResolvedValueOnce({tables:[{name:'Parameter',columns:[{name:'RowNumber-engine',isHidden:true},{name:'Display',dataType:'string'}]}],measures:[]} as any)
+    model.query.mockImplementation(async(_c,dax)=>{if(dax.includes('VALUES('))throw Error('part of composite key');return [{'[__vilsem_sample]':'Revenue'},{'[__vilsem_sample]':'Revenue'},{'[__vilsem_sample]':'Profit'}]})
+    const client=await clientFor(model),connection=unpack(await client.callTool({name:'connect_model',arguments:{source:{kind:'desktop'}}}))
+    const result=unpack(await client.callTool({name:'get_schema',arguments:connection}))
+    expect(result.tables[0].columns[0].sampleSkipped).toContain('not queryable')
+    expect(result.tables[0].columns[1].sampleValues).toEqual(['Revenue','Profit'])
+    expect(model.query).toHaveBeenCalledTimes(2)
+    expect(model.query.mock.calls[1][1]).toContain('SELECTCOLUMNS(TOPN(10,')
+  })
   it('does not expose raw model or data-source definitions through get_schema',async()=>{
     const model=adapter();model.schema.mockResolvedValueOnce({tables:[],measures:[],relationships:[],rawModelBim:{dataSources:[{connectionString:'private'}]}} as any)
     const client=await clientFor(model),connection=unpack(await client.callTool({name:'connect_model',arguments:{source:{kind:'desktop'}}}))
