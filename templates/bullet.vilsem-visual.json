@@ -1,0 +1,163 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "expressiveness_bullet",
+      "name": "Revenue vs target \u2022 latest month",
+      "formatVersion": 2
+    },
+    "slots": {
+      "month": {
+        "kind": "time"
+      },
+      "actual": {
+        "kind": "measure"
+      },
+      "target": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "color": [
+        "#14b8a6",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa"
+      ],
+      "textStyle": {
+        "color": "$theme.textPrimary",
+        "fontFamily": "Segoe UI, Arial, sans-serif"
+      },
+      "title": {
+        "text": "Revenue vs target \u2022 latest month",
+        "left": 12,
+        "top": 8,
+        "textStyle": {
+          "fontSize": 16,
+          "color": "$theme.textPrimary"
+        }
+      },
+      "tooltip": {
+        "trigger": "item"
+      },
+      "grid": {
+        "left": 35,
+        "right": 45,
+        "top": 120,
+        "bottom": 120
+      },
+      "xAxis": {
+        "type": "value",
+        "axisLabel": {
+          "color": "$theme.textMuted"
+        },
+        "splitLine": {
+          "lineStyle": {
+            "color": "$theme.gridStrokeOn"
+          }
+        },
+        "max": "$calc.ceiling.last"
+      },
+      "yAxis": {
+        "type": "category",
+        "data": [
+          "Latest month"
+        ],
+        "show": false
+      },
+      "series": [
+        {
+          "type": "bar",
+          "stack": "bands",
+          "silent": true,
+          "barWidth": 65,
+          "data": [
+            "$calc.low.last"
+          ],
+          "itemStyle": {
+            "color": "#334155"
+          }
+        },
+        {
+          "type": "bar",
+          "stack": "bands",
+          "silent": true,
+          "barWidth": 65,
+          "data": [
+            "$calc.mid.last"
+          ],
+          "itemStyle": {
+            "color": "#475569"
+          }
+        },
+        {
+          "type": "bar",
+          "stack": "bands",
+          "silent": true,
+          "barWidth": 65,
+          "data": [
+            "$calc.high.last"
+          ],
+          "itemStyle": {
+            "color": "#64748b"
+          }
+        },
+        {
+          "type": "bar",
+          "name": "Revenue",
+          "barWidth": 24,
+          "barGap": "-100%",
+          "data": [
+            {
+              "value": "$slot.actual.last",
+              "rowIndexes": [
+                "$slot.actual.lastIndex"
+              ]
+            }
+          ],
+          "itemStyle": {
+            "color": "#14b8a6"
+          },
+          "markLine": {
+            "symbol": "none",
+            "label": {
+              "formatterTemplate": "Target {value:thousands}"
+            },
+            "data": [
+              {
+                "xAxis": "$slot.target.last"
+              }
+            ]
+          }
+        }
+      ],
+      "backgroundColor": "$theme.background"
+    },
+    "transforms": [
+      {
+        "calculate": "target * 0.5",
+        "as": "low"
+      },
+      {
+        "calculate": "target * 0.3",
+        "as": "mid"
+      },
+      {
+        "calculate": "target * 0.4",
+        "as": "high"
+      },
+      {
+        "calculate": "target * 1.2",
+        "as": "ceiling"
+      }
+    ]
+  }
+}

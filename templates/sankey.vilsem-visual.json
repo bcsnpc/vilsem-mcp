@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "expressiveness_sankey",
+      "name": "Category ? subcategory \u2022 units",
+      "formatVersion": 2
+    },
+    "slots": {
+      "source": {
+        "kind": "dimension"
+      },
+      "target": {
+        "kind": "dimension"
+      },
+      "weight": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "color": [
+        "#14b8a6",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa"
+      ],
+      "textStyle": {
+        "color": "$theme.textPrimary",
+        "fontFamily": "Segoe UI, Arial, sans-serif"
+      },
+      "title": {
+        "text": "Category / subcategory - units",
+        "left": 12,
+        "top": 8,
+        "textStyle": {
+          "fontSize": 16,
+          "color": "$theme.textPrimary"
+        }
+      },
+      "tooltip": {
+        "trigger": "item"
+      },
+      "series": [
+        {
+          "type": "sankey",
+          "left": 20,
+          "right": 160,
+          "top": 65,
+          "bottom": 25,
+          "data": "$calc.flow.nodes",
+          "links": "$calc.flow.links",
+          "label": {
+            "color": "$theme.textPrimary",
+            "formatterTemplate": "{label}"
+          },
+          "lineStyle": {
+            "color": "source",
+            "opacity": 0.35
+          },
+          "labelLayout": {
+            "hideOverlap": true
+          }
+        }
+      ],
+      "backgroundColor": "$theme.background"
+    },
+    "transforms": [
+      {
+        "links": {
+          "source": "source",
+          "target": "target",
+          "value": "weight"
+        },
+        "as": "flow"
+      }
+    ]
+  }
+}

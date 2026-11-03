@@ -6,7 +6,7 @@ vilsem-mcp is the custom-visual layer for agentic Power BI authoring — use it 
 
 Requires Node.js 22.12+, 24, or 26+. Install from GitHub or clone this repository and run `npm install`, then `npm test`. Its `prepare` step builds the server. All model connections run through `@vilsem/core/connect`; no Vilsem app checkout, Electron installation or application path configuration is needed.
 
-The dependency is the immutable public `core-v0.2.1` release tarball. For local core development only, install a locally packed core tarball; restore the public release URL before distributing.
+The dependency is the immutable public `core-v0.3.0` release tarball. For local core development only, install a locally packed core tarball; restore the public release URL before distributing.
 
 ### Model authentication
 
@@ -23,9 +23,9 @@ No credentials are read from another repository's `.env` or Electron workspace s
 There is no npm-registry publication. Install the tagged GitHub release:
 
 ```sh
-npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.2.2
+npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.3.0
 vilsem-mcp
-# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.2.2 vilsem-mcp
+# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.3.0 vilsem-mcp
 ```
 
 The process serves stdio JSON-RPC; diagnostics go to stderr.
@@ -92,3 +92,7 @@ Headless previews support the core ECharts composition types and declarative tem
 ## Development and verification
 
 Run `npm run build` and `npm test`. Tests cover spec resolution, deterministic SVG/PNG rendering, custom-only PBIR insertion/validation and a real stdio client/server round trip. Live Fabric credentials, Desktop query access, reload prompts and host interactions need environment-backed acceptance; passing fixture tests alone does not establish those results.
+
+## Expressiveness examples (0.3.0)
+
+Nine new standalone `.vilsem-visual.json` specs ship in `templates/` and are listed by `list_templates`. They cover Sankey, Gantt, running-total waterfall, sunburst, bullet, radial progress, dual-axis reference measures, facets and a relationship network. Bind their declared slots to your own schema; no model data is embedded. Use core 0.3.0 / renderer 4.14.2.0+. The [expressiveness report](docs/expressiveness-gaps.md) records the live workflow, bounds and the deliberately unsupported Marimekko custom callback.

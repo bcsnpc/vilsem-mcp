@@ -1,6 +1,6 @@
 {
   "name": "vilsem-mcp",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Custom-visual authoring for local Power BI projects over MCP",
   "type": "module",
   "license": "MIT",
@@ -12,7 +12,8 @@
   },
   "files": [
     "dist",
-    "docs"
+    "docs",
+    "templates"
   ],
   "scripts": {
     "build": "tsc",
@@ -23,7 +24,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.2",
     "@resvg/resvg-js": "^2.6.2",
-    "@vilsem/core": "https://github.com/bcsnpc/vilsem/releases/download/core-v0.2.1/vilsem-core-0.2.1.tgz",
+    "@vilsem/core": "https://github.com/bcsnpc/vilsem/releases/download/core-v0.3.0/vilsem-core-0.3.0.tgz",
     "echarts": "6.1.0",
     "zod": "^4.6.7"
   },

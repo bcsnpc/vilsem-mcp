@@ -1,0 +1,134 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "expressiveness_gantt",
+      "name": "Order fulfilment \u2022 stock to order",
+      "formatVersion": 2
+    },
+    "slots": {
+      "task": {
+        "kind": "dimension"
+      },
+      "start": {
+        "kind": "time"
+      },
+      "end": {
+        "kind": "time"
+      },
+      "weight": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "color": [
+        "#14b8a6",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa"
+      ],
+      "textStyle": {
+        "color": "$theme.textPrimary",
+        "fontFamily": "Segoe UI, Arial, sans-serif"
+      },
+      "title": {
+        "text": "Order fulfilment \u2022 stock to order",
+        "left": 12,
+        "top": 8,
+        "textStyle": {
+          "fontSize": 16,
+          "color": "$theme.textPrimary"
+        }
+      },
+      "tooltip": {
+        "trigger": "item"
+      },
+      "grid": {
+        "left": 90,
+        "right": 55,
+        "top": 70,
+        "bottom": 65,
+        "containLabel": true
+      },
+      "xAxis": {
+        "type": "value",
+        "axisLabel": {
+          "formatterTemplate": "{value:date}",
+          "color": "$theme.textMuted"
+        },
+        "splitLine": {
+          "lineStyle": {
+            "color": "$theme.gridStrokeOn"
+          }
+        },
+        "min": "$calc.starts.min"
+      },
+      "yAxis": {
+        "type": "category",
+        "inverse": true,
+        "data": "$calc.tasks.categories",
+        "axisLabel": {
+          "color": "$theme.textMuted",
+          "width": 90,
+          "overflow": "truncate"
+        }
+      },
+      "series": [
+        {
+          "type": "bar",
+          "stack": "schedule",
+          "silent": true,
+          "itemStyle": {
+            "color": "transparent"
+          },
+          "data": "$calc.starts.values"
+        },
+        {
+          "type": "bar",
+          "name": "Duration (ms)",
+          "stack": "schedule",
+          "data": "$calc.duration.values",
+          "itemStyle": {
+            "color": "#14b8a6"
+          }
+        }
+      ],
+      "backgroundColor": "$theme.background"
+    },
+    "transforms": [
+      {
+        "take": {
+          "field": "task",
+          "count": 16
+        },
+        "as": "tasks"
+      },
+      {
+        "date": {
+          "field": "start",
+          "take": 16
+        },
+        "as": "starts"
+      },
+      {
+        "date": {
+          "field": "end",
+          "take": 16
+        },
+        "as": "ends"
+      },
+      {
+        "calculate": "max(0, ends - starts)",
+        "as": "duration"
+      }
+    ]
+  }
+}

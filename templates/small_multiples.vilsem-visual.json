@@ -1,0 +1,118 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "expressiveness_small_multiples",
+      "name": "Units by category \u2022 per country",
+      "formatVersion": 2
+    },
+    "slots": {
+      "country": {
+        "kind": "dimension"
+      },
+      "category": {
+        "kind": "dimension"
+      },
+      "weight": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "color": [
+        "#14b8a6",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa"
+      ],
+      "textStyle": {
+        "color": "$theme.textPrimary",
+        "fontFamily": "Segoe UI, Arial, sans-serif"
+      },
+      "title": {
+        "text": "Units by category \u2022 per country",
+        "left": 12,
+        "top": 8,
+        "textStyle": {
+          "fontSize": 16,
+          "color": "$theme.textPrimary"
+        }
+      },
+      "tooltip": {
+        "trigger": "item"
+      },
+      "grid": {
+        "repeat": "$calc.facets.panels",
+        "template": {
+          "left": "$item.left",
+          "top": "$item.top",
+          "width": "$item.width",
+          "height": "$item.height",
+          "containLabel": true
+        }
+      },
+      "xAxis": {
+        "repeat": "$calc.facets.panels",
+        "template": {
+          "type": "category",
+          "gridIndex": "$item.index",
+          "data": "$item.categories",
+          "axisLabel": {
+            "fontSize": 9,
+            "color": "$theme.textMuted"
+          }
+        }
+      },
+      "yAxis": {
+        "repeat": "$calc.facets.panels",
+        "template": {
+          "type": "value",
+          "axisLabel": {
+            "color": "$theme.textMuted"
+          },
+          "splitLine": {
+            "lineStyle": {
+              "color": "$theme.gridStrokeOn"
+            }
+          },
+          "gridIndex": "$item.index",
+          "name": "$item.name",
+          "nameTextStyle": {
+            "color": "$theme.textPrimary"
+          },
+          "max": "$calc.facets.max"
+        }
+      },
+      "series": {
+        "repeat": "$calc.facets.panels",
+        "template": {
+          "type": "bar",
+          "name": "$item.name",
+          "xAxisIndex": "$item.index",
+          "yAxisIndex": "$item.index",
+          "data": "$item.data"
+        }
+      },
+      "backgroundColor": "$theme.background"
+    },
+    "transforms": [
+      {
+        "facet": {
+          "by": "country",
+          "category": "category",
+          "value": "weight",
+          "columns": 3,
+          "maxPanels": 12
+        },
+        "as": "facets"
+      }
+    ]
+  }
+}

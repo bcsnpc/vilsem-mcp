@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "expressiveness_marimekko",
+      "name": "Country \u00d7 category \u2022 proportional area",
+      "formatVersion": 2
+    },
+    "slots": {
+      "country": {
+        "kind": "dimension"
+      },
+      "category": {
+        "kind": "dimension"
+      },
+      "weight": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "color": [
+        "#14b8a6",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa"
+      ],
+      "textStyle": {
+        "color": "$theme.textPrimary",
+        "fontFamily": "Segoe UI, Arial, sans-serif"
+      },
+      "title": {
+        "text": "Country \u00d7 category \u2022 proportional area",
+        "left": 12,
+        "top": 8,
+        "textStyle": {
+          "fontSize": 16,
+          "color": "$theme.textPrimary"
+        }
+      },
+      "tooltip": {
+        "trigger": "item"
+      },
+      "series": [
+        {
+          "type": "custom",
+          "data": "$slot.weight.values",
+          "renderItem": "REQUIRES_SANDBOXED_CUSTOM_SERIES"
+        }
+      ],
+      "grid": {
+        "left": 60,
+        "right": 30,
+        "top": 60,
+        "bottom": 50
+      },
+      "xAxis": {
+        "type": "value"
+      },
+      "yAxis": {
+        "type": "value"
+      }
+    }
+  }
+}

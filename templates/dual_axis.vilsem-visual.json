@@ -1,0 +1,142 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "expressiveness_dual_axis",
+      "name": "Revenue + profit \u2022 profit target line",
+      "formatVersion": 2
+    },
+    "slots": {
+      "month": {
+        "kind": "time"
+      },
+      "revenue": {
+        "kind": "measure"
+      },
+      "profit": {
+        "kind": "measure"
+      },
+      "target": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "color": [
+        "#14b8a6",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa"
+      ],
+      "textStyle": {
+        "color": "$theme.textPrimary",
+        "fontFamily": "Segoe UI, Arial, sans-serif"
+      },
+      "title": {
+        "text": "Revenue + profit \u2022 profit target line",
+        "left": 12,
+        "top": 8,
+        "textStyle": {
+          "fontSize": 16,
+          "color": "$theme.textPrimary"
+        }
+      },
+      "tooltip": {
+        "trigger": "item"
+      },
+      "grid": {
+        "left": 90,
+        "right": 55,
+        "top": 70,
+        "bottom": 65,
+        "containLabel": true
+      },
+      "legend": {
+        "top": 35,
+        "textStyle": {
+          "color": "$theme.textMuted"
+        }
+      },
+      "xAxis": {
+        "type": "category",
+        "data": "$slot.month.values",
+        "axisLabel": {
+          "rotate": 40,
+          "formatterTemplate": "{value:date}",
+          "color": "$theme.textMuted"
+        }
+      },
+      "yAxis": [
+        {
+          "type": "value",
+          "axisLabel": {
+            "color": "$theme.textMuted"
+          },
+          "splitLine": {
+            "lineStyle": {
+              "color": "$theme.gridStrokeOn"
+            }
+          },
+          "name": "Revenue"
+        },
+        {
+          "type": "value",
+          "axisLabel": {
+            "color": "$theme.textMuted"
+          },
+          "splitLine": {
+            "show": false
+          },
+          "name": "Profit",
+          "min": 0,
+          "max": "$calc.profitDomain.max"
+        }
+      ],
+      "series": [
+        {
+          "type": "bar",
+          "name": "Revenue",
+          "data": "$slot.revenue.values"
+        },
+        {
+          "type": "line",
+          "name": "Profit",
+          "yAxisIndex": 1,
+          "data": "$slot.profit.values",
+          "markLine": {
+            "symbol": "none",
+            "label": {
+              "formatterTemplate": "Latest target {value:thousands}",
+              "color": "#f59e0b",
+              "position": "insideEndTop"
+            },
+            "data": [
+              {
+                "yAxis": "$slot.target.last"
+              }
+            ],
+            "lineStyle": {
+              "color": "#f59e0b",
+              "width": 2,
+              "type": "dashed"
+            }
+          }
+        }
+      ],
+      "backgroundColor": "$theme.background"
+    },
+    "transforms": [
+      {
+        "calculate": "max(profit, target) * 1.1",
+        "as": "profitDomain"
+      }
+    ]
+  }
+}

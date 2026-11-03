@@ -1,3 +1,4 @@
+import { SHIPPED_TEMPLATES } from '../src/templates.js'
 import { describe,it,expect,afterEach,vi } from 'vitest'
 import fs from 'node:fs/promises'
 import os from 'node:os'
@@ -148,9 +149,9 @@ describe('MCP end-to-end contracts',()=>{
     const client=new Client({name:'stdio-qa',version:'1'})
     await client.connect(transport);closed.push(client)
     const templates:any=await client.callTool({name:'list_templates',arguments:{}})
-    expect(unpack(templates)).toHaveLength(EXAMPLE_TEMPLATES.length)
+    expect(unpack(templates)).toHaveLength(EXAMPLE_TEMPLATES.length+SHIPPED_TEMPLATES.length)
     const resources=await client.listResources()
-    expect(resources.resources).toHaveLength(EXAMPLE_TEMPLATES.length+1)
+    expect(resources.resources).toHaveLength(EXAMPLE_TEMPLATES.length+SHIPPED_TEMPLATES.length+1)
     const docs=await client.readResource({uri:'vilsem://docs/spec-format'})
     expect((docs.contents[0] as any).text).toContain('_val3')
     const tools=await client.listTools()

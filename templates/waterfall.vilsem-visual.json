@@ -1,0 +1,151 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "expressiveness_waterfall",
+      "name": "Monthly revenue target gap \u2022 cumulative",
+      "formatVersion": 2
+    },
+    "slots": {
+      "month": {
+        "kind": "time"
+      },
+      "gap": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "color": [
+        "#14b8a6",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa"
+      ],
+      "textStyle": {
+        "color": "$theme.textPrimary",
+        "fontFamily": "Segoe UI, Arial, sans-serif"
+      },
+      "title": {
+        "text": "Monthly revenue target gap \u2022 cumulative",
+        "left": 12,
+        "top": 8,
+        "textStyle": {
+          "fontSize": 16,
+          "color": "$theme.textPrimary"
+        }
+      },
+      "tooltip": {
+        "trigger": "item"
+      },
+      "grid": {
+        "left": 90,
+        "right": 55,
+        "top": 70,
+        "bottom": 65,
+        "containLabel": true
+      },
+      "xAxis": {
+        "type": "category",
+        "data": "$slot.month.values",
+        "axisLabel": {
+          "rotate": 40,
+          "formatterTemplate": "{value:date}",
+          "color": "$theme.textMuted"
+        }
+      },
+      "yAxis": {
+        "type": "value",
+        "axisLabel": {
+          "color": "$theme.textMuted"
+        },
+        "splitLine": {
+          "lineStyle": {
+            "color": "$theme.gridStrokeOn"
+          }
+        }
+      },
+      "series": [
+        {
+          "type": "bar",
+          "stack": "flow",
+          "silent": true,
+          "data": "$calc.base.values",
+          "itemStyle": {
+            "color": "transparent"
+          },
+          "stackStrategy": "all"
+        },
+        {
+          "type": "bar",
+          "name": "Positive",
+          "stack": "flow",
+          "data": "$calc.up.values",
+          "itemStyle": {
+            "color": "#14b8a6"
+          },
+          "stackStrategy": "all"
+        },
+        {
+          "type": "bar",
+          "name": "Negative",
+          "stack": "flow",
+          "data": "$calc.down.values",
+          "itemStyle": {
+            "color": "#f87171"
+          },
+          "stackStrategy": "all"
+        },
+        {
+          "type": "line",
+          "name": "Running total",
+          "data": "$calc.running.values",
+          "symbol": "none",
+          "lineStyle": {
+            "color": "#fbbf24",
+            "width": 2
+          }
+        }
+      ],
+      "backgroundColor": "$theme.background"
+    },
+    "transforms": [
+      {
+        "window": {
+          "op": "sum",
+          "field": "gap",
+          "orderBy": "month"
+        },
+        "as": "running"
+      },
+      {
+        "window": {
+          "op": "lag",
+          "field": "running",
+          "orderBy": "month",
+          "default": 0
+        },
+        "as": "prior"
+      },
+      {
+        "calculate": "min(running, prior)",
+        "as": "base"
+      },
+      {
+        "calculate": "max(gap, 0)",
+        "as": "up"
+      },
+      {
+        "calculate": "max(-gap, 0)",
+        "as": "down"
+      }
+    ]
+  }
+}

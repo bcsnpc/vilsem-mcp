@@ -1,0 +1,107 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "expressiveness_network",
+      "name": "Sales relationship \u2022 product ? territory",
+      "formatVersion": 2
+    },
+    "slots": {
+      "product": {
+        "kind": "dimension"
+      },
+      "territory": {
+        "kind": "dimension"
+      },
+      "weight": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "color": [
+        "#14b8a6",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa"
+      ],
+      "textStyle": {
+        "color": "$theme.textPrimary",
+        "fontFamily": "Segoe UI, Arial, sans-serif"
+      },
+      "title": {
+        "text": "Sales relationship - product / territory",
+        "left": 12,
+        "top": 8,
+        "textStyle": {
+          "fontSize": 16,
+          "color": "$theme.textPrimary"
+        }
+      },
+      "tooltip": {
+        "trigger": "item"
+      },
+      "series": [
+        {
+          "type": "graph",
+          "layout": "circular",
+          "top": 80,
+          "bottom": 50,
+          "left": 85,
+          "right": 85,
+          "roam": true,
+          "symbolSize": 14,
+          "data": "$calc.edges.nodes",
+          "links": "$calc.edges.links",
+          "label": {
+            "show": false,
+            "formatterTemplate": "{label}"
+          },
+          "lineStyle": {
+            "color": "source",
+            "opacity": 0.35
+          },
+          "emphasis": {
+            "focus": "adjacency",
+            "label": {
+              "show": true,
+              "color": "$theme.textPrimary"
+            }
+          },
+          "categories": [
+            {
+              "name": "Product",
+              "itemStyle": {
+                "color": "#14b8a6"
+              }
+            },
+            {
+              "name": "Territory",
+              "itemStyle": {
+                "color": "#f59e0b"
+              }
+            }
+          ]
+        }
+      ],
+      "backgroundColor": "$theme.background"
+    },
+    "transforms": [
+      {
+        "links": {
+          "source": "product",
+          "target": "territory",
+          "value": "weight"
+        },
+        "as": "edges"
+      }
+    ]
+  }
+}

@@ -1,0 +1,142 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "expressiveness_radial_progress",
+      "name": "Revenue progress \u2022 latest month",
+      "formatVersion": 2
+    },
+    "slots": {
+      "month": {
+        "kind": "time"
+      },
+      "actual": {
+        "kind": "measure"
+      },
+      "target": {
+        "kind": "measure"
+      },
+      "previous": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "color": [
+        "#14b8a6",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa"
+      ],
+      "textStyle": {
+        "color": "$theme.textPrimary",
+        "fontFamily": "Segoe UI, Arial, sans-serif"
+      },
+      "title": {
+        "text": "Revenue progress \u2022 latest month",
+        "left": 12,
+        "top": 8,
+        "textStyle": {
+          "fontSize": 16,
+          "color": "$theme.textPrimary"
+        }
+      },
+      "tooltip": {
+        "trigger": "item"
+      },
+      "series": [
+        {
+          "type": "pie",
+          "radius": [
+            "66%",
+            "78%"
+          ],
+          "center": [
+            "50%",
+            "55%"
+          ],
+          "startAngle": 90,
+          "label": {
+            "show": false
+          },
+          "data": [
+            {
+              "name": "Achieved",
+              "value": "$calc.progress.last",
+              "itemStyle": {
+                "color": "#14b8a6"
+              },
+              "rowIndexes": [
+                "$slot.actual.lastIndex"
+              ]
+            },
+            {
+              "name": "Remaining",
+              "value": "$calc.remaining.last",
+              "itemStyle": {
+                "color": "#334155"
+              },
+              "rowIndexes": [
+                "$slot.actual.lastIndex"
+              ]
+            }
+          ]
+        }
+      ],
+      "graphic": [
+        {
+          "type": "text",
+          "left": "center",
+          "top": "44%",
+          "style": {
+            "text": "$slot.actual.lastLabel",
+            "fill": "$theme.textPrimary",
+            "fontSize": 28
+          }
+        },
+        {
+          "type": "text",
+          "left": "center",
+          "top": "54%",
+          "style": {
+            "text": "$calc.delta.lastLabel",
+            "fill": "#14b8a6",
+            "fontSize": 18
+          }
+        },
+        {
+          "type": "text",
+          "left": "center",
+          "top": "61%",
+          "style": {
+            "text": "change vs previous month",
+            "fill": "$theme.textMuted",
+            "fontSize": 12
+          }
+        }
+      ],
+      "backgroundColor": "$theme.background"
+    },
+    "transforms": [
+      {
+        "calculate": "min(1, max(0, actual / target))",
+        "as": "progress"
+      },
+      {
+        "calculate": "1 - progress",
+        "as": "remaining"
+      },
+      {
+        "calculate": "actual - previous",
+        "as": "delta"
+      }
+    ]
+  }
+}
