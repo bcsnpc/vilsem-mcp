@@ -1,0 +1,227 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_006_horizon",
+      "name": "06 \u00b7 Country revenue horizon \u00b7 three bands to observed peak",
+      "description": "06 \u00b7 Country revenue horizon \u00b7 three bands to observed peak",
+      "formatVersion": 2
+    },
+    "slots": {
+      "date": {
+        "kind": "time"
+      },
+      "country": {
+        "kind": "dimension"
+      },
+      "revenue": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "06 \u00b7 Country revenue horizon \u00b7 three bands to observed peak",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "axis",
+        "confine": true
+      },
+      "grid": {
+        "repeat": "$calc.f0.panels",
+        "template": {
+          "left": "18%",
+          "top": "$item.top",
+          "width": "76%",
+          "height": "$item.height"
+        }
+      },
+      "xAxis": {
+        "repeat": "$calc.f0.panels",
+        "template": {
+          "type": "category",
+          "gridIndex": "$item.index",
+          "data": "$item.categories",
+          "axisLabel": {
+            "show": false
+          },
+          "axisTick": {
+            "show": false
+          },
+          "axisLine": {
+            "show": false
+          }
+        }
+      },
+      "yAxis": {
+        "repeat": "$calc.f0.panels",
+        "template": {
+          "type": "value",
+          "gridIndex": "$item.index",
+          "min": 0,
+          "max": "$calc.width.max",
+          "show": false,
+          "name": "$item.name"
+        }
+      },
+      "series": {
+        "concat": [
+          {
+            "repeat": "$calc.f0.panels",
+            "template": {
+              "type": "line",
+              "name": "$item.name",
+              "xAxisIndex": "$item.index",
+              "yAxisIndex": "$item.index",
+              "data": "$item.data",
+              "symbol": "none",
+              "lineStyle": {
+                "width": 0
+              },
+              "areaStyle": {
+                "color": "#a7f3d0",
+                "opacity": 1
+              },
+              "z": 1
+            }
+          },
+          {
+            "repeat": "$calc.f1.panels",
+            "template": {
+              "type": "line",
+              "name": "$item.name",
+              "xAxisIndex": "$item.index",
+              "yAxisIndex": "$item.index",
+              "data": "$item.data",
+              "symbol": "none",
+              "lineStyle": {
+                "width": 0
+              },
+              "areaStyle": {
+                "color": "#34d399",
+                "opacity": 1
+              },
+              "z": 2
+            }
+          },
+          {
+            "repeat": "$calc.f2.panels",
+            "template": {
+              "type": "line",
+              "name": "$item.name",
+              "xAxisIndex": "$item.index",
+              "yAxisIndex": "$item.index",
+              "data": "$item.data",
+              "symbol": "none",
+              "lineStyle": {
+                "width": 0
+              },
+              "areaStyle": {
+                "color": "#059669",
+                "opacity": 1
+              },
+              "z": 3
+            }
+          }
+        ]
+      },
+      "graphic": {
+        "repeat": "$calc.f0.panels",
+        "template": {
+          "type": "text",
+          "left": "2%",
+          "top": "$item.top",
+          "style": {
+            "text": "$item.name",
+            "fill": "#cbd5e1",
+            "fontSize": 11,
+            "fontFamily": "Segoe UI"
+          }
+        }
+      }
+    },
+    "transforms": [
+      {
+        "stat": {
+          "field": "revenue",
+          "op": "max"
+        },
+        "as": "peak"
+      },
+      {
+        "calculate": "peak/3",
+        "as": "width"
+      },
+      {
+        "calculate": "min(max(revenue-width*0,0),width)",
+        "as": "band0"
+      },
+      {
+        "facet": {
+          "by": "country",
+          "category": "date",
+          "value": "band0",
+          "columns": 1,
+          "maxPanels": 8
+        },
+        "as": "f0"
+      },
+      {
+        "calculate": "min(max(revenue-width*1,0),width)",
+        "as": "band1"
+      },
+      {
+        "facet": {
+          "by": "country",
+          "category": "date",
+          "value": "band1",
+          "columns": 1,
+          "maxPanels": 8
+        },
+        "as": "f1"
+      },
+      {
+        "calculate": "min(max(revenue-width*2,0),width)",
+        "as": "band2"
+      },
+      {
+        "facet": {
+          "by": "country",
+          "category": "date",
+          "value": "band2",
+          "columns": 1,
+          "maxPanels": 8
+        },
+        "as": "f2"
+      }
+    ]
+  }
+}

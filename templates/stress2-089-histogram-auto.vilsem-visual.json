@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_089_histogram-auto",
+      "name": "89 - Retail price distribution of products with sales - automatic bins",
+      "description": "89 - Retail price distribution of products with sales - automatic bins",
+      "formatVersion": 3
+    },
+    "slots": {
+      "product": {
+        "kind": "dimension"
+      },
+      "price": {
+        "kind": "dimension"
+      },
+      "sold": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "89 - Retail price distribution of products with sales - automatic bins",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "axis",
+        "confine": true
+      },
+      "grid": {
+        "left": 75,
+        "right": 40,
+        "top": 90,
+        "bottom": 75,
+        "containLabel": true
+      },
+      "xAxis": {
+        "type": "category",
+        "data": "$calc.bins.categories",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "rotate": 35,
+          "hideOverlap": true
+        },
+        "axisLine": {
+          "lineStyle": {
+            "color": "#64748b"
+          }
+        }
+      },
+      "yAxis": {
+        "type": "value",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "formatterTemplate": "{value:thousands}"
+        },
+        "splitLine": {
+          "lineStyle": {
+            "color": "#263244"
+          }
+        }
+      },
+      "series": [
+        {
+          "type": "bar",
+          "data": "$calc.bins.data",
+          "barCategoryGap": 0
+        }
+      ]
+    },
+    "transforms": [
+      {
+        "histogram": {
+          "field": "price",
+          "bins": "auto"
+        },
+        "as": "bins"
+      }
+    ]
+  }
+}

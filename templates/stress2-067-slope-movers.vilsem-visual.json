@@ -1,0 +1,173 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_067_slope-movers",
+      "name": "67 - 2021 to 2022 revenue - slope chart, five largest movers",
+      "description": "67 - 2021 to 2022 revenue - slope chart, five largest movers",
+      "formatVersion": 2
+    },
+    "slots": {
+      "country": {
+        "kind": "dimension"
+      },
+      "prior": {
+        "kind": "measure"
+      },
+      "current": {
+        "kind": "measure"
+      },
+      "rank": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "67 - 2021 to 2022 revenue - slope chart, five largest movers",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "item",
+        "confine": true,
+        "formatterTemplate": "{seriesName} | {name}: {value.1:thousands}"
+      },
+      "grid": {
+        "left": 75,
+        "right": 160,
+        "top": 90,
+        "bottom": 75,
+        "containLabel": true
+      },
+      "xAxis": {
+        "type": "category",
+        "data": [
+          "2021",
+          "2022"
+        ],
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "rotate": 0,
+          "hideOverlap": true
+        },
+        "axisLine": {
+          "lineStyle": {
+            "color": "#64748b"
+          }
+        }
+      },
+      "yAxis": {
+        "type": "value",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "formatterTemplate": "{value:thousands}"
+        },
+        "splitLine": {
+          "lineStyle": {
+            "color": "#263244"
+          }
+        }
+      },
+      "series": {
+        "repeat": "$calc.values.data",
+        "template": {
+          "type": "line",
+          "name": "$item.name",
+          "lineStyle": {
+            "opacity": "$item.value.3"
+          },
+          "itemStyle": {
+            "opacity": "$item.value.3"
+          },
+          "data": [
+            {
+              "value": [
+                0,
+                "$item.value.0",
+                "$item.value.2"
+              ],
+              "rowIndexes": "$item.rowIndexes"
+            },
+            {
+              "value": [
+                1,
+                "$item.value.1",
+                "$item.value.2"
+              ],
+              "rowIndexes": "$item.rowIndexes"
+            }
+          ],
+          "label": {
+            "show": true,
+            "position": "right",
+            "formatterTemplate": "{seriesName}",
+            "color": "#e2e8f0"
+          },
+          "labelLayout": {
+            "hideOverlap": true
+          }
+        }
+      }
+    },
+    "transforms": [
+      {
+        "calculate": "0.25+0.75*min(1,max(0,6-rank))",
+        "as": "fade"
+      },
+      {
+        "points": {
+          "fields": [
+            "prior",
+            "current",
+            "rank",
+            "fade"
+          ],
+          "numeric": [
+            "prior",
+            "current",
+            "rank",
+            "fade"
+          ],
+          "name": "country"
+        },
+        "as": "values"
+      }
+    ]
+  },
+  "measures": {
+    "Stress Revenue 2021": "CALCULATE([Total Revenue], FILTER(ALL('Calendar Lookup'), YEAR('Calendar Lookup'[Date])=2021))",
+    "Stress Revenue 2022": "CALCULATE([Total Revenue], FILTER(ALL('Calendar Lookup'), YEAR('Calendar Lookup'[Date])=2022))",
+    "Stress Mover Rank": "RANKX(ALL('Territory Lookup'[Country]), ABS([Stress Revenue 2022]-[Stress Revenue 2021]), , DESC, DENSE)"
+  }
+}

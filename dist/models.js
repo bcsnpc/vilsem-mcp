@@ -4,6 +4,7 @@ import { createConnector } from '@vilsem/core/connect';
 export class Models {
     adapter;
     connections = new Map();
+    metadata = new Map();
     constructor(adapter = new VilsemAdapter()) {
         this.adapter = adapter;
     }
@@ -23,6 +24,7 @@ export class Models {
         // Introspection may include raw model definitions for Desktop app export.
         // The MCP schema contract exposes fields/relationships only, never data sources.
         const schema = { tables: discovered.tables || [], measures: discovered.measures || [], relationships: discovered.relationships || [] };
+        this.metadata.set(id, schema);
         const columnTasks = [];
         for (const table of schema.tables || [])
             for (const column of table.columns || []) {
@@ -62,6 +64,14 @@ export class Models {
                 }
             }
         }));
+        return schema;
+    }
+    async fields(id) {
+        if (this.metadata.has(id))
+            return this.metadata.get(id);
+        const discovered = await this.adapter.schema(this.get(id));
+        const schema = { tables: discovered.tables || [], measures: discovered.measures || [], relationships: discovered.relationships || [] };
+        this.metadata.set(id, schema);
         return schema;
     }
 }

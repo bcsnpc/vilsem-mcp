@@ -1,0 +1,141 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_009_diverging-stack",
+      "name": "09 \u00b7 Country economics \u00b7 diverging stacked balances",
+      "description": "09 \u00b7 Country economics \u00b7 diverging stacked balances",
+      "formatVersion": 2
+    },
+    "slots": {
+      "date": {
+        "kind": "dimension"
+      },
+      "m0": {
+        "kind": "measure"
+      },
+      "m1": {
+        "kind": "measure"
+      },
+      "m2": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "09 \u00b7 Country economics \u00b7 diverging stacked balances",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        }
+      },
+      "tooltip": {
+        "trigger": "axis",
+        "confine": true
+      },
+      "grid": {
+        "left": 75,
+        "right": 40,
+        "top": 90,
+        "bottom": 75,
+        "containLabel": true
+      },
+      "xAxis": {
+        "type": "value",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "formatterTemplate": "{value:thousands}"
+        }
+      },
+      "yAxis": {
+        "type": "category",
+        "data": "$slot.date.values",
+        "axisLabel": {
+          "color": "#cbd5e1"
+        }
+      },
+      "series": [
+        {
+          "type": "bar",
+          "name": "Cost (outflow)",
+          "stack": "balance",
+          "data": "$slot.m0.values",
+          "stackStrategy": "samesign",
+          "labelLayout": {
+            "hideOverlap": true
+          },
+          "label": {
+            "show": true,
+            "position": "inside",
+            "formatterTemplate": "{value:thousands}",
+            "color": "#ffffff"
+          }
+        },
+        {
+          "type": "bar",
+          "name": "Profit",
+          "stack": "balance",
+          "data": "$slot.m1.values",
+          "stackStrategy": "samesign",
+          "labelLayout": {
+            "hideOverlap": true
+          },
+          "label": {
+            "show": true,
+            "position": "inside",
+            "formatterTemplate": "{value:thousands}",
+            "color": "#ffffff"
+          }
+        },
+        {
+          "type": "bar",
+          "name": "Returns cost (outflow)",
+          "stack": "balance",
+          "data": "$slot.m2.values",
+          "stackStrategy": "samesign",
+          "labelLayout": {
+            "hideOverlap": true
+          },
+          "label": {
+            "show": false,
+            "position": "inside",
+            "formatterTemplate": "{value:thousands}",
+            "color": "#ffffff"
+          }
+        }
+      ]
+    }
+  },
+  "measures": {
+    "Stress Negative Cost": "-[Total Cost]",
+    "Stress Returns Cost": "-[Quantity Returned] * [Average Retail Price]"
+  }
+}

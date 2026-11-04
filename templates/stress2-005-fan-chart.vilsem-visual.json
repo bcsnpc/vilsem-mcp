@@ -1,0 +1,202 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_005_fan-chart",
+      "name": "05 \u00b7 Daily sales-line revenue \u00b7 P10\u2013P90 and P25\u2013P75",
+      "description": "05 \u00b7 Daily sales-line revenue \u00b7 P10\u2013P90 and P25\u2013P75",
+      "formatVersion": 2
+    },
+    "slots": {
+      "date": {
+        "kind": "time"
+      },
+      "m0": {
+        "kind": "measure"
+      },
+      "m1": {
+        "kind": "measure"
+      },
+      "m2": {
+        "kind": "measure"
+      },
+      "m3": {
+        "kind": "measure"
+      },
+      "m4": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "05 \u00b7 Daily sales-line revenue \u00b7 P10\u2013P90 and P25\u2013P75",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "data": [
+          "P10\u2013P90",
+          "P25\u2013P75",
+          "Median"
+        ]
+      },
+      "tooltip": {
+        "trigger": "axis",
+        "confine": true
+      },
+      "grid": {
+        "left": 75,
+        "right": 40,
+        "top": 90,
+        "bottom": 75,
+        "containLabel": true
+      },
+      "xAxis": {
+        "type": "category",
+        "data": "$slot.date.values",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "rotate": 35,
+          "hideOverlap": true
+        },
+        "axisLine": {
+          "lineStyle": {
+            "color": "#64748b"
+          }
+        }
+      },
+      "yAxis": {
+        "type": "value",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "formatterTemplate": "{value:thousands}"
+        },
+        "splitLine": {
+          "lineStyle": {
+            "color": "#263244"
+          }
+        }
+      },
+      "series": [
+        {
+          "type": "line",
+          "name": "P10",
+          "stack": "outer",
+          "data": "$slot.m0.values",
+          "symbol": "none",
+          "lineStyle": {
+            "opacity": 0
+          },
+          "areaStyle": {
+            "opacity": 0
+          }
+        },
+        {
+          "type": "line",
+          "name": "P10\u2013P90",
+          "stack": "outer",
+          "data": "$calc.outer.values",
+          "symbol": "none",
+          "lineStyle": {
+            "opacity": 0
+          },
+          "areaStyle": {
+            "color": "#60a5fa",
+            "opacity": 0.2
+          },
+          "itemStyle": {
+            "color": "#60a5fa"
+          }
+        },
+        {
+          "type": "line",
+          "name": "P25",
+          "stack": "inner",
+          "data": "$slot.m1.values",
+          "symbol": "none",
+          "lineStyle": {
+            "opacity": 0
+          },
+          "areaStyle": {
+            "opacity": 0
+          }
+        },
+        {
+          "type": "line",
+          "name": "P25\u2013P75",
+          "stack": "inner",
+          "data": "$calc.inner.values",
+          "symbol": "none",
+          "lineStyle": {
+            "opacity": 0
+          },
+          "areaStyle": {
+            "color": "#60a5fa",
+            "opacity": 0.4
+          },
+          "itemStyle": {
+            "color": "#60a5fa"
+          }
+        },
+        {
+          "type": "line",
+          "name": "Median",
+          "data": "$slot.m2.values",
+          "symbol": "none",
+          "lineStyle": {
+            "color": "#f59e0b",
+            "width": 2
+          },
+          "itemStyle": {
+            "color": "#f59e0b"
+          }
+        }
+      ]
+    },
+    "transforms": [
+      {
+        "calculate": "m4-m0",
+        "as": "outer"
+      },
+      {
+        "calculate": "m3-m1",
+        "as": "inner"
+      }
+    ]
+  },
+  "measures": {
+    "Stress P10": "PERCENTILEX.INC('Sales Data', 'Sales Data'[Revenue], 0.1)",
+    "Stress P25": "PERCENTILEX.INC('Sales Data', 'Sales Data'[Revenue], 0.25)",
+    "Stress P50": "PERCENTILEX.INC('Sales Data', 'Sales Data'[Revenue], 0.5)",
+    "Stress P75": "PERCENTILEX.INC('Sales Data', 'Sales Data'[Revenue], 0.75)",
+    "Stress P90": "PERCENTILEX.INC('Sales Data', 'Sales Data'[Revenue], 0.9)"
+  }
+}

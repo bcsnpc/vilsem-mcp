@@ -11,6 +11,7 @@ import { Models } from '../src/models.js'
 import { previewRows } from '../src/preview.js'
 import { validateSpec,validateVisuals,validateBindings } from '../src/reports.js'
 import { EXAMPLE_TEMPLATES } from '@vilsem/core/templates/examples'
+import { injectVisual, RENDERER_GUID } from '@vilsem/core/pbir'
 
 const closed:any[]=[]
 const temporary:string[]=[]
@@ -37,6 +38,13 @@ async function fixture(){
 }
 
 describe('spec and SSR',()=>{
+  it('contains a native rasterizer panic and can render the next request',()=>{
+    const spec={template:{meta:{id:'offscreen-flat-line'},slots:{cat:{kind:'dimension'},value:{kind:'measure'}},template:{animation:false,xAxis:{type:'category',data:'$slot.cat.categories'},yAxis:{min:0,max:1},series:[{type:'line',showSymbol:false,data:'$slot.value.values'}]}}}
+    // resvg 2.6.2 can abort on a flat stroked line entirely outside the SVG.
+    try {previewRows(spec,[{_cat:'A',_val:15},{_cat:'B',_val:15}],900,600)}
+    catch(error){expect((error as Error).message).toMatch(/PNG rasterization failed in an isolated worker/)}
+    expect(previewRows({type:'bar'},[{_cat:'A',_val:1}]).png.length).toBeGreaterThan(100)
+  })
   it.each(EXAMPLE_TEMPLATES.map(template=>[template.meta.id,template]))('validates and renders shared template %s',(_name,template)=>{
     const spec={type:'custom',template}
     expect(()=>validateSpec(spec)).not.toThrow()
@@ -76,6 +84,58 @@ describe('spec and SSR',()=>{
 })
 
 describe('MCP end-to-end contracts',()=>{
+  it('reports old Vilsem runtime incompatibility without reporting or changing native visuals',async()=>{
+    const root=await fixture()
+    const template=EXAMPLE_TEMPLATES.find(t=>t.meta.id==='lollipop')!
+    const spec={type:'custom',template:{...template,transforms:[{waterfall:{category:'category',value:'value'},as:'steps'}]}}
+    await injectVisual({reportDir:root,pageName:'page1',visualName:'advanced',spec,bindings})
+    const metadata=path.join(root,'CustomVisuals',RENDERER_GUID,'package.json')
+    await fs.writeFile(metadata,JSON.stringify({visual:{guid:RENDERER_GUID},version:'4.14.2.0'}))
+    const native=path.join(root,'definition/pages/page1/visuals/native/visual.json'),before=await fs.readFile(native)
+    const result=await validateVisuals(root)
+    expect(result).toHaveLength(1)
+    expect(result[0].valid).toBe(false)
+    expect(result[0].error).toMatch(/requires vilsem Renderer 4.18/)
+    expect(await fs.readFile(native)).toEqual(before)
+  })
+  it('uses an explicit bounded row window consistently in explanation and preview',async()=>{
+    const model=adapter();model.query=vi.fn(async()=>[{'Product[Category]':'A','[Sales]':12},{'Product[Category]':'B','[Sales]':3}])
+    const client=await clientFor(model)
+    const connection=unpack(await client.callTool({name:'connect_model',arguments:{source:{kind:'desktop',port:12345}}}))
+    const args={...connection,spec:{type:'bar'},bindings,maxRows:2}
+    const explanation=unpack(await client.callTool({name:'explain_visual',arguments:args}))
+    expect(explanation.dax).toMatch(/TOPN\(2,/)
+    const result=unpack(await client.callTool({name:'preview_visual',arguments:args}))
+    expect(model.query.mock.calls.at(-1).slice(1)).toEqual([explanation.dax,2])
+    expect(result.maxRows).toBe(2);expect(result.warnings[0]).toContain('2-row limit')
+    const invalid:any=await client.callTool({name:'preview_visual',arguments:{...args,maxRows:10001}})
+    expect(invalid.isError).toBe(true)
+  })
+
+  it('requires connected engine validation for scoped measures and carries DEFINE into explanation/preview',async()=>{
+    const model=adapter()
+    model.schema=vi.fn(async()=>({tables:[{name:'Measures',columns:[]},{name:'Product',columns:[{name:'Category'}]}],measures:[{table:'Measures',name:'Sales'}]}))
+    model.query=vi.fn(async()=>[{'Product[Category]':'Bikes','[Margin]':0.25}])
+    const client=await clientFor(model)
+    const spec={type:'bar',measures:{Margin:'DIVIDE([Sales], 100)'}}
+    const noConnection:any=await client.callTool({name:'validate_spec',arguments:{spec}})
+    expect(noConnection.isError).toBe(true)
+    expect(noConnection.content[0].text).toContain('connectionId is required')
+    const connection=unpack(await client.callTool({name:'connect_model',arguments:{source:{kind:'desktop',port:12345}}}))
+    const args={...connection,spec,bindings:{dimensions:bindings.dimensions,measures:[{table:'Measures',name:'Margin'}]}}
+    expect((await client.callTool({name:'validate_spec',arguments:args})).isError).not.toBe(true)
+    expect(model.query.mock.calls.at(-1)[1]).toContain('DEFINE')
+    const explanation=unpack(await client.callTool({name:'explain_visual',arguments:args}))
+    expect(explanation.dax).toContain("MEASURE 'Measures'[Margin] = DIVIDE([Sales], 100)")
+    const preview:any=await client.callTool({name:'preview_visual',arguments:args})
+    expect(preview.isError).not.toBe(true)
+    expect(unpack(preview).option.series[0].data[0].value).toBe(0.25)
+    const invalid:any=await client.callTool({name:'validate_spec',arguments:{...connection,spec:{type:'bar',measures:{Bad:'[Unknown]'}}}})
+    expect(invalid.isError).toBe(true);expect(invalid.content[0].text).toContain('Unknown measure')
+    model.query.mockRejectedValueOnce(Error('DAX syntax error at comma'))
+    const badSyntax:any=await client.callTool({name:'validate_spec',arguments:{...connection,spec:{type:'bar',measures:{Bad:'DIVIDE(, [Sales])'}}}})
+    expect(badSyntax.isError).toBe(true);expect(badSyntax.content[0].text).toContain('DAX syntax error')
+  })
   it('connects, samples schema, caps queries and previews actual normalized model rows',async()=>{
     const model=adapter(),client=await clientFor(model)
     const connected=unpack(await client.callTool({name:'connect_model',arguments:{source:{kind:'desktop',port:12345}}}))

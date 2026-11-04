@@ -1,0 +1,118 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_054_arc-diagram",
+      "name": "54 - Country to category revenue - fixed line nodes",
+      "description": "54 - Country to category revenue - fixed line nodes",
+      "formatVersion": 2
+    },
+    "slots": {
+      "source": {
+        "kind": "dimension"
+      },
+      "target": {
+        "kind": "dimension"
+      },
+      "revenue": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "54 - Country to category revenue - fixed line nodes",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "item",
+        "confine": true,
+        "formatterTemplate": "{label}: {value:thousands}"
+      },
+      "series": [
+        {
+          "type": "graph",
+          "data": "$calc.flow.nodes",
+          "links": "$calc.flow.links",
+          "left": 90,
+          "right": 100,
+          "top": 270,
+          "bottom": 210,
+          "label": {
+            "show": true,
+            "position": "bottom",
+            "rotate": 40,
+            "formatterTemplate": "{label}",
+            "color": "#e2e8f0",
+            "fontSize": 11
+          },
+          "lineStyle": {
+            "color": "source",
+            "opacity": 0.7,
+            "curveness": 0.6
+          },
+          "emphasis": {
+            "focus": "adjacency"
+          },
+          "layout": "none",
+          "roam": false,
+          "draggable": false,
+          "categories": [
+            {
+              "name": "Country"
+            },
+            {
+              "name": "CategoryName"
+            }
+          ],
+          "preserveAspect": true
+        }
+      ]
+    },
+    "transforms": [
+      {
+        "flows": {
+          "levels": [
+            "source",
+            "target"
+          ],
+          "value": "revenue",
+          "order": "value",
+          "layout": "line"
+        },
+        "as": "flow"
+      }
+    ]
+  }
+}

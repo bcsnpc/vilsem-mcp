@@ -1,5 +1,81 @@
 # Expressiveness audit and imperative gap
 
+## Stress round 2: final unsupported cases
+
+All four actual MCP operations (`validate_spec`, `explain_visual`, `preview_visual`, `commit_visual`) refused each case below. The harness asserted target-container absence before and after every group of calls. Failed specs are retained separately from shipped working templates. No extension was implemented.
+
+| Case | Reason / exact primary diagnostic | Proposed extension |
+| --- | --- | --- |
+| 087 [marimekko](expressiveness/stress2-087-marimekko.vilsem-visual.json) | `custom series requires imperative renderItem; executable callbacks are not supported by the declarative format` | A bounded variable-width/height rectangle display list. |
+| 088 [mosaic](expressiveness/stress2-088-mosaic.vilsem-visual.json) | `custom series requires imperative renderItem; executable callbacks are not supported by the declarative format` | A bounded variable-width/height rectangle display list. |
+| 111 [choropleth](expressiveness/stress2-111-choropleth.vilsem-visual.json) | `geo/map rendering requires a shipped registered map asset; the current renderer ships none` | A locally shipped, bounded and versioned geography asset, projection, validated coordinates and dedicated geo modules; the current model also lacks lat/long fields. |
+| 112 [bubble-map](expressiveness/stress2-112-bubble-map.vilsem-visual.json) | `geo/map rendering requires a shipped registered map asset; the current renderer ships none` | A locally shipped, bounded and versioned geography asset, projection, validated coordinates and dedicated geo modules; the current model also lacks lat/long fields. |
+| 113 [geo-heatmap](expressiveness/stress2-113-geo-heatmap.vilsem-visual.json) | `geo/map rendering requires a shipped registered map asset; the current renderer ships none` | A locally shipped, bounded and versioned geography asset, projection, validated coordinates and dedicated geo modules; the current model also lacks lat/long fields. |
+| 114 [flow-map](expressiveness/stress2-114-flow-map.vilsem-visual.json) | `geo/map rendering requires a shipped registered map asset; the current renderer ships none` | A locally shipped, bounded and versioned geography asset, projection, validated coordinates and dedicated geo modules; the current model also lacks lat/long fields. |
+| 117 [voronoi-treemap](expressiveness/stress2-117-voronoi-treemap.vilsem-visual.json) | `custom series requires imperative renderItem; executable callbacks are not supported by the declarative format` | A weighted power-diagram solver and validated bounded polygon display list. |
+| 119 [bar3d](expressiveness/stress2-119-bar3d.vilsem-visual.json) | `series type "bar3D" is not shipped by the current renderer; a bounded declarative transform or a sandboxed extension is required` | A separate isolated GL/3D renderer with bounded mesh/camera resources and explicit device support. |
+| 120 [euler-overlap](expressiveness/stress2-120-euler-overlap.vilsem-visual.json) | `custom series requires imperative renderItem; executable callbacks are not supported by the declarative format` | A constrained area-overlap layout and model-evaluated intersection counts; never infer intersections from marginal counts. |
+
+Geography is environment/capability-limited, not a claim that map rendering inherently needs arbitrary callbacks. A map asset and real coordinate/geocoding inputs are prerequisites; none were fabricated or downloaded. Tile grids (115) use explicit authored coordinates and are tested separately.
+
+Word-cloud116 now passes using bounded trusted packing and ordinary graph labels. Weighted Voronoi tessellation and exact Euler-area fitting remain unsupported; a plain treemap or random circles are not accepted substitutes. These remaining Tier-C probes stop at explicit refusal as requested.
+
+All extensions must preserve the security model below: no inline JavaScript/eval, DOM/network/filesystem/model-connection access, bounded execution/memory/display lists and source identities. Web Workers and node:vm alone are not security boundaries. GL needs a distinct renderer boundary; local map assets need provenance/licensing, size limits and no remote URL loading.
+
+The full literal diagnostics, including any duplicate guard messages, are retained in [refusal evidence](stress2-refusals.json).
+
+
+## Earlier refusal checkpoint (word cloud subsequently revisited)
+
+All four actual MCP operations (`validate_spec`, `explain_visual`, `preview_visual`, `commit_visual`) refused each case below. The harness asserted target-container absence before and after every group of calls. Failed specs are retained separately from shipped working templates. No extension was implemented.
+
+| Case | Reason / exact primary diagnostic | Proposed extension |
+| --- | --- | --- |
+| 087 [marimekko](expressiveness/stress2-087-marimekko.vilsem-visual.json) | `custom series requires imperative renderItem; executable callbacks are not supported by the declarative format` | A bounded variable-width/height rectangle display list. |
+| 088 [mosaic](expressiveness/stress2-088-mosaic.vilsem-visual.json) | `custom series requires imperative renderItem; executable callbacks are not supported by the declarative format` | A bounded variable-width/height rectangle display list. |
+| 111 [choropleth](expressiveness/stress2-111-choropleth.vilsem-visual.json) | `geo/map rendering requires a shipped registered map asset; the current renderer ships none` | A locally shipped, bounded and versioned geography asset, projection, validated coordinates and dedicated geo modules; the current model also lacks lat/long fields. |
+| 112 [bubble-map](expressiveness/stress2-112-bubble-map.vilsem-visual.json) | `geo/map rendering requires a shipped registered map asset; the current renderer ships none` | A locally shipped, bounded and versioned geography asset, projection, validated coordinates and dedicated geo modules; the current model also lacks lat/long fields. |
+| 113 [geo-heatmap](expressiveness/stress2-113-geo-heatmap.vilsem-visual.json) | `geo/map rendering requires a shipped registered map asset; the current renderer ships none` | A locally shipped, bounded and versioned geography asset, projection, validated coordinates and dedicated geo modules; the current model also lacks lat/long fields. |
+| 114 [flow-map](expressiveness/stress2-114-flow-map.vilsem-visual.json) | `geo/map rendering requires a shipped registered map asset; the current renderer ships none` | A locally shipped, bounded and versioned geography asset, projection, validated coordinates and dedicated geo modules; the current model also lacks lat/long fields. |
+| 116 [word-cloud](expressiveness/stress2-116-word-cloud.vilsem-visual.json) | `series type "wordCloud" is not shipped by the current renderer; a bounded declarative transform or a sandboxed extension is required` | A bounded word-placement/collision module and text display list. |
+| 117 [voronoi-treemap](expressiveness/stress2-117-voronoi-treemap.vilsem-visual.json) | `custom series requires imperative renderItem; executable callbacks are not supported by the declarative format` | A weighted power-diagram solver and validated bounded polygon display list. |
+| 119 [bar3d](expressiveness/stress2-119-bar3d.vilsem-visual.json) | `series type "bar3D" is not shipped by the current renderer; a bounded declarative transform or a sandboxed extension is required` | A separate isolated GL/3D renderer with bounded mesh/camera resources and explicit device support. |
+| 120 [euler-overlap](expressiveness/stress2-120-euler-overlap.vilsem-visual.json) | `custom series requires imperative renderItem; executable callbacks are not supported by the declarative format` | A constrained area-overlap layout and model-evaluated intersection counts; never infer intersections from marginal counts. |
+
+Geography is environment/capability-limited, not a claim that map rendering inherently needs arbitrary callbacks. A map asset and real coordinate/geocoding inputs are prerequisites; none were fabricated or downloaded. Tile grids (115) use explicit authored coordinates and are tested separately.
+
+Word-cloud116 now passes using bounded trusted packing and ordinary graph labels. Weighted Voronoi tessellation and exact Euler-area fitting remain unsupported; a plain treemap or random circles are not accepted substitutes. These remaining Tier-C probes stop at explicit refusal as requested.
+
+All extensions must preserve the security model below: no inline JavaScript/eval, DOM/network/filesystem/model-connection access, bounded execution/memory/display lists and source identities. Web Workers and node:vm alone are not security boundaries. GL needs a distinct renderer boundary; local map assets need provenance/licensing, size limits and no remote URL loading.
+
+The full literal diagnostics, including any duplicate guard messages, are retained in [refusal evidence](stress2-refusals.json).
+
+
+## Stress round 2: confirmed imperative refusals
+
+Cases 087 (Marimekko) and 088 (mosaic) were independently authored from scratch
+against real CategoryName/SubcategoryName/Total Revenue bindings. Each attempts
+variable-width/height rectangle cells through a custom-series skeleton. Actual
+MCP `validate_spec`, `explain_visual`, `preview_visual` and `commit_visual` all
+returned this exact refusal for each case:
+
+`custom series requires imperative renderItem; executable callbacks are not supported by the declarative format`
+
+No visual container was written; the refusal harness checked target absence
+before and after all eight calls. The failed specs are preserved as
+[Marimekko](expressiveness/stress2-087-marimekko.vilsem-visual.json) and
+[mosaic](expressiveness/stress2-088-mosaic.vilsem-visual.json), outside the shipped
+working-template catalog. They are category (c), not implemented. The sandboxed
+custom-series design and threat model below apply: a trusted host would validate
+a bounded rectangle/path display list with source identities, while executable
+extension logic remains isolated from model connections, credentials, DOM,
+network and filesystem. No inline JavaScript or privilege expansion is added.
+
+The original ten-visual audit below is historical; it is not the current status
+of the ongoing 120-case round. Distribution/layout proposals in that round are
+still under test and are not classified as imperative merely because a trusted
+data-shaping operation is currently missing.
+
 Status: nine templates pass validate/explain/real-data PNG preview, commit and persisted Desktop rendering. Marimekko is an intentional category-(c) failure, not shipped as a working example.
 
 All ten specs were authored from scratch for this exercise. Existing template bodies were not reused. Desktop mode connected with auto-detected port 62232 using `process-workspace-port-file`. `get_schema` returned 13 tables and 39 measures from the open AdventureWorks QA copy. Original supplied PBIP remains untouched; no measures, tables or relationships were added. Model-backed period/target measures are evaluated at month grain, not guessed by a local transform.

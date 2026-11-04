@@ -1,0 +1,150 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_094_strip-mean",
+      "name": "94 - Retail-price strip plot and mean by subcategory",
+      "description": "94 - Retail-price strip plot and mean by subcategory",
+      "formatVersion": 3
+    },
+    "slots": {
+      "subcategory": {
+        "kind": "dimension"
+      },
+      "product": {
+        "kind": "dimension"
+      },
+      "price": {
+        "kind": "dimension"
+      },
+      "sold": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "94 - Retail-price strip plot and mean by subcategory",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "axis",
+        "confine": true
+      },
+      "grid": {
+        "left": 200,
+        "right": 40,
+        "top": 90,
+        "bottom": 75,
+        "containLabel": true
+      },
+      "xAxis": {
+        "type": "value",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "formatterTemplate": "{value:thousands}"
+        }
+      },
+      "yAxis": {
+        "type": "category",
+        "data": "$slot.subcategory.categories",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "fontSize": 9
+        }
+      },
+      "series": {
+        "concat": [
+          [
+            {
+              "type": "scatter",
+              "name": "Product price",
+              "data": "$calc.strip.data",
+              "symbolSize": 4,
+              "itemStyle": {
+                "opacity": 0.5
+              }
+            }
+          ],
+          {
+            "repeat": "$calc.means.data",
+            "template": {
+              "type": "scatter",
+              "name": "Subcategory mean",
+              "data": [
+                {
+                  "name": "$item.name",
+                  "value": [
+                    "$item.value",
+                    "$item.name"
+                  ],
+                  "rowIndexes": "$item.rowIndexes"
+                }
+              ],
+              "symbol": "diamond",
+              "symbolSize": 10,
+              "itemStyle": {
+                "color": "#f59e0b"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "transforms": [
+      {
+        "points": {
+          "fields": [
+            "price",
+            "subcategory"
+          ],
+          "numeric": [
+            "price"
+          ],
+          "name": "product"
+        },
+        "as": "strip"
+      },
+      {
+        "stat": {
+          "field": "price",
+          "op": "mean",
+          "partitionBy": "subcategory",
+          "records": true
+        },
+        "as": "means"
+      }
+    ]
+  }
+}

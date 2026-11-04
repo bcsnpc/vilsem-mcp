@@ -1,0 +1,122 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_019_semi-donut-kpi",
+      "name": "19 \u00b7 Global profit margin \u00b7 semi-circle KPI",
+      "description": "19 \u00b7 Global profit margin \u00b7 semi-circle KPI",
+      "formatVersion": 2
+    },
+    "slots": {
+      "margin": {
+        "kind": "measure"
+      },
+      "rest": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "19 \u00b7 Global profit margin \u00b7 semi-circle KPI",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "item"
+      },
+      "series": [
+        {
+          "type": "pie",
+          "startAngle": 180,
+          "endAngle": 0,
+          "radius": [
+            "58%",
+            "78%"
+          ],
+          "center": [
+            "50%",
+            "70%"
+          ],
+          "label": {
+            "show": false
+          },
+          "data": [
+            {
+              "name": "Profit share",
+              "value": "$slot.margin.first",
+              "itemStyle": {
+                "color": "#2dd4bf"
+              }
+            },
+            {
+              "name": "Cost share",
+              "value": "$slot.rest.first",
+              "itemStyle": {
+                "color": "#334155"
+              }
+            }
+          ]
+        }
+      ],
+      "graphic": [
+        {
+          "type": "text",
+          "left": "center",
+          "top": "55%",
+          "style": {
+            "text": "$slot.margin.lastLabel",
+            "fill": "#f8fafc",
+            "fontSize": 42,
+            "fontFamily": "Segoe UI"
+          }
+        },
+        {
+          "type": "text",
+          "left": "center",
+          "top": "68%",
+          "style": {
+            "text": "Profit margin (%)",
+            "fill": "#cbd5e1",
+            "fontSize": 16,
+            "fontFamily": "Segoe UI"
+          }
+        }
+      ]
+    }
+  },
+  "measures": {
+    "Stress Margin Percent": "100 * DIVIDE([Total Profit],[Total Revenue])",
+    "Stress Remaining Percent": "100 * DIVIDE([Total Cost],[Total Revenue])"
+  }
+}

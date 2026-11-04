@@ -1,0 +1,147 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_093_beeswarm",
+      "name": "93 - Retail-price beeswarm by product category - bounded collision layout",
+      "description": "93 - Retail-price beeswarm by product category - bounded collision layout",
+      "formatVersion": 3
+    },
+    "slots": {
+      "category": {
+        "kind": "dimension"
+      },
+      "product": {
+        "kind": "dimension"
+      },
+      "price": {
+        "kind": "dimension"
+      },
+      "sold": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "93 - Retail-price beeswarm by product category - bounded collision layout",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "item",
+        "confine": true,
+        "formatterTemplate": "{label}"
+      },
+      "grid": {
+        "left": 170,
+        "top": 95,
+        "width": 700,
+        "height": 420
+      },
+      "xAxis": {
+        "type": "value",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "formatterTemplate": "{value:thousands}",
+          "showMinLabel": false,
+          "showMaxLabel": false
+        },
+        "min": "$calc.swarm.min",
+        "max": "$calc.swarm.max"
+      },
+      "yAxis": {
+        "type": "value",
+        "axisLabel": {
+          "show": false
+        },
+        "min": 0,
+        "max": "$calc.swarm.height",
+        "splitLine": {
+          "show": false
+        }
+      },
+      "series": [
+        {
+          "type": "scatter",
+          "data": "$calc.swarm.data",
+          "symbolSize": "$calc.swarm.symbolSize",
+          "itemStyle": {
+            "opacity": 0.75
+          },
+          "markPoint": {
+            "symbolSize": 1,
+            "itemStyle": {
+              "opacity": 0
+            },
+            "silent": true,
+            "label": {
+              "show": true,
+              "opacity": 1,
+              "position": "left",
+              "fontSize": 8,
+              "width": 150,
+              "overflow": "truncate",
+              "color": "#cbd5e1",
+              "formatterTemplate": "{name}"
+            },
+            "data": {
+              "repeat": "$calc.swarm.groups",
+              "template": {
+                "name": "$item.name",
+                "coord": [
+                  "$calc.swarm.min",
+                  "$item.value"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "transforms": [
+      {
+        "jitter": {
+          "by": "category",
+          "field": "price",
+          "name": "product",
+          "method": "collision",
+          "width": 700,
+          "height": 420,
+          "radius": 3
+        },
+        "as": "swarm"
+      }
+    ]
+  }
+}

@@ -1,0 +1,128 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_040_treemap-secondary-colour",
+      "name": "40 - Category / subcategory - area revenue, colour profit",
+      "description": "40 - Category / subcategory - area revenue, colour profit",
+      "formatVersion": 2
+    },
+    "slots": {
+      "category": {
+        "kind": "dimension"
+      },
+      "subcategory": {
+        "kind": "dimension"
+      },
+      "revenue": {
+        "kind": "measure"
+      },
+      "profit": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "40 - Category / subcategory - area revenue, colour profit",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "item",
+        "confine": true,
+        "formatterTemplate": "{name} | Revenue {value.0:thousands} | Profit {value.1:thousands}"
+      },
+      "series": [
+        {
+          "type": "treemap",
+          "top": 80,
+          "bottom": 90,
+          "left": 25,
+          "right": 25,
+          "data": "$calc.tree.children",
+          "visualDimension": 1,
+          "visualMin": "$slot.profit.min",
+          "visualMax": "$slot.profit.max",
+          "colorMappingBy": "value",
+          "color": [
+            "#312e81",
+            "#2dd4bf"
+          ],
+          "leafDepth": 2,
+          "label": {
+            "show": true,
+            "formatterTemplate": "{name}",
+            "color": "#f8fafc"
+          },
+          "upperLabel": {
+            "show": true,
+            "height": 25,
+            "color": "#f8fafc"
+          },
+          "itemStyle": {
+            "borderColor": "#1e293b",
+            "borderWidth": 3,
+            "gapWidth": 2
+          },
+          "breadcrumb": {
+            "show": false
+          },
+          "levels": [
+            {},
+            {
+              "itemStyle": {
+                "borderColor": "#1e293b",
+                "borderWidth": 3,
+                "gapWidth": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "transforms": [
+      {
+        "hierarchy": {
+          "levels": [
+            "category",
+            "subcategory"
+          ],
+          "value": "revenue",
+          "color": "profit"
+        },
+        "as": "tree"
+      }
+    ]
+  }
+}

@@ -1,0 +1,264 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_075_labelled-quadrants",
+      "name": "75 - Country portfolio - revenue / margin quadrant matrix",
+      "description": "75 - Country portfolio - revenue / margin quadrant matrix",
+      "formatVersion": 2
+    },
+    "slots": {
+      "country": {
+        "kind": "dimension"
+      },
+      "revenue": {
+        "kind": "measure"
+      },
+      "margin": {
+        "kind": "measure"
+      },
+      "quantity": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "75 - Country portfolio - revenue / margin quadrant matrix",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "item",
+        "confine": true,
+        "formatterTemplate": "{name} | Revenue {value.0:thousands} | Margin {value.1:percent}"
+      },
+      "grid": {
+        "left": 75,
+        "right": 40,
+        "top": 90,
+        "bottom": 75,
+        "containLabel": true
+      },
+      "xAxis": {
+        "type": "value",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "formatterTemplate": "{value:thousands}",
+          "showMaxLabel": false
+        },
+        "max": "$calc.right.first"
+      },
+      "yAxis": {
+        "type": "value",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "formatterTemplate": "{value:percent}",
+          "showMaxLabel": false
+        },
+        "min": "$calc.bottom.first",
+        "max": "$calc.top.first"
+      },
+      "series": [
+        {
+          "type": "scatter",
+          "data": "$calc.xy.data",
+          "symbolSize": 25,
+          "label": {
+            "show": true,
+            "position": "top",
+            "formatterTemplate": "{name}",
+            "color": "#cbd5e1",
+            "fontSize": 10
+          },
+          "markLine": {
+            "symbol": "none",
+            "label": {
+              "show": false
+            },
+            "data": [
+              {
+                "xAxis": "$calc.mx.first"
+              },
+              {
+                "yAxis": "$calc.my.first"
+              }
+            ]
+          },
+          "markArea": {
+            "silent": true,
+            "itemStyle": {
+              "color": "#2dd4bf15"
+            },
+            "label": {
+              "color": "#94a3b8",
+              "fontSize": 10,
+              "position": "insideTopLeft"
+            },
+            "data": [
+              [
+                {
+                  "name": "Lower revenue / high margin",
+                  "xAxis": 0,
+                  "yAxis": "$calc.my.first"
+                },
+                {
+                  "xAxis": "$calc.mx.first",
+                  "yAxis": "$calc.top.first"
+                }
+              ],
+              [
+                {
+                  "name": "High revenue / high margin",
+                  "xAxis": "$calc.mx.first",
+                  "yAxis": "$calc.my.first"
+                },
+                {
+                  "xAxis": "$calc.right.first",
+                  "yAxis": "$calc.top.first"
+                }
+              ],
+              [
+                {
+                  "name": "Lower revenue / lower margin",
+                  "xAxis": 0,
+                  "yAxis": "$calc.bottom.first",
+                  "label": {
+                    "position": "insideBottomLeft"
+                  }
+                },
+                {
+                  "xAxis": "$calc.mx.first",
+                  "yAxis": "$calc.my.first"
+                }
+              ],
+              [
+                {
+                  "name": "High revenue / lower margin",
+                  "xAxis": "$calc.mx.first",
+                  "yAxis": "$calc.bottom.first",
+                  "label": {
+                    "position": "insideBottomLeft"
+                  }
+                },
+                {
+                  "xAxis": "$calc.right.first",
+                  "yAxis": "$calc.my.first"
+                }
+              ]
+            ]
+          },
+          "labelLayout": {
+            "hideOverlap": true,
+            "moveOverlap": "shiftY"
+          },
+          "labelLine": {
+            "show": true,
+            "lineStyle": {
+              "color": "#94a3b8",
+              "width": 1
+            }
+          }
+        }
+      ]
+    },
+    "transforms": [
+      {
+        "points": {
+          "fields": [
+            "revenue",
+            "margin",
+            "quantity"
+          ],
+          "numeric": [
+            "revenue",
+            "margin",
+            "quantity"
+          ],
+          "name": "country"
+        },
+        "as": "xy"
+      },
+      {
+        "stat": {
+          "field": "revenue",
+          "op": "median"
+        },
+        "as": "mx"
+      },
+      {
+        "stat": {
+          "field": "margin",
+          "op": "median"
+        },
+        "as": "my"
+      },
+      {
+        "stat": {
+          "field": "margin",
+          "op": "min"
+        },
+        "as": "minMargin"
+      },
+      {
+        "stat": {
+          "field": "margin",
+          "op": "max"
+        },
+        "as": "maxMargin"
+      },
+      {
+        "stat": {
+          "field": "revenue",
+          "op": "max"
+        },
+        "as": "maxRevenue"
+      },
+      {
+        "calculate": "minMargin-max(0.01,maxMargin-minMargin)*0.4",
+        "as": "bottom"
+      },
+      {
+        "calculate": "maxMargin+max(0.01,maxMargin-minMargin)*0.4",
+        "as": "top"
+      },
+      {
+        "calculate": "maxRevenue*1.1",
+        "as": "right"
+      }
+    ]
+  },
+  "measures": {
+    "Stress Portfolio Margin": "DIVIDE([Total Profit], [Total Revenue])"
+  }
+}

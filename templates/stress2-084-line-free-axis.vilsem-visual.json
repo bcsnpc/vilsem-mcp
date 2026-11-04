@@ -1,0 +1,179 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_084_line-free-axis",
+      "name": "84 - Country revenue small multiples - free scales",
+      "description": "84 - Country revenue small multiples - free scales",
+      "formatVersion": 2
+    },
+    "slots": {
+      "country": {
+        "kind": "dimension"
+      },
+      "category": {
+        "kind": "time"
+      },
+      "revenue": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "84 - Country revenue small multiples - free scales",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "axis",
+        "confine": true
+      },
+      "grid": [
+        {
+          "left": "4.0%",
+          "top": "21.0%",
+          "width": "27.666666666666668%",
+          "height": "25.5%",
+          "containLabel": true
+        },
+        {
+          "left": "34.66666666666667%",
+          "top": "21.0%",
+          "width": "27.666666666666668%",
+          "height": "25.5%",
+          "containLabel": true
+        },
+        {
+          "left": "65.33333333333334%",
+          "top": "21.0%",
+          "width": "27.666666666666668%",
+          "height": "25.5%",
+          "containLabel": true
+        },
+        {
+          "left": "4.0%",
+          "top": "58.5%",
+          "width": "27.666666666666668%",
+          "height": "25.5%",
+          "containLabel": true
+        },
+        {
+          "left": "34.66666666666667%",
+          "top": "58.5%",
+          "width": "27.666666666666668%",
+          "height": "25.5%",
+          "containLabel": true
+        },
+        {
+          "left": "65.33333333333334%",
+          "top": "58.5%",
+          "width": "27.666666666666668%",
+          "height": "25.5%",
+          "containLabel": true
+        }
+      ],
+      "xAxis": {
+        "repeat": "$calc.facets.panels",
+        "template": {
+          "type": "category",
+          "gridIndex": "$item.index",
+          "data": "$item.categories",
+          "axisLabel": {
+            "color": "#cbd5e1",
+            "fontSize": 9,
+            "hideOverlap": true,
+            "interval": "auto",
+            "formatterTemplate": "{value:date}"
+          }
+        }
+      },
+      "yAxis": {
+        "repeat": "$calc.facets.panels",
+        "template": {
+          "type": "value",
+          "gridIndex": "$item.index",
+          "splitNumber": 3,
+          "max": null,
+          "axisLabel": {
+            "showMaxLabel": false,
+            "color": "#cbd5e1",
+            "fontSize": 8,
+            "formatterTemplate": "{value:thousands}"
+          },
+          "splitLine": {
+            "lineStyle": {
+              "color": "#263244"
+            }
+          }
+        }
+      },
+      "series": {
+        "repeat": "$calc.facets.panels",
+        "template": {
+          "type": "line",
+          "name": "$item.name",
+          "xAxisIndex": "$item.index",
+          "yAxisIndex": "$item.index",
+          "data": "$item.data",
+          "showSymbol": false
+        }
+      },
+      "graphic": {
+        "repeat": "$calc.facets.panels",
+        "template": {
+          "type": "text",
+          "left": "$item.left",
+          "top": "$item.top",
+          "style": {
+            "text": "$item.name",
+            "fill": "#f8fafc",
+            "fontSize": 11
+          }
+        }
+      }
+    },
+    "transforms": [
+      {
+        "facet": {
+          "by": "country",
+          "category": "category",
+          "value": "revenue",
+          "columns": 3,
+          "maxPanels": 6
+        },
+        "as": "facets"
+      }
+    ]
+  }
+}

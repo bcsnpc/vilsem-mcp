@@ -1,0 +1,205 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_062_median-quadrants",
+      "name": "62 - Revenue / profit bubbles - median quadrants and extrema",
+      "description": "62 - Revenue / profit bubbles - median quadrants and extrema",
+      "formatVersion": 2
+    },
+    "slots": {
+      "country": {
+        "kind": "dimension"
+      },
+      "revenue": {
+        "kind": "measure"
+      },
+      "profit": {
+        "kind": "measure"
+      },
+      "quantity": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "62 - Revenue / profit bubbles - median quadrants and extrema",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "item",
+        "confine": true,
+        "formatterTemplate": "{name} | Revenue {value.0:thousands} | Profit {value.1:thousands} | Quantity {value.2:thousands}"
+      },
+      "grid": {
+        "left": 75,
+        "right": 40,
+        "top": 90,
+        "bottom": 75,
+        "containLabel": true
+      },
+      "xAxis": {
+        "type": "value",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "formatterTemplate": "{value:thousands}"
+        },
+        "splitLine": {
+          "lineStyle": {
+            "color": "#263244"
+          }
+        }
+      },
+      "yAxis": {
+        "type": "value",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "formatterTemplate": "{value:thousands}"
+        },
+        "splitLine": {
+          "lineStyle": {
+            "color": "#263244"
+          }
+        }
+      },
+      "visualMap": {
+        "show": false,
+        "dimension": 2,
+        "min": "$slot.quantity.min",
+        "max": "$slot.quantity.max",
+        "inRange": {
+          "symbolSize": [
+            12,
+            60
+          ]
+        }
+      },
+      "series": [
+        {
+          "type": "scatter",
+          "data": "$calc.xy.data",
+          "label": {
+            "show": true,
+            "position": "top",
+            "formatterTemplate": "{name}",
+            "color": "#e2e8f0"
+          },
+          "markLine": {
+            "symbol": "none",
+            "lineStyle": {
+              "color": "#f59e0b",
+              "type": "dashed"
+            },
+            "data": [
+              {
+                "xAxis": "$calc.mx.first",
+                "name": "Median revenue"
+              },
+              {
+                "yAxis": "$calc.my.first",
+                "name": "Median profit"
+              }
+            ],
+            "label": {
+              "position": "insideEndTop",
+              "formatterTemplate": "{name}",
+              "color": "#f59e0b",
+              "fontSize": 10
+            }
+          },
+          "markPoint": {
+            "symbolSize": 8,
+            "data": [
+              {
+                "type": "max",
+                "valueDim": "y",
+                "name": "Highest profit"
+              },
+              {
+                "type": "min",
+                "valueDim": "y",
+                "name": "Lowest profit"
+              }
+            ],
+            "label": {
+              "show": true,
+              "position": "bottom",
+              "distance": 12,
+              "formatterTemplate": "{name}",
+              "fontSize": 10,
+              "color": "#f59e0b"
+            },
+            "symbol": "circle"
+          },
+          "labelLayout": {
+            "hideOverlap": true
+          }
+        }
+      ]
+    },
+    "transforms": [
+      {
+        "points": {
+          "fields": [
+            "revenue",
+            "profit",
+            "quantity"
+          ],
+          "numeric": [
+            "revenue",
+            "profit",
+            "quantity"
+          ],
+          "name": "country"
+        },
+        "as": "xy"
+      },
+      {
+        "stat": {
+          "field": "revenue",
+          "op": "median"
+        },
+        "as": "mx"
+      },
+      {
+        "stat": {
+          "field": "profit",
+          "op": "median"
+        },
+        "as": "my"
+      }
+    ]
+  }
+}

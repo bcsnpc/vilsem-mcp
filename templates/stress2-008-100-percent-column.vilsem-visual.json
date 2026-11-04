@@ -1,0 +1,125 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_008_100-percent-column",
+      "name": "08 \u00b7 Revenue composition \u00b7 profit and cost share",
+      "description": "08 \u00b7 Revenue composition \u00b7 profit and cost share",
+      "formatVersion": 2
+    },
+    "slots": {
+      "date": {
+        "kind": "dimension"
+      },
+      "m0": {
+        "kind": "measure"
+      },
+      "m1": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "08 \u00b7 Revenue composition \u00b7 profit and cost share",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        }
+      },
+      "tooltip": {
+        "trigger": "axis",
+        "confine": true
+      },
+      "grid": {
+        "left": 75,
+        "right": 40,
+        "top": 90,
+        "bottom": 75,
+        "containLabel": true
+      },
+      "xAxis": {
+        "type": "category",
+        "data": "$slot.date.values",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "rotate": 35,
+          "hideOverlap": true
+        },
+        "axisLine": {
+          "lineStyle": {
+            "color": "#64748b"
+          }
+        }
+      },
+      "yAxis": {
+        "type": "value",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "formatterTemplate": "{value:percent}"
+        },
+        "splitLine": {
+          "lineStyle": {
+            "color": "#263244"
+          }
+        },
+        "max": 1
+      },
+      "series": [
+        {
+          "type": "bar",
+          "name": "Profit share",
+          "stack": "share",
+          "data": "$slot.m0.values",
+          "label": {
+            "show": true,
+            "formatterTemplate": "{value:percent}",
+            "color": "#ffffff"
+          }
+        },
+        {
+          "type": "bar",
+          "name": "Cost share",
+          "stack": "share",
+          "data": "$slot.m1.values",
+          "label": {
+            "show": true,
+            "formatterTemplate": "{value:percent}",
+            "color": "#ffffff"
+          }
+        }
+      ]
+    }
+  },
+  "measures": {
+    "Stress Profit Share": "DIVIDE([Total Profit],[Total Revenue])",
+    "Stress Cost Share": "DIVIDE([Total Cost],[Total Revenue])"
+  }
+}

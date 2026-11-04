@@ -1,0 +1,99 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_023_waffle-share",
+      "name": "23 \u00b7 Country revenue share \u00b7 100-cell waffle",
+      "description": "23 \u00b7 Country revenue share \u00b7 100-cell waffle",
+      "formatVersion": 2
+    },
+    "slots": {
+      "date": {
+        "kind": "dimension"
+      },
+      "m0": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "23 \u00b7 Country revenue share \u00b7 100-cell waffle",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 45,
+        "textStyle": {
+          "color": "#cbd5e1"
+        }
+      },
+      "tooltip": {
+        "trigger": "item"
+      },
+      "grid": {
+        "left": 70,
+        "right": 70,
+        "top": 110,
+        "bottom": 45
+      },
+      "xAxis": {
+        "type": "value",
+        "show": false,
+        "min": -1,
+        "max": 10
+      },
+      "yAxis": {
+        "type": "value",
+        "show": false,
+        "min": -1,
+        "max": 10
+      },
+      "series": {
+        "repeat": "$calc.seats.groups",
+        "template": {
+          "type": "scatter",
+          "name": "$item.name",
+          "symbol": "roundRect",
+          "symbolSize": 24,
+          "data": "$item.data"
+        }
+      }
+    },
+    "transforms": [
+      {
+        "allocate": {
+          "category": "date",
+          "value": "m0",
+          "total": 100,
+          "layout": "grid",
+          "columns": 10
+        },
+        "as": "seats"
+      }
+    ]
+  }
+}

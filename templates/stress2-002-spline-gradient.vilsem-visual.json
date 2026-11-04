@@ -1,0 +1,121 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_002_spline-gradient",
+      "name": "02 \u00b7 Revenue spline with gradient",
+      "description": "02 \u00b7 Revenue spline with gradient",
+      "formatVersion": 2
+    },
+    "slots": {
+      "date": {
+        "kind": "time"
+      },
+      "m0": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "02 \u00b7 Revenue spline with gradient",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        }
+      },
+      "tooltip": {
+        "trigger": "axis",
+        "confine": true
+      },
+      "grid": {
+        "left": 75,
+        "right": 40,
+        "top": 90,
+        "bottom": 75,
+        "containLabel": true
+      },
+      "xAxis": {
+        "type": "category",
+        "data": "$slot.date.values",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "rotate": 35,
+          "hideOverlap": true
+        },
+        "axisLine": {
+          "lineStyle": {
+            "color": "#64748b"
+          }
+        }
+      },
+      "yAxis": {
+        "type": "value",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "formatterTemplate": "{value:thousands}"
+        },
+        "splitLine": {
+          "lineStyle": {
+            "color": "#263244"
+          }
+        }
+      },
+      "series": [
+        {
+          "type": "line",
+          "name": "Revenue",
+          "smooth": true,
+          "showSymbol": false,
+          "data": "$slot.m0.values",
+          "areaStyle": {
+            "color": {
+              "type": "linear",
+              "x": 0,
+              "y": 0,
+              "x2": 0,
+              "y2": 1,
+              "colorStops": [
+                {
+                  "offset": 0,
+                  "color": "#14b8a6cc"
+                },
+                {
+                  "offset": 1,
+                  "color": "#14b8a600"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

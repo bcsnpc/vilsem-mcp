@@ -11,6 +11,7 @@ export interface ModelAdapter {
 // Connections own their target IDs. No process-global dataset mutation is used.
 export class Models {
   private connections=new Map<string,any>()
+  private metadata=new Map<string,any>()
   constructor(private adapter:ModelAdapter=new VilsemAdapter()){}
   async connect(source:Source){const connection=await this.adapter.connect(source);const connectionId=crypto.randomUUID();this.connections.set(connectionId,connection);return {connectionId,kind:source.kind,...(connection.discovery?{discovery:connection.discovery,port:connection.source.port}:{})}}
   private get(id:string){const connection=this.connections.get(id);if(!connection)throw Error('Unknown connectionId; connect_model first');return connection}
@@ -26,6 +27,7 @@ export class Models {
     // Introspection may include raw model definitions for Desktop app export.
     // The MCP schema contract exposes fields/relationships only, never data sources.
     const schema={tables:discovered.tables || [],measures:discovered.measures || [],relationships:discovered.relationships || []}
+    this.metadata.set(id,schema)
     const columnTasks:any[]=[]
     for(const table of schema.tables || [])for(const column of table.columns || []){
       if(/^RowNumber-/.test(column.name)){column.sampleValues=[];column.sampleSkipped='Internal Analysis Services row identity is not queryable';continue}
@@ -56,6 +58,12 @@ export class Models {
       }
     }))
     return schema
+  }
+  async fields(id:string){
+    if(this.metadata.has(id))return this.metadata.get(id)
+    const discovered=await this.adapter.schema(this.get(id))
+    const schema={tables:discovered.tables || [],measures:discovered.measures || [],relationships:discovered.relationships || []}
+    this.metadata.set(id,schema);return schema
   }
 }
 

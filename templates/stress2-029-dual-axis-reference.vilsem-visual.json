@@ -1,0 +1,155 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_029_dual-axis-reference",
+      "name": "29 \u00b7 Monthly revenue / profit margin \u00b7 target reference",
+      "description": "29 \u00b7 Monthly revenue / profit margin \u00b7 target reference",
+      "formatVersion": 2
+    },
+    "slots": {
+      "date": {
+        "kind": "time"
+      },
+      "m0": {
+        "kind": "measure"
+      },
+      "m1": {
+        "kind": "measure"
+      },
+      "m2": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "29 \u00b7 Monthly revenue / profit margin \u00b7 target reference",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        }
+      },
+      "tooltip": {
+        "trigger": "axis",
+        "confine": true
+      },
+      "grid": {
+        "left": 75,
+        "right": 40,
+        "top": 90,
+        "bottom": 75,
+        "containLabel": true
+      },
+      "xAxis": {
+        "type": "category",
+        "data": "$slot.date.values",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "rotate": 35,
+          "hideOverlap": true,
+          "formatterTemplate": "{value:date}"
+        },
+        "axisLine": {
+          "lineStyle": {
+            "color": "#64748b"
+          }
+        }
+      },
+      "yAxis": [
+        {
+          "type": "value",
+          "axisLabel": {
+            "color": "#cbd5e1",
+            "formatterTemplate": "{value:thousands}"
+          },
+          "splitLine": {
+            "lineStyle": {
+              "color": "#263244"
+            }
+          }
+        },
+        {
+          "type": "value",
+          "min": "$calc.axisFloor.min",
+          "max": "$calc.axisCeiling.max",
+          "axisLabel": {
+            "color": "#f59e0b",
+            "formatterTemplate": "{value:percent}"
+          },
+          "splitLine": {
+            "show": false
+          }
+        }
+      ],
+      "series": [
+        {
+          "type": "bar",
+          "name": "Revenue",
+          "data": "$slot.m0.values"
+        },
+        {
+          "type": "line",
+          "name": "Profit margin",
+          "yAxisIndex": 1,
+          "data": "$slot.m1.values",
+          "showSymbol": false,
+          "markLine": {
+            "symbol": "none",
+            "data": [
+              {
+                "name": "Latest target margin",
+                "yAxis": "$slot.m2.last"
+              }
+            ],
+            "label": {
+              "color": "#f8fafc",
+              "formatterTemplate": "Target {value:percent}"
+            }
+          }
+        }
+      ]
+    },
+    "transforms": [
+      {
+        "calculate": "min(m1,0)",
+        "as": "axisFloor"
+      },
+      {
+        "calculate": "max(m1,m2,1)",
+        "as": "axisCeiling"
+      }
+    ]
+  },
+  "measures": {
+    "Stress Monthly Margin": "DIVIDE([Total Profit],[Total Revenue])",
+    "Stress Target Margin": "DIVIDE([Profit Target],[Revenue Target])"
+  }
+}

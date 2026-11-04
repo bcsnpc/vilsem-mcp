@@ -1,0 +1,122 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_044_circle-packing",
+      "name": "44 - Revenue hierarchy - nested circle packing",
+      "description": "44 - Revenue hierarchy - nested circle packing",
+      "formatVersion": 2
+    },
+    "slots": {
+      "category": {
+        "kind": "dimension"
+      },
+      "subcategory": {
+        "kind": "dimension"
+      },
+      "revenue": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "44 - Revenue hierarchy - nested circle packing",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "axis",
+        "confine": true
+      },
+      "grid": {
+        "left": "center",
+        "top": 100,
+        "width": 400,
+        "height": 400
+      },
+      "xAxis": {
+        "type": "value",
+        "min": 0,
+        "max": 400,
+        "show": false
+      },
+      "yAxis": {
+        "type": "value",
+        "min": 0,
+        "max": 400,
+        "inverse": true,
+        "show": false
+      },
+      "series": {
+        "repeat": "$calc.tree.nodes",
+        "template": {
+          "type": "scatter",
+          "name": "$item.name",
+          "data": [
+            "$item.data"
+          ],
+          "z": "$item.depth",
+          "itemStyle": {
+            "opacity": 0.6,
+            "borderColor": "#cbd5e1",
+            "borderWidth": 1
+          },
+          "label": {
+            "show": true,
+            "formatterTemplate": "{name}",
+            "color": "#ffffff",
+            "fontSize": 10
+          },
+          "labelLayout": {
+            "hideOverlap": true
+          }
+        }
+      }
+    },
+    "transforms": [
+      {
+        "hierarchy": {
+          "levels": [
+            "category",
+            "subcategory"
+          ],
+          "value": "revenue",
+          "layout": "pack",
+          "size": 400
+        },
+        "as": "tree"
+      }
+    ]
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_110_radial-histogram",
+      "name": "110 - Sold-product retail-price frequency - polar bins",
+      "description": "110 - Sold-product retail-price frequency - polar bins",
+      "formatVersion": 3
+    },
+    "slots": {
+      "product": {
+        "kind": "dimension"
+      },
+      "price": {
+        "kind": "dimension"
+      },
+      "sold": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "110 - Sold-product retail-price frequency - polar bins",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "axis",
+        "confine": true
+      },
+      "grid": {
+        "left": 75,
+        "right": 40,
+        "top": 90,
+        "bottom": 75,
+        "containLabel": true
+      },
+      "polar": {
+        "radius": [
+          "10%",
+          "70%"
+        ],
+        "center": [
+          "50%",
+          "54%"
+        ]
+      },
+      "angleAxis": {
+        "type": "category",
+        "data": "$calc.hist.categories",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "fontSize": 9
+        }
+      },
+      "radiusAxis": {
+        "type": "value",
+        "axisLabel": {
+          "color": "#cbd5e1"
+        },
+        "splitLine": {
+          "lineStyle": {
+            "color": "#334155"
+          }
+        }
+      },
+      "series": [
+        {
+          "type": "bar",
+          "coordinateSystem": "polar",
+          "data": "$calc.hist.data",
+          "barCategoryGap": 0
+        }
+      ]
+    },
+    "transforms": [
+      {
+        "histogram": {
+          "field": "price",
+          "bins": 12
+        },
+        "as": "hist"
+      }
+    ]
+  }
+}

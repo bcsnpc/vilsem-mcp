@@ -1,0 +1,254 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_085_kpi-sparkline",
+      "name": "85 - Latest monthly revenue - sparkline and change versus prior month",
+      "description": "85 - Latest monthly revenue - sparkline and change versus prior month",
+      "formatVersion": 3
+    },
+    "slots": {
+      "date": {
+        "kind": "time"
+      },
+      "revenue": {
+        "kind": "measure"
+      },
+      "change": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "85 - Latest monthly revenue - sparkline and change versus prior month",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "axis",
+        "confine": true
+      },
+      "grid": {
+        "left": 90,
+        "right": 55,
+        "top": 350,
+        "bottom": 75,
+        "containLabel": true
+      },
+      "xAxis": {
+        "type": "category",
+        "data": "$slot.date.values",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "rotate": 0,
+          "hideOverlap": true,
+          "formatterTemplate": "{value:date}"
+        },
+        "axisLine": {
+          "lineStyle": {
+            "color": "#64748b"
+          }
+        }
+      },
+      "yAxis": {
+        "type": "value",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "formatterTemplate": "{value:thousands}"
+        },
+        "splitLine": {
+          "lineStyle": {
+            "color": "#263244"
+          }
+        }
+      },
+      "series": [
+        {
+          "type": "line",
+          "name": "Monthly revenue",
+          "data": "$slot.revenue.values",
+          "showSymbol": false,
+          "lineStyle": {
+            "width": 2
+          },
+          "areaStyle": {
+            "opacity": 0.12
+          }
+        },
+        {
+          "type": "gauge",
+          "name": "Latest month",
+          "center": [
+            "50%",
+            "28%"
+          ],
+          "radius": "20%",
+          "min": 0,
+          "max": "$slot.revenue.max",
+          "pointer": {
+            "show": false
+          },
+          "axisLine": {
+            "show": false,
+            "lineStyle": {
+              "color": [
+                [
+                  0.49975,
+                  "#f87171"
+                ],
+                [
+                  0.50025,
+                  "#94a3b8"
+                ],
+                [
+                  1,
+                  "#2dd4bf"
+                ]
+              ]
+            }
+          },
+          "axisTick": {
+            "show": false
+          },
+          "axisLabel": {
+            "show": false
+          },
+          "splitLine": {
+            "show": false
+          },
+          "title": {
+            "show": false
+          },
+          "detail": {
+            "show": true,
+            "offsetCenter": [
+              0,
+              0
+            ],
+            "fontSize": 50,
+            "formatterTemplate": "{value:thousands}",
+            "formatterEmptyText": "No revenue",
+            "rich": {
+              "empty": {
+                "color": "#94a3b8",
+                "fontSize": 16,
+                "fontWeight": "normal"
+              }
+            },
+            "color": "#f8fafc"
+          },
+          "data": [
+            {
+              "name": "Latest month",
+              "value": "$slot.revenue.lastRowValue"
+            }
+          ]
+        },
+        {
+          "type": "gauge",
+          "name": "Change vs previous month",
+          "center": [
+            "50%",
+            "45%"
+          ],
+          "radius": "20%",
+          "min": -1,
+          "max": 1,
+          "pointer": {
+            "show": false
+          },
+          "axisLine": {
+            "show": false,
+            "lineStyle": {
+              "color": [
+                [
+                  0.49975,
+                  "#f87171"
+                ],
+                [
+                  0.50025,
+                  "#94a3b8"
+                ],
+                [
+                  1,
+                  "#2dd4bf"
+                ]
+              ]
+            }
+          },
+          "axisTick": {
+            "show": false
+          },
+          "axisLabel": {
+            "show": false
+          },
+          "splitLine": {
+            "show": false
+          },
+          "title": {
+            "show": false
+          },
+          "detail": {
+            "show": true,
+            "offsetCenter": [
+              0,
+              0
+            ],
+            "fontSize": 24,
+            "formatterTemplate": "{value:percent}",
+            "formatterEmptyText": "{empty|No prior revenue}",
+            "rich": {
+              "empty": {
+                "color": "#94a3b8",
+                "fontSize": 16,
+                "fontWeight": "normal"
+              }
+            },
+            "color": "inherit"
+          },
+          "data": [
+            {
+              "name": "Change vs previous month",
+              "value": "$slot.change.lastRowValue"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "measures": {
+    "Stress Previous Month Revenue": "VAR currentMonth=MAX('Calendar Lookup'[Start of Month]) RETURN CALCULATE([Total Revenue], FILTER(ALL('Calendar Lookup'), 'Calendar Lookup'[Date]>=EDATE(currentMonth,-1) && 'Calendar Lookup'[Date]<currentMonth))",
+    "Stress Month Change": "IF(NOT ISBLANK([Total Revenue]), DIVIDE([Total Revenue]-[Stress Previous Month Revenue], [Stress Previous Month Revenue]), BLANK())"
+  }
+}

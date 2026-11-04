@@ -1,0 +1,154 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_007_sparkline-grid",
+      "name": "07 \u00b7 Top nine subcategory revenue sparklines",
+      "description": "07 \u00b7 Top nine subcategory revenue sparklines",
+      "formatVersion": 2
+    },
+    "slots": {
+      "date": {
+        "kind": "time"
+      },
+      "subcategory": {
+        "kind": "dimension"
+      },
+      "revenue": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "07 \u00b7 Top nine subcategory revenue sparklines",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "axis",
+        "confine": true
+      },
+      "grid": {
+        "repeat": "$calc.facets.panels",
+        "template": {
+          "left": "$item.left",
+          "top": "$item.top",
+          "width": "$item.width",
+          "height": "$item.height"
+        }
+      },
+      "xAxis": {
+        "repeat": "$calc.facets.panels",
+        "template": {
+          "type": "category",
+          "gridIndex": "$item.index",
+          "data": "$item.categories",
+          "show": false
+        }
+      },
+      "yAxis": {
+        "repeat": "$calc.facets.panels",
+        "template": {
+          "type": "value",
+          "gridIndex": "$item.index",
+          "show": false
+        }
+      },
+      "series": {
+        "repeat": "$calc.facets.panels",
+        "template": {
+          "type": "line",
+          "name": "$item.name",
+          "xAxisIndex": "$item.index",
+          "yAxisIndex": "$item.index",
+          "data": "$item.data",
+          "symbol": "none",
+          "lineStyle": {
+            "width": 2
+          },
+          "areaStyle": {
+            "opacity": 0.15
+          }
+        }
+      },
+      "graphic": {
+        "repeat": "$calc.facets.panels",
+        "template": {
+          "type": "group",
+          "left": "$item.left",
+          "top": "$item.top",
+          "children": [
+            {
+              "type": "text",
+              "x": 0,
+              "y": 0,
+              "style": {
+                "text": "$item.name",
+                "fill": "#e2e8f0",
+                "fontSize": 12,
+                "backgroundColor": "#0b0b12",
+                "fontFamily": "Segoe UI"
+              },
+              "z": 100
+            },
+            {
+              "type": "text",
+              "x": 0,
+              "y": 16,
+              "style": {
+                "text": "$item.lastLabel",
+                "fill": "#f8fafc",
+                "fontSize": 16,
+                "backgroundColor": "#0b0b12",
+                "fontFamily": "Segoe UI"
+              },
+              "z": 100
+            }
+          ]
+        }
+      }
+    },
+    "transforms": [
+      {
+        "facet": {
+          "by": "subcategory",
+          "category": "date",
+          "value": "revenue",
+          "columns": 3,
+          "maxPanels": 9
+        },
+        "as": "facets"
+      }
+    ]
+  },
+  "measures": {
+    "Stress Top Nine Revenue": "VAR r = RANKX(ALL('Product Subcategories Lookup'[SubcategoryName]), CALCULATE([Total Revenue], ALL('Calendar Lookup')), , DESC, SKIP) RETURN IF(r <= 9, [Total Revenue])"
+  }
+}

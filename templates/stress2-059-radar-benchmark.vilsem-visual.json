@@ -1,0 +1,138 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_059_radar-benchmark",
+      "name": "59 - Country revenue and model revenue target - radar",
+      "description": "59 - Country revenue and model revenue target - radar",
+      "formatVersion": 2
+    },
+    "slots": {
+      "country": {
+        "kind": "dimension"
+      },
+      "actual": {
+        "kind": "measure"
+      },
+      "target": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "59 - Country revenue and model revenue target - radar",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "show": true,
+        "top": 45,
+        "textStyle": {
+          "color": "#cbd5e1"
+        }
+      },
+      "tooltip": {
+        "trigger": "item",
+        "confine": true
+      },
+      "radar": {
+        "center": [
+          "50%",
+          "57%"
+        ],
+        "radius": "59%",
+        "indicator": {
+          "repeat": "$slot.country.categories",
+          "template": {
+            "name": "$item"
+          }
+        },
+        "axisName": {
+          "color": "#e2e8f0"
+        },
+        "splitArea": {
+          "areaStyle": {
+            "color": [
+              "#111827",
+              "#172033"
+            ]
+          }
+        }
+      },
+      "series": [
+        {
+          "type": "radar",
+          "data": {
+            "concat": [
+              {
+                "repeat": "$calc.actualPanel.panels",
+                "template": {
+                  "name": "Revenue",
+                  "value": "$item.values",
+                  "rowIndexes": "$item.rowIndexes"
+                }
+              },
+              {
+                "repeat": "$calc.targetPanel.panels",
+                "template": {
+                  "name": "Target",
+                  "value": "$item.values",
+                  "rowIndexes": "$item.rowIndexes"
+                }
+              }
+            ]
+          },
+          "areaStyle": {
+            "opacity": 0.1
+          }
+        }
+      ]
+    },
+    "transforms": [
+      {
+        "calculate": "0",
+        "as": "constant"
+      },
+      {
+        "facet": {
+          "by": "constant",
+          "category": "country",
+          "value": "actual"
+        },
+        "as": "actualPanel"
+      },
+      {
+        "facet": {
+          "by": "constant",
+          "category": "country",
+          "value": "target"
+        },
+        "as": "targetPanel"
+      }
+    ]
+  }
+}

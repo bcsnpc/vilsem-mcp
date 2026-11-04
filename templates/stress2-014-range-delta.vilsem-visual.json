@@ -1,0 +1,118 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_014_range-delta",
+      "name": "14 \u00b7 Country cost-to-revenue range \u00b7 delta is profit",
+      "description": "14 \u00b7 Country cost-to-revenue range \u00b7 delta is profit",
+      "formatVersion": 2
+    },
+    "slots": {
+      "date": {
+        "kind": "dimension"
+      },
+      "m0": {
+        "kind": "measure"
+      },
+      "m1": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "14 \u00b7 Country cost-to-revenue range \u00b7 delta is profit",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "axis",
+        "confine": true
+      },
+      "grid": {
+        "left": 75,
+        "right": 40,
+        "top": 90,
+        "bottom": 75,
+        "containLabel": true
+      },
+      "xAxis": {
+        "type": "value",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "formatterTemplate": "{value:thousands}"
+        }
+      },
+      "yAxis": {
+        "type": "category",
+        "data": "$slot.date.categories",
+        "axisLabel": {
+          "color": "#cbd5e1"
+        }
+      },
+      "series": [
+        {
+          "type": "bar",
+          "name": "Offset",
+          "stack": "range",
+          "silent": true,
+          "data": "$slot.m0.values",
+          "itemStyle": {
+            "opacity": 0
+          },
+          "emphasis": {
+            "disabled": true
+          }
+        },
+        {
+          "type": "bar",
+          "name": "Profit delta",
+          "stack": "range",
+          "data": "$calc.delta.values",
+          "label": {
+            "show": true,
+            "position": "inside",
+            "formatterTemplate": "\u0394 {value:thousands}",
+            "color": "#ffffff"
+          }
+        }
+      ]
+    },
+    "transforms": [
+      {
+        "calculate": "m1-m0",
+        "as": "delta"
+      }
+    ]
+  }
+}

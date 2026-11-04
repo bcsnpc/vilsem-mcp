@@ -1,0 +1,87 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_073_funnel-conversion",
+      "name": "73 - Product-category revenue stages - conversion to previous category",
+      "description": "73 - Product-category revenue stages - conversion to previous category",
+      "formatVersion": 2
+    },
+    "slots": {
+      "category": {
+        "kind": "dimension"
+      },
+      "revenue": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "73 - Product-category revenue stages - conversion to previous category",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        }
+      },
+      "tooltip": {
+        "trigger": "item",
+        "confine": true,
+        "formatterTemplate": "{name}: {value:thousands}"
+      },
+      "series": [
+        {
+          "type": "funnel",
+          "left": "15%",
+          "right": "15%",
+          "top": 100,
+          "bottom": 60,
+          "sort": "none",
+          "data": "$calc.stages.data",
+          "label": {
+            "show": true,
+            "position": "inside",
+            "formatterTemplate": "{label}",
+            "color": "#f8fafc"
+          }
+        }
+      ]
+    },
+    "transforms": [
+      {
+        "conversion": {
+          "category": "category",
+          "value": "revenue"
+        },
+        "as": "stages"
+      }
+    ]
+  }
+}

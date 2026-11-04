@@ -1,0 +1,147 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_102_yoy-variance",
+      "name": "102 - Country revenue 2022 versus 2021 - year-over-year variance",
+      "description": "102 - Country revenue 2022 versus 2021 - year-over-year variance",
+      "formatVersion": 3
+    },
+    "slots": {
+      "country": {
+        "kind": "dimension"
+      },
+      "current": {
+        "kind": "measure"
+      },
+      "prior": {
+        "kind": "measure"
+      },
+      "variance": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "102 - Country revenue 2022 versus 2021 - year-over-year variance",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        },
+        "subtext": "2021 blue; 2022 green=growth, red=decline; labels show year-over-year change",
+        "subtextStyle": {
+          "fontSize": 10,
+          "color": "#94a3b8"
+        }
+      },
+      "legend": {
+        "top": 55,
+        "textStyle": {
+          "color": "#cbd5e1"
+        }
+      },
+      "tooltip": {
+        "trigger": "axis",
+        "confine": true
+      },
+      "grid": {
+        "left": 75,
+        "right": 40,
+        "top": 90,
+        "bottom": 75,
+        "containLabel": true
+      },
+      "xAxis": {
+        "type": "category",
+        "data": "$slot.country.values",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "rotate": 35,
+          "hideOverlap": true
+        },
+        "axisLine": {
+          "lineStyle": {
+            "color": "#64748b"
+          }
+        }
+      },
+      "yAxis": {
+        "type": "value",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "formatterTemplate": "{value:thousands}"
+        },
+        "splitLine": {
+          "lineStyle": {
+            "color": "#263244"
+          }
+        }
+      },
+      "series": [
+        {
+          "type": "bar",
+          "name": "2021",
+          "data": "$slot.prior.values",
+          "itemStyle": {
+            "color": "#60a5fa"
+          }
+        },
+        {
+          "type": "bar",
+          "name": "2022",
+          "data": "$calc.coloured.data",
+          "label": {
+            "show": true,
+            "position": "top",
+            "formatterTemplate": "{label}",
+            "color": "#cbd5e1"
+          },
+          "itemStyle": {
+            "color": "#94a3b8"
+          }
+        }
+      ]
+    },
+    "transforms": [
+      {
+        "conditional": {
+          "value": "current",
+          "condition": "variance",
+          "label": "variance",
+          "positive": "#2dd4bf",
+          "negative": "#f87171",
+          "zero": "#94a3b8",
+          "labelFormat": "percent"
+        },
+        "as": "coloured"
+      }
+    ]
+  },
+  "measures": {
+    "Stress Revenue 2022": "CALCULATE([Total Revenue], 'Calendar Lookup'[Year]=2022)",
+    "Stress Revenue 2021": "CALCULATE([Total Revenue], 'Calendar Lookup'[Year]=2021)",
+    "Stress YoY Variance": "DIVIDE([Stress Revenue 2022]-[Stress Revenue 2021], [Stress Revenue 2021])"
+  }
+}

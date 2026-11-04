@@ -1,0 +1,115 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_052_chord-ribbons",
+      "name": "52 - Country to category revenue - chord ribbons",
+      "description": "52 - Country to category revenue - chord ribbons",
+      "formatVersion": 2
+    },
+    "slots": {
+      "source": {
+        "kind": "dimension"
+      },
+      "target": {
+        "kind": "dimension"
+      },
+      "revenue": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "52 - Country to category revenue - chord ribbons",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "item",
+        "confine": true,
+        "formatterTemplate": "{label}: {value:thousands}"
+      },
+      "series": [
+        {
+          "type": "chord",
+          "data": "$calc.flow.nodes",
+          "links": "$calc.flow.links",
+          "left": 90,
+          "right": 100,
+          "top": 120,
+          "bottom": 100,
+          "label": {
+            "show": true,
+            "formatterTemplate": "{label}",
+            "color": "#e2e8f0",
+            "fontSize": 11
+          },
+          "lineStyle": {
+            "color": "source",
+            "opacity": 0.6,
+            "curveness": 0.25
+          },
+          "emphasis": {
+            "focus": "adjacency"
+          },
+          "center": [
+            "50%",
+            "55%"
+          ],
+          "radius": [
+            "72%",
+            "85%"
+          ],
+          "padAngle": 7,
+          "labelLayout": {
+            "hideOverlap": true
+          }
+        }
+      ]
+    },
+    "transforms": [
+      {
+        "flows": {
+          "levels": [
+            "source",
+            "target"
+          ],
+          "value": "revenue",
+          "order": "value"
+        },
+        "as": "flow"
+      }
+    ]
+  }
+}

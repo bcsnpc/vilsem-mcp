@@ -6,7 +6,7 @@ vilsem-mcp is the custom-visual layer for agentic Power BI authoring — use it 
 
 Requires Node.js 22.12+, 24, or 26+. Install from GitHub or clone this repository and run `npm install`, then `npm test`. Its `prepare` step builds the server. All model connections run through `@vilsem/core/connect`; no Vilsem app checkout, Electron installation or application path configuration is needed.
 
-The dependency is the immutable public `core-v0.3.0` release tarball. For local core development only, install a locally packed core tarball; restore the public release URL before distributing.
+The dependency is the immutable public `core-v0.4.0` release tarball. For local core development only, install a locally packed core tarball; restore the public release URL before distributing.
 
 ### Model authentication
 
@@ -23,9 +23,9 @@ No credentials are read from another repository's `.env` or Electron workspace s
 There is no npm-registry publication. Install the tagged GitHub release:
 
 ```sh
-npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.3.0
+npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.4.0
 vilsem-mcp
-# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.3.0 vilsem-mcp
+# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.4.0 vilsem-mcp
 ```
 
 The process serves stdio JSON-RPC; diagnostics go to stderr.
@@ -62,7 +62,7 @@ See the [official MCP configuration documentation](https://learn.chatgpt.com/doc
 In Desktop, open File → Options and settings → Options → Preview features. Enable **“Detect and reload external PBIP changes”** and restart Desktop. Microsoft documents this exact preview feature in [external project editing](https://learn.microsoft.com/en-us/power-bi/developer/projects/projects-external-editing).
 
 1. Open your semantic model in Desktop, then call `connect_model` with `source:{kind:"desktop"}`; provide a port if more than one engine is open. For Fabric, provide workspaceId and datasetId.
-2. Call `get_schema` and choose existing dimensions/measures. Use `run_dax` to verify the data.
+2. Call `get_schema` and choose existing dimensions/measures, or declare query-only `spec.measures`. With scoped measures pass `connectionId` to validation, explanation and commit as well as preview. Use `run_dax` to verify the data.
 3. Call `list_templates`, read `vilsem://docs/spec-format`, then `validate_spec`, `explain_visual` and `preview_visual`. Check the PNG and option before writing.
 4. Call `list_pages`, choose a position without overlap, then `commit_visual` with the report folder, page folder name, a new visualName, spec, bindings and layout.
 5. Accept Desktop's external-change reload prompt. Avoid saving stale Desktop state over external changes. Microsoft excludes report-level `report.json` changes from live reload: first-time custom-visual registration can require reopening the project. For visual-only reload, first import the renderer package in Desktop and save the project, then commit a visual.
@@ -82,17 +82,41 @@ Rendered Vilsem ECharts visuals cross-filter through Power BI selection IDs, acc
 
 - Create, edit or validate native Power BI visuals.
 - Create or edit slicers, filters, bookmarks or themes.
-- Change semantic models, measures or model metadata.
+- Change semantic models or model metadata.
+- Persist measures to the model; declare a visual-scoped measure instead, or use Microsoft's Power BI Modeling MCP to add one to the model.
 - Read or write PBIX files. Existing enhanced PBIR report folders are required.
 
 Desktop connections require Windows and Power BI Desktop. Column sampling can be expensive on large models and permission failures are returned per column.
 
-Headless previews support the core ECharts composition types and declarative templates. DOM-adapter visual types are rejected by this resolver rather than emitted as empty or substituted charts. Previews render the chart marks and option; renderer-owned card chrome/title headers and existing report-level filters are not replayed. Fonts can differ between server PNGs and Desktop if the machines have different installed fonts. Preview data is capped at 200 rows; arbitrary DAX results default to 200 and are capped at 10,000 returned rows.
+Headless previews support the core ECharts composition types and declarative templates. DOM-adapter visual types are rejected by this resolver rather than emitted as empty or substituted charts. Previews render the chart marks and option; renderer-owned card chrome/title headers and existing report-level filters are not replayed. Fonts can differ between server PNGs and Desktop if the machines have different installed fonts. Preview queries and arbitrary DAX default to200 rows and accept `maxRows` up to10000. Choose a complete bounded window for population statistics; Desktop's categorical host reduction is2000 rows.
 
 ## Development and verification
 
 Run `npm run build` and `npm test`. Tests cover spec resolution, deterministic SVG/PNG rendering, custom-only PBIR insertion/validation and a real stdio client/server round trip. Live Fabric credentials, Desktop query access, reload prompts and host interactions need environment-backed acceptance; passing fixture tests alone does not establish those results.
 
-## Expressiveness examples (0.3.0)
+For an independent test, follow [author a visual from scratch](docs/author-from-scratch.md).
+
+## Stress round2 examples (0.4.0)
+
+111 freshly authored stress examples passed the actual validate/explain/preview/commit
+workflow and individual Desktop rendering inspection at900x600. Nine capabilities
+remain explicit refusals, documented with sandbox/asset requirements. This is not
+exhaustive formatting, resize, cloud-target or interaction certification.
+See the [120-case results](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/stress2/results.md)
+and [format additions](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/stress2/format-additions.md).
+
+Use core0.4.0 and the bundled renderer4.31. Existing reports keep the same GUID
+and primitiveSpec property. New features enforce renderer version floors rather
+than silently replacing an existing report resource. `list_templates` retains
+the template contract and includes `exampleSpec`: use that complete envelope to
+preserve query-only `measures`, theme and instance parameters.
+
+The catalog includes the nine original examples below plus111 stress examples.
+Failed authored probes are kept under `docs/expressiveness/`, never listed as
+working templates. Word packing, swarm and partition label bounds require their
+declared fixed plot dimensions; density/cohort/statistical assumptions and limits
+are documented in `vilsem://docs/spec-format`.
+
+## Original expressiveness examples (0.3.0)
 
 Nine new standalone `.vilsem-visual.json` specs ship in `templates/` and are listed by `list_templates`. They cover Sankey, Gantt, running-total waterfall, sunburst, bullet, radial progress, dual-axis reference measures, facets and a relationship network. Bind their declared slots to your own schema; no model data is embedded. Use core 0.3.0 / renderer 4.14.2.0+. The [expressiveness report](docs/expressiveness-gaps.md) records the live workflow, bounds and the deliberately unsupported Marimekko custom callback.

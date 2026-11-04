@@ -1,0 +1,144 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_036_diverging-heatmap",
+      "name": "36 \u00b7 Country/category profit vs target \u00b7 zero-centred heatmap",
+      "description": "36 \u00b7 Country/category profit vs target \u00b7 zero-centred heatmap",
+      "formatVersion": 2
+    },
+    "slots": {
+      "country": {
+        "kind": "dimension"
+      },
+      "category": {
+        "kind": "dimension"
+      },
+      "variance": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "36 \u00b7 Country/category profit vs target \u00b7 zero-centred heatmap",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "axis",
+        "confine": true
+      },
+      "grid": {
+        "left": 75,
+        "right": 40,
+        "top": 90,
+        "bottom": 75,
+        "containLabel": true
+      },
+      "xAxis": {
+        "type": "category",
+        "data": "$slot.country.categories",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "rotate": 25
+        }
+      },
+      "yAxis": {
+        "type": "category",
+        "data": "$slot.category.categories",
+        "axisLabel": {
+          "color": "#cbd5e1"
+        }
+      },
+      "visualMap": {
+        "type": "continuous",
+        "min": "$calc.floor.min",
+        "max": "$calc.ceiling.max",
+        "dimension": 2,
+        "calculable": true,
+        "orient": "horizontal",
+        "left": "center",
+        "bottom": 10,
+        "inRange": {
+          "color": [
+            "#ef4444",
+            "#334155",
+            "#2dd4bf"
+          ]
+        },
+        "textStyle": {
+          "color": "#cbd5e1"
+        }
+      },
+      "series": [
+        {
+          "type": "heatmap",
+          "data": "$slot.variance.matrix",
+          "label": {
+            "show": true,
+            "formatterTemplate": "{value:thousands}",
+            "color": "#ffffff"
+          }
+        }
+      ]
+    },
+    "transforms": [
+      {
+        "stat": {
+          "field": "variance",
+          "op": "max"
+        },
+        "as": "maxv"
+      },
+      {
+        "stat": {
+          "field": "variance",
+          "op": "min"
+        },
+        "as": "minv"
+      },
+      {
+        "calculate": "max(abs(maxv),abs(minv))",
+        "as": "ceiling"
+      },
+      {
+        "calculate": "-ceiling",
+        "as": "floor"
+      }
+    ]
+  },
+  "measures": {
+    "Stress Profit Variance": "[Total Profit] - [Profit Target]"
+  }
+}

@@ -1,0 +1,119 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_051_parallel-sets",
+      "name": "51 - Country / category / subcategory / colour - alluvial",
+      "description": "51 - Country / category / subcategory / colour - alluvial",
+      "formatVersion": 2
+    },
+    "slots": {
+      "d0": {
+        "kind": "dimension"
+      },
+      "d1": {
+        "kind": "dimension"
+      },
+      "d2": {
+        "kind": "dimension"
+      },
+      "d3": {
+        "kind": "dimension"
+      },
+      "revenue": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "51 - Country / category / subcategory / colour - alluvial",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "item",
+        "confine": true,
+        "formatterTemplate": "{label}: {value:thousands}"
+      },
+      "series": [
+        {
+          "type": "sankey",
+          "left": 45,
+          "right": 155,
+          "top": 90,
+          "bottom": 50,
+          "data": "$calc.flow.nodes",
+          "links": "$calc.flow.links",
+          "nodeAlign": "left",
+          "layoutIterations": 0,
+          "nodeWidth": 14,
+          "nodeGap": 12,
+          "draggable": false,
+          "label": {
+            "color": "#e2e8f0",
+            "fontSize": 10,
+            "formatterTemplate": "{label}",
+            "width": 130,
+            "overflow": "truncate"
+          },
+          "lineStyle": {
+            "color": "source",
+            "opacity": 0.3
+          },
+          "emphasis": {
+            "focus": "adjacency"
+          },
+          "labelLayout": {
+            "hideOverlap": true
+          }
+        }
+      ]
+    },
+    "transforms": [
+      {
+        "flows": {
+          "levels": [
+            "d0",
+            "d1",
+            "d2",
+            "d3"
+          ],
+          "value": "revenue",
+          "order": "value"
+        },
+        "as": "flow"
+      }
+    ]
+  }
+}

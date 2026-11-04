@@ -1,0 +1,170 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_032_double-waterfall",
+      "name": "32 \u00b7 Country profit waterfalls \u00b7 current vs previous month",
+      "description": "32 \u00b7 Country profit waterfalls \u00b7 current vs previous month",
+      "formatVersion": 2
+    },
+    "slots": {
+      "date": {
+        "kind": "dimension"
+      },
+      "m0": {
+        "kind": "measure"
+      },
+      "m1": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "32 \u00b7 Country profit waterfalls \u00b7 current vs previous month",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "data": [
+          "Selected window",
+          "Month-shifted window"
+        ]
+      },
+      "tooltip": {
+        "trigger": "axis",
+        "confine": true
+      },
+      "grid": {
+        "left": 75,
+        "right": 40,
+        "top": 90,
+        "bottom": 75,
+        "containLabel": true
+      },
+      "xAxis": {
+        "type": "category",
+        "data": "$slot.date.values",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "rotate": 35,
+          "hideOverlap": true
+        },
+        "axisLine": {
+          "lineStyle": {
+            "color": "#64748b"
+          }
+        }
+      },
+      "yAxis": {
+        "type": "value",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "formatterTemplate": "{value:thousands}"
+        },
+        "splitLine": {
+          "lineStyle": {
+            "color": "#263244"
+          }
+        }
+      },
+      "series": [
+        {
+          "type": "bar",
+          "name": "Offset",
+          "stack": "0",
+          "stackStrategy": "all",
+          "data": "$calc.base0.values",
+          "itemStyle": {
+            "opacity": 0
+          },
+          "silent": true
+        },
+        {
+          "type": "bar",
+          "name": "Selected window",
+          "stack": "0",
+          "stackStrategy": "all",
+          "data": "$calc.span0.values"
+        },
+        {
+          "type": "bar",
+          "name": "Offset",
+          "stack": "1",
+          "stackStrategy": "all",
+          "data": "$calc.base1.values",
+          "itemStyle": {
+            "opacity": 0
+          },
+          "silent": true
+        },
+        {
+          "type": "bar",
+          "name": "Month-shifted window",
+          "stack": "1",
+          "stackStrategy": "all",
+          "data": "$calc.span1.values"
+        }
+      ]
+    },
+    "transforms": [
+      {
+        "window": {
+          "op": "sum",
+          "field": "m0"
+        },
+        "as": "run0"
+      },
+      {
+        "calculate": "min(run0,run0-m0)",
+        "as": "base0"
+      },
+      {
+        "calculate": "abs(m0)",
+        "as": "span0"
+      },
+      {
+        "window": {
+          "op": "sum",
+          "field": "m1"
+        },
+        "as": "run1"
+      },
+      {
+        "calculate": "min(run1,run1-m1)",
+        "as": "base1"
+      },
+      {
+        "calculate": "abs(m1)",
+        "as": "span1"
+      }
+    ]
+  }
+}

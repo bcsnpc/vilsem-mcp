@@ -1,0 +1,120 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_028_gauge-target-bands",
+      "name": "28 \u00b7 Revenue gauge \u00b7 bands relative to current target",
+      "description": "28 \u00b7 Revenue gauge \u00b7 bands relative to current target",
+      "formatVersion": 2
+    },
+    "slots": {
+      "actual": {
+        "kind": "measure"
+      },
+      "target": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "28 \u00b7 Revenue gauge \u00b7 bands relative to current target",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "axis",
+        "confine": true
+      },
+      "series": [
+        {
+          "type": "gauge",
+          "center": [
+            "50%",
+            "58%"
+          ],
+          "radius": "74%",
+          "min": 0,
+          "max": "$calc.ceiling.first",
+          "axisLine": {
+            "lineStyle": {
+              "width": 22,
+              "color": [
+                [
+                  0.5,
+                  "#ef4444"
+                ],
+                [
+                  0.6666666666666666,
+                  "#f59e0b"
+                ],
+                [
+                  0.8333333333333334,
+                  "#2dd4bf"
+                ],
+                [
+                  1,
+                  "#334155"
+                ]
+              ]
+            }
+          },
+          "axisLabel": {
+            "color": "#cbd5e1",
+            "formatterTemplate": "{value:thousands}"
+          },
+          "detail": {
+            "formatterTemplate": "{value:thousands}",
+            "color": "#f8fafc",
+            "fontSize": 22
+          },
+          "data": [
+            {
+              "name": "Revenue",
+              "value": "$slot.actual.first"
+            }
+          ],
+          "title": {
+            "color": "#cbd5e1"
+          }
+        }
+      ]
+    },
+    "transforms": [
+      {
+        "calculate": "target*1.2",
+        "as": "ceiling"
+      }
+    ]
+  }
+}

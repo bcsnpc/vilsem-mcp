@@ -1,0 +1,154 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_061_parallel-six-measures",
+      "name": "61 - Country comparison across six real measures - parallel coordinates",
+      "description": "61 - Country comparison across six real measures - parallel coordinates",
+      "formatVersion": 2
+    },
+    "slots": {
+      "country": {
+        "kind": "dimension"
+      },
+      "m0": {
+        "kind": "measure"
+      },
+      "m1": {
+        "kind": "measure"
+      },
+      "m2": {
+        "kind": "measure"
+      },
+      "m3": {
+        "kind": "measure"
+      },
+      "m4": {
+        "kind": "measure"
+      },
+      "m5": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "61 - Country comparison across six real measures - parallel coordinates",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "item",
+        "confine": true,
+        "formatterTemplate": "{name} | Revenue {value.0:thousands} | Profit {value.1:thousands} | Quantity {value.2:thousands} | Orders {value.3:thousands} | Customers {value.4:thousands} | Avg price {value.5:thousands}"
+      },
+      "parallel": {
+        "left": 95,
+        "right": 90,
+        "top": 110,
+        "bottom": 95,
+        "parallelAxisDefault": {
+          "type": "value",
+          "nameTextStyle": {
+            "color": "#cbd5e1",
+            "fontSize": 10
+          },
+          "axisLabel": {
+            "color": "#cbd5e1",
+            "formatterTemplate": "{value:thousands}"
+          }
+        }
+      },
+      "parallelAxis": [
+        {
+          "dim": 0,
+          "name": "Revenue"
+        },
+        {
+          "dim": 1,
+          "name": "Profit"
+        },
+        {
+          "dim": 2,
+          "name": "Quantity Sold"
+        },
+        {
+          "dim": 3,
+          "name": "Orders"
+        },
+        {
+          "dim": 4,
+          "name": "Customers"
+        },
+        {
+          "dim": 5,
+          "name": "Average Retail Price"
+        }
+      ],
+      "series": [
+        {
+          "type": "parallel",
+          "data": "$calc.lines.data",
+          "lineStyle": {
+            "width": 2,
+            "opacity": 0.7
+          }
+        }
+      ]
+    },
+    "transforms": [
+      {
+        "points": {
+          "fields": [
+            "m0",
+            "m1",
+            "m2",
+            "m3",
+            "m4",
+            "m5"
+          ],
+          "numeric": [
+            "m0",
+            "m1",
+            "m2",
+            "m3",
+            "m4",
+            "m5"
+          ],
+          "name": "country"
+        },
+        "as": "lines"
+      }
+    ]
+  }
+}

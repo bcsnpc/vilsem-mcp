@@ -1,0 +1,127 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_055_relationship-force",
+      "name": "55 - Top ten products to model - relationship graph",
+      "description": "55 - Top ten products to model - relationship graph",
+      "formatVersion": 2
+    },
+    "slots": {
+      "source": {
+        "kind": "dimension"
+      },
+      "target": {
+        "kind": "dimension"
+      },
+      "revenue": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "55 - Top ten products to model - relationship graph",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "item",
+        "confine": true,
+        "formatterTemplate": "{label}: {value:thousands}"
+      },
+      "series": [
+        {
+          "type": "graph",
+          "data": "$calc.flow.nodes",
+          "links": "$calc.flow.links",
+          "left": 90,
+          "right": 100,
+          "top": 120,
+          "bottom": 100,
+          "label": {
+            "show": true,
+            "formatterTemplate": "{label}",
+            "color": "#e2e8f0",
+            "fontSize": 11
+          },
+          "lineStyle": {
+            "color": "source",
+            "opacity": 0.6,
+            "curveness": 0.25
+          },
+          "emphasis": {
+            "focus": "adjacency"
+          },
+          "layout": "force",
+          "roam": false,
+          "draggable": false,
+          "categories": [
+            {
+              "name": "ProductName"
+            },
+            {
+              "name": "ModelName"
+            }
+          ],
+          "force": {
+            "repulsion": 100,
+            "edgeLength": 60,
+            "gravity": 0.25,
+            "initLayout": "circular",
+            "layoutAnimation": false
+          },
+          "labelLayout": {
+            "hideOverlap": true
+          }
+        }
+      ]
+    },
+    "transforms": [
+      {
+        "flows": {
+          "levels": [
+            "source",
+            "target"
+          ],
+          "value": "revenue",
+          "order": "value"
+        },
+        "as": "flow"
+      }
+    ]
+  },
+  "measures": {
+    "Stress Top Product Revenue": "IF(RANKX(ALL('Product Lookup'), [Total Revenue], , DESC, DENSE)<=10, [Total Revenue])"
+  }
+}

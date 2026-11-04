@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
-import { injectVisual, validateVisualContainer, RENDERER_GUID } from '@vilsem/core/pbir';
+import { injectVisual, validateVisualContainer, RENDERER_GUID, assertReportRenderer } from '@vilsem/core/pbir';
 import { resolveVisualSpec } from '@vilsem/core/spec/resolve';
 import { instantiateVisual, buildThemeContext, slotCount } from '@vilsem/core/templates';
 import { getThemeTokens } from '@vilsem/core/theme';
@@ -93,6 +93,9 @@ export async function validateVisuals(reportDir) {
                     throw Error('Missing primitiveSpec literal');
                 const spec = JSON.parse(literal.slice(1, -1).replace(/''/g, "'"));
                 validateSpec(spec);
+                const measureRoles = ['content', 'secondary', 'tertiary', 'quaternary', 'quinary', 'senary'];
+                const measureCount = measureRoles.filter(role => value.visual.query?.queryState?.[role]?.projections?.length).length;
+                await assertReportRenderer(root, RENDERER_GUID, spec, { measures: Array(measureCount) });
                 results.push({ path: file, valid: true });
             }
             catch (error) {

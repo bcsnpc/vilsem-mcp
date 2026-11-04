@@ -1,0 +1,172 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_078_columns-error-bars",
+      "name": "78 - Country monthly revenue mean and observed min/max range",
+      "description": "78 - Country monthly revenue mean and observed min/max range",
+      "formatVersion": 2
+    },
+    "slots": {
+      "country": {
+        "kind": "dimension"
+      },
+      "low": {
+        "kind": "measure"
+      },
+      "high": {
+        "kind": "measure"
+      },
+      "mean": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "78 - Country monthly revenue mean and observed min/max range",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "item",
+        "confine": true,
+        "formatterTemplate": "{seriesName} | {name}: {value:thousands}"
+      },
+      "grid": {
+        "left": 75,
+        "right": 40,
+        "top": 90,
+        "bottom": 75,
+        "containLabel": true
+      },
+      "xAxis": {
+        "type": "category",
+        "data": "$slot.country.values",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "rotate": 35,
+          "hideOverlap": true
+        },
+        "axisLine": {
+          "lineStyle": {
+            "color": "#64748b"
+          }
+        }
+      },
+      "yAxis": {
+        "type": "value",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "formatterTemplate": "{value:thousands}"
+        },
+        "splitLine": {
+          "lineStyle": {
+            "color": "#263244"
+          }
+        }
+      },
+      "series": {
+        "concat": [
+          [
+            {
+              "type": "bar",
+              "name": "Mean",
+              "data": "$slot.mean.values",
+              "symbolSize": 11
+            }
+          ],
+          {
+            "repeat": "$calc.ranges.data",
+            "template": {
+              "type": "line",
+              "name": "$item.name",
+              "data": [
+                {
+                  "value": [
+                    "$item.name",
+                    "$item.value.0"
+                  ],
+                  "rowIndexes": "$item.rowIndexes"
+                },
+                {
+                  "value": [
+                    "$item.name",
+                    "$item.value.1"
+                  ],
+                  "rowIndexes": "$item.rowIndexes"
+                }
+              ],
+              "symbol": "rect",
+              "symbolSize": [
+                12,
+                2
+              ],
+              "lineStyle": {
+                "width": 2,
+                "color": "#f8fafc"
+              },
+              "itemStyle": {
+                "color": "#f8fafc"
+              },
+              "tooltip": {
+                "formatterTemplate": "{seriesName}: {value.0:thousands} / {value.1:thousands}"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "transforms": [
+      {
+        "points": {
+          "fields": [
+            "low",
+            "high"
+          ],
+          "numeric": [
+            "low",
+            "high"
+          ],
+          "name": "country"
+        },
+        "as": "ranges"
+      }
+    ]
+  },
+  "measures": {
+    "Stress Monthly Low": "MINX(VALUES('Calendar Lookup'[Start of Month]), [Total Revenue])",
+    "Stress Monthly High": "MAXX(VALUES('Calendar Lookup'[Start of Month]), [Total Revenue])",
+    "Stress Monthly Mean": "AVERAGEX(VALUES('Calendar Lookup'[Start of Month]), [Total Revenue])"
+  }
+}

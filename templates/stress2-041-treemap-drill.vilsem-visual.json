@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_041_treemap-drill",
+      "name": "41 - Revenue treemap - click a category, use breadcrumb to return",
+      "description": "41 - Revenue treemap - click a category, use breadcrumb to return",
+      "formatVersion": 2
+    },
+    "slots": {
+      "category": {
+        "kind": "dimension"
+      },
+      "subcategory": {
+        "kind": "dimension"
+      },
+      "revenue": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "41 - Revenue treemap - click a category, use breadcrumb to return",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "item",
+        "confine": true
+      },
+      "series": [
+        {
+          "type": "treemap",
+          "name": "Products",
+          "itemStyle": {
+            "borderColor": "#1e293b",
+            "borderWidth": 3,
+            "gapWidth": 2
+          },
+          "top": 80,
+          "bottom": 70,
+          "left": 25,
+          "right": 25,
+          "data": "$calc.tree.children",
+          "leafDepth": 1,
+          "nodeClick": "zoomToNode",
+          "roam": false,
+          "label": {
+            "show": true,
+            "color": "#f8fafc"
+          },
+          "upperLabel": {
+            "show": true,
+            "height": 24,
+            "color": "#f8fafc"
+          },
+          "breadcrumb": {
+            "show": true,
+            "bottom": 15,
+            "itemStyle": {
+              "color": "#334155",
+              "textStyle": {
+                "color": "#f8fafc"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "transforms": [
+      {
+        "hierarchy": {
+          "levels": [
+            "category",
+            "subcategory"
+          ],
+          "value": "revenue"
+        },
+        "as": "tree"
+      }
+    ]
+  }
+}

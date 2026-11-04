@@ -1,0 +1,370 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_027_multi-ring-progress",
+      "name": "27 \u00b7 Revenue attainment, margin and return rate \u00b7 multi-ring",
+      "description": "27 \u00b7 Revenue attainment, margin and return rate \u00b7 multi-ring",
+      "formatVersion": 2
+    },
+    "slots": {
+      "m0": {
+        "kind": "measure"
+      },
+      "m1": {
+        "kind": "measure"
+      },
+      "m2": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "27 \u00b7 Revenue attainment, margin and return rate \u00b7 multi-ring",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "axis",
+        "confine": true
+      },
+      "series": [
+        {
+          "type": "gauge",
+          "center": [
+            "50%",
+            "57%"
+          ],
+          "radius": "76%",
+          "startAngle": 90,
+          "endAngle": -270,
+          "min": 0,
+          "max": 100,
+          "progress": {
+            "show": true,
+            "width": 12,
+            "itemStyle": {
+              "color": "#2dd4bf"
+            }
+          },
+          "axisLine": {
+            "lineStyle": {
+              "width": 12,
+              "color": [
+                [
+                  1,
+                  "#334155"
+                ]
+              ]
+            }
+          },
+          "pointer": {
+            "show": false
+          },
+          "axisTick": {
+            "show": false
+          },
+          "splitLine": {
+            "show": false
+          },
+          "axisLabel": {
+            "show": false
+          },
+          "title": {
+            "offsetCenter": [
+              0,
+              "-30%"
+            ],
+            "color": "#cbd5e1",
+            "fontSize": 13,
+            "show": false
+          },
+          "detail": {
+            "offsetCenter": [
+              0,
+              "-16%"
+            ],
+            "fontSize": 18,
+            "color": "#f8fafc",
+            "formatterTemplate": "{value}%",
+            "show": false
+          },
+          "data": [
+            {
+              "value": "$slot.m0.first",
+              "name": "Revenue attainment"
+            }
+          ]
+        },
+        {
+          "type": "gauge",
+          "center": [
+            "50%",
+            "57%"
+          ],
+          "radius": "58%",
+          "startAngle": 90,
+          "endAngle": -270,
+          "min": 0,
+          "max": 100,
+          "progress": {
+            "show": true,
+            "width": 12,
+            "itemStyle": {
+              "color": "#60a5fa"
+            }
+          },
+          "axisLine": {
+            "lineStyle": {
+              "width": 12,
+              "color": [
+                [
+                  1,
+                  "#334155"
+                ]
+              ]
+            }
+          },
+          "pointer": {
+            "show": false
+          },
+          "axisTick": {
+            "show": false
+          },
+          "splitLine": {
+            "show": false
+          },
+          "axisLabel": {
+            "show": false
+          },
+          "title": {
+            "offsetCenter": [
+              0,
+              "-2%"
+            ],
+            "color": "#cbd5e1",
+            "fontSize": 13,
+            "show": false
+          },
+          "detail": {
+            "offsetCenter": [
+              0,
+              "12%"
+            ],
+            "fontSize": 18,
+            "color": "#f8fafc",
+            "formatterTemplate": "{value}%",
+            "show": false
+          },
+          "data": [
+            {
+              "value": "$slot.m1.first",
+              "name": "Profit margin"
+            }
+          ]
+        },
+        {
+          "type": "gauge",
+          "center": [
+            "50%",
+            "57%"
+          ],
+          "radius": "40%",
+          "startAngle": 90,
+          "endAngle": -270,
+          "min": 0,
+          "max": 100,
+          "progress": {
+            "show": true,
+            "width": 12,
+            "itemStyle": {
+              "color": "#f59e0b"
+            }
+          },
+          "axisLine": {
+            "lineStyle": {
+              "width": 12,
+              "color": [
+                [
+                  1,
+                  "#334155"
+                ]
+              ]
+            }
+          },
+          "pointer": {
+            "show": false
+          },
+          "axisTick": {
+            "show": false
+          },
+          "splitLine": {
+            "show": false
+          },
+          "axisLabel": {
+            "show": false
+          },
+          "title": {
+            "offsetCenter": [
+              0,
+              "26%"
+            ],
+            "color": "#cbd5e1",
+            "fontSize": 13,
+            "show": false
+          },
+          "detail": {
+            "offsetCenter": [
+              0,
+              "40%"
+            ],
+            "fontSize": 18,
+            "color": "#f8fafc",
+            "formatterTemplate": "{value}%",
+            "show": false
+          },
+          "data": [
+            {
+              "value": "$slot.m2.first",
+              "name": "Return rate"
+            }
+          ]
+        }
+      ],
+      "graphic": [
+        {
+          "type": "group",
+          "left": "center",
+          "top": "41%",
+          "z": 100,
+          "children": [
+            {
+              "type": "text",
+              "x": 0,
+              "y": 0,
+              "style": {
+                "text": "Revenue attainment (%)",
+                "fill": "#cbd5e1",
+                "fontSize": 13,
+                "fontFamily": "Segoe UI",
+                "align": "center"
+              }
+            },
+            {
+              "type": "text",
+              "x": 0,
+              "y": 20,
+              "style": {
+                "text": "$slot.m0.lastLabel",
+                "fill": "#f8fafc",
+                "fontSize": 18,
+                "fontFamily": "Segoe UI",
+                "align": "center"
+              }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "left": "center",
+          "top": "52%",
+          "z": 100,
+          "children": [
+            {
+              "type": "text",
+              "x": 0,
+              "y": 0,
+              "style": {
+                "text": "Profit margin (%)",
+                "fill": "#cbd5e1",
+                "fontSize": 13,
+                "fontFamily": "Segoe UI",
+                "align": "center"
+              }
+            },
+            {
+              "type": "text",
+              "x": 0,
+              "y": 20,
+              "style": {
+                "text": "$slot.m1.lastLabel",
+                "fill": "#f8fafc",
+                "fontSize": 18,
+                "fontFamily": "Segoe UI",
+                "align": "center"
+              }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "left": "center",
+          "top": "63%",
+          "z": 100,
+          "children": [
+            {
+              "type": "text",
+              "x": 0,
+              "y": 0,
+              "style": {
+                "text": "Return rate (%)",
+                "fill": "#cbd5e1",
+                "fontSize": 13,
+                "fontFamily": "Segoe UI",
+                "align": "center"
+              }
+            },
+            {
+              "type": "text",
+              "x": 0,
+              "y": 20,
+              "style": {
+                "text": "$slot.m2.lastLabel",
+                "fill": "#f8fafc",
+                "fontSize": 18,
+                "fontFamily": "Segoe UI",
+                "align": "center"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "measures": {
+    "Stress Revenue Attainment": "ROUND(100 * DIVIDE([Total Revenue],[Revenue Target]),2)",
+    "Stress Profit Percent": "ROUND(100 * DIVIDE([Total Profit],[Total Revenue]),2)",
+    "Stress Return Percent": "ROUND(100 * [Return Rate],2)"
+  }
+}

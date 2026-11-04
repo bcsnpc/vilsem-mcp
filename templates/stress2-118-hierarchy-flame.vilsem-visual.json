@@ -1,0 +1,153 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_118_hierarchy-flame",
+      "name": "118 - Revenue hierarchy flame chart - taxonomy widths, not CPU time",
+      "description": "118 - Revenue hierarchy flame chart - taxonomy widths, not CPU time",
+      "formatVersion": 3
+    },
+    "slots": {
+      "category": {
+        "kind": "dimension"
+      },
+      "subcategory": {
+        "kind": "dimension"
+      },
+      "product": {
+        "kind": "dimension"
+      },
+      "revenue": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "118 - Revenue hierarchy flame chart - taxonomy widths, not CPU time",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "axis",
+        "confine": true
+      },
+      "grid": {
+        "left": 130,
+        "right": 40,
+        "top": 90,
+        "bottom": 75,
+        "containLabel": false,
+        "width": 700
+      },
+      "xAxis": {
+        "type": "value",
+        "min": 0,
+        "max": 1,
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "formatterTemplate": "{value:percent}"
+        }
+      },
+      "yAxis": {
+        "type": "category",
+        "inverse": true,
+        "data": [
+          "Category",
+          "Subcategory",
+          "Product"
+        ],
+        "axisLabel": {
+          "color": "#cbd5e1"
+        }
+      },
+      "series": {
+        "concat": [
+          {
+            "repeat": "$calc.flame.nodes",
+            "template": {
+              "type": "bar",
+              "stack": "$item.id",
+              "silent": true,
+              "data": "$item.base",
+              "itemStyle": {
+                "opacity": 0
+              },
+              "barGap": "-100%"
+            }
+          },
+          {
+            "repeat": "$calc.flame.nodes",
+            "template": {
+              "type": "bar",
+              "name": "$item.name",
+              "stack": "$item.id",
+              "data": "$item.data",
+              "barGap": "-100%",
+              "barCategoryGap": "8%",
+              "label": {
+                "show": "$item.labelVisible",
+                "position": "inside",
+                "formatterTemplate": "{seriesName}",
+                "fontSize": 8,
+                "overflow": "truncate",
+                "width": "$item.labelWidth"
+              },
+              "emphasis": {
+                "focus": "self"
+              },
+              "labelLayout": {
+                "hideOverlap": true
+              }
+            }
+          }
+        ]
+      }
+    },
+    "transforms": [
+      {
+        "hierarchy": {
+          "levels": [
+            "category",
+            "subcategory",
+            "product"
+          ],
+          "value": "revenue",
+          "layout": "partition",
+          "size": 700
+        },
+        "as": "flame"
+      }
+    ]
+  }
+}

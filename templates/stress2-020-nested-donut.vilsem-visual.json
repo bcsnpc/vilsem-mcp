@@ -1,0 +1,134 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_020_nested-donut",
+      "name": "20 \u00b7 Category and subcategory revenue \u00b7 nested donut",
+      "description": "20 \u00b7 Category and subcategory revenue \u00b7 nested donut",
+      "formatVersion": 2
+    },
+    "slots": {
+      "category": {
+        "kind": "dimension"
+      },
+      "subcategory": {
+        "kind": "dimension"
+      },
+      "revenue": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "20 \u00b7 Category and subcategory revenue \u00b7 nested donut",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "item"
+      },
+      "series": [
+        {
+          "type": "pie",
+          "radius": [
+            "18%",
+            "38%"
+          ],
+          "center": [
+            "50%",
+            "56%"
+          ],
+          "data": "$calc.tree.children",
+          "label": {
+            "position": "inside",
+            "color": "#ffffff"
+          },
+          "minShowLabelAngle": 6,
+          "labelLayout": {
+            "hideOverlap": true
+          }
+        },
+        {
+          "type": "sunburst",
+          "radius": [
+            "39%",
+            "70%"
+          ],
+          "center": [
+            "50%",
+            "56%"
+          ],
+          "data": "$calc.tree.children",
+          "levels": [
+            {},
+            {
+              "r0": "39%",
+              "r": "41%",
+              "label": {
+                "show": false
+              }
+            },
+            {
+              "r0": "42%",
+              "r": "70%",
+              "label": {
+                "rotate": "radial",
+                "color": "#ffffff",
+                "minAngle": 6
+              }
+            }
+          ],
+          "label": {
+            "minAngle": 6
+          },
+          "labelLayout": {
+            "hideOverlap": true
+          }
+        }
+      ]
+    },
+    "transforms": [
+      {
+        "hierarchy": {
+          "levels": [
+            "category",
+            "subcategory"
+          ],
+          "value": "revenue"
+        },
+        "as": "tree"
+      }
+    ]
+  }
+}

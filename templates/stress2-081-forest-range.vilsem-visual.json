@@ -1,0 +1,172 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_081_forest-range",
+      "name": "81 - Monthly revenue mean with 95% Student-t confidence interval",
+      "description": "81 - Monthly revenue mean with 95% Student-t confidence interval",
+      "formatVersion": 2
+    },
+    "slots": {
+      "country": {
+        "kind": "dimension"
+      },
+      "low": {
+        "kind": "measure"
+      },
+      "high": {
+        "kind": "measure"
+      },
+      "mean": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "81 - Monthly revenue mean with 95% Student-t confidence interval",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "item",
+        "confine": true,
+        "formatterTemplate": "{seriesName} | {name}: {value:thousands}"
+      },
+      "grid": {
+        "left": 75,
+        "right": 40,
+        "top": 90,
+        "bottom": 75,
+        "containLabel": true
+      },
+      "xAxis": {
+        "type": "value",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "formatterTemplate": "{value:thousands}"
+        }
+      },
+      "yAxis": {
+        "type": "category",
+        "data": "$slot.country.values",
+        "axisLabel": {
+          "color": "#cbd5e1"
+        }
+      },
+      "series": {
+        "concat": [
+          [
+            {
+              "type": "scatter",
+              "name": "Mean",
+              "data": "$slot.mean.values",
+              "symbolSize": 11
+            }
+          ],
+          {
+            "repeat": "$calc.ranges.data",
+            "template": {
+              "type": "line",
+              "name": "$item.name",
+              "data": [
+                {
+                  "value": [
+                    "$item.value.0",
+                    "$item.name"
+                  ],
+                  "rowIndexes": "$item.rowIndexes"
+                },
+                {
+                  "value": [
+                    "$item.value.1",
+                    "$item.name"
+                  ],
+                  "rowIndexes": "$item.rowIndexes"
+                }
+              ],
+              "symbol": "rect",
+              "symbolSize": [
+                2,
+                12
+              ],
+              "lineStyle": {
+                "width": 2,
+                "color": "#f8fafc"
+              },
+              "itemStyle": {
+                "color": "#f8fafc"
+              },
+              "tooltip": {
+                "formatterTemplate": "{seriesName}: {value.0:thousands}"
+              }
+            }
+          }
+        ]
+      },
+      "graphic": {
+        "type": "text",
+        "left": 75,
+        "bottom": 16,
+        "style": {
+          "text": "95% Student-t CI; monthly observations treated as independent.",
+          "fill": "#94a3b8",
+          "fontSize": 11
+        }
+      }
+    },
+    "transforms": [
+      {
+        "points": {
+          "fields": [
+            "low",
+            "high"
+          ],
+          "numeric": [
+            "low",
+            "high"
+          ],
+          "name": "country"
+        },
+        "as": "ranges"
+      }
+    ]
+  },
+  "measures": {
+    "Stress Monthly Mean": "AVERAGEX(VALUES('Calendar Lookup'[Start of Month]), [Total Revenue])",
+    "Stress CI N": "COUNTROWS(FILTER(VALUES('Calendar Lookup'[Start of Month]), NOT ISBLANK([Total Revenue])))",
+    "Stress CI Half Width": "IF([Stress CI N]>=2, T.INV.2T(0.05, [Stress CI N]-1)*DIVIDE(STDEVX.S(VALUES('Calendar Lookup'[Start of Month]), [Total Revenue]), SQRT([Stress CI N])), BLANK())",
+    "Stress CI Low": "IF([Stress CI N]>=2, [Stress Monthly Mean]-[Stress CI Half Width], BLANK())",
+    "Stress CI High": "IF([Stress CI N]>=2, [Stress Monthly Mean]+[Stress CI Half Width], BLANK())"
+  }
+}

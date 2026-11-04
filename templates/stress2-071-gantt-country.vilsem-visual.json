@@ -1,0 +1,175 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_071_gantt-country",
+      "name": "71 - Stock-to-order spans grouped by destination country - historical Gantt",
+      "description": "71 - Stock-to-order spans grouped by destination country - historical Gantt",
+      "formatVersion": 2
+    },
+    "slots": {
+      "order": {
+        "kind": "dimension"
+      },
+      "owner": {
+        "kind": "dimension"
+      },
+      "start": {
+        "kind": "time"
+      },
+      "end": {
+        "kind": "time"
+      },
+      "quantity": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "71 - Stock-to-order spans grouped by destination country - historical Gantt",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "item",
+        "confine": true,
+        "formatterTemplate": "{label}"
+      },
+      "grid": {
+        "left": 210,
+        "right": 50,
+        "top": 110,
+        "bottom": 60,
+        "containLabel": true
+      },
+      "xAxis": {
+        "type": "value",
+        "min": "$calc.tasks.min",
+        "max": "$calc.tasks.max",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "formatterTemplate": "{value:date}"
+        }
+      },
+      "yAxis": {
+        "type": "category",
+        "inverse": true,
+        "data": "$calc.tasks.categories",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "fontSize": 9,
+          "width": 180,
+          "overflow": "truncate"
+        }
+      },
+      "series": [
+        {
+          "type": "bar",
+          "name": "Start",
+          "stack": "range",
+          "data": "$calc.tasks.base",
+          "itemStyle": {
+            "opacity": 0
+          },
+          "silent": true,
+          "stackStrategy": "all"
+        },
+        {
+          "type": "bar",
+          "name": "Stock-to-order",
+          "stack": "range",
+          "data": "$calc.tasks.duration",
+          "barWidth": 12,
+          "itemStyle": {
+            "color": "#2dd4bf"
+          },
+          "markLine": {
+            "symbol": "none",
+            "data": [
+              {
+                "xAxis": 1793664000000,
+                "name": "Today 2026-11-03"
+              }
+            ]
+          },
+          "stackStrategy": "all"
+        },
+        {
+          "type": "scatter",
+          "name": "Same-day order",
+          "data": "$calc.tasks.milestones",
+          "symbol": "diamond",
+          "symbolSize": 10,
+          "itemStyle": {
+            "color": "#f59e0b"
+          }
+        }
+      ],
+      "graphic": [
+        {
+          "type": "text",
+          "left": 210,
+          "bottom": 8,
+          "style": {
+            "text": "$calc.tasks.summary",
+            "fill": "#cbd5e1",
+            "fontSize": 11
+          }
+        },
+        {
+          "type": "text",
+          "right": 25,
+          "top": 70,
+          "style": {
+            "text": "Today 2026-11-03 is beyond this historical window >",
+            "fill": "#f59e0b",
+            "fontSize": 11
+          }
+        }
+      ]
+    },
+    "transforms": [
+      {
+        "intervals": {
+          "group": "owner",
+          "category": "order",
+          "start": "start",
+          "end": "end",
+          "limit": 16
+        },
+        "as": "tasks"
+      }
+    ]
+  }
+}

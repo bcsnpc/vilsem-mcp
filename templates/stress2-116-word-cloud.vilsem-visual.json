@@ -1,0 +1,117 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_116_word-cloud",
+      "name": "116 - Product-name word cloud weighted by revenue",
+      "description": "116 - Product-name word cloud weighted by revenue",
+      "formatVersion": 3
+    },
+    "slots": {
+      "word": {
+        "kind": "dimension"
+      },
+      "revenue": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "116 - Product-name terms weighted by product revenue - top24 words",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        },
+        "subtext": "Revenue-weighted word occurrences; fixed750x400 layout, conservative no-overlap bounds",
+        "subtextStyle": {
+          "color": "#94a3b8",
+          "fontSize": 10
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "item",
+        "confine": true,
+        "formatterTemplate": "{name}: {value.2:thousands}"
+      },
+      "grid": {
+        "left": 75,
+        "top": 100,
+        "width": 750,
+        "height": 400,
+        "containLabel": false
+      },
+      "series": [
+        {
+          "type": "graph",
+          "coordinateSystem": "cartesian2d",
+          "layout": "none",
+          "data": "$calc.words.data",
+          "links": [],
+          "label": {
+            "show": true,
+            "position": "inside"
+          },
+          "emphasis": {
+            "focus": "self"
+          }
+        }
+      ],
+      "xAxis": {
+        "type": "value",
+        "min": 0,
+        "max": 750,
+        "show": false
+      },
+      "yAxis": {
+        "type": "value",
+        "min": 0,
+        "max": 400,
+        "inverse": true,
+        "show": false
+      }
+    },
+    "transforms": [
+      {
+        "words": {
+          "text": "word",
+          "weight": "revenue",
+          "limit": 24,
+          "width": 750,
+          "height": 400,
+          "minFont": 12,
+          "maxFont": 36
+        },
+        "as": "words"
+      }
+    ]
+  }
+}

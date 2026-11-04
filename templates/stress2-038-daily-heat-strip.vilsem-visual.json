@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_038_daily-heat-strip",
+      "name": "38 - Daily revenue - one-dimensional heat strip",
+      "description": "38 - Daily revenue - one-dimensional heat strip",
+      "formatVersion": 2
+    },
+    "slots": {
+      "date": {
+        "kind": "time"
+      },
+      "value": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "38 - Daily revenue - one-dimensional heat strip",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "axis",
+        "confine": true
+      },
+      "grid": {
+        "left": 75,
+        "right": 40,
+        "top": 210,
+        "height": 90,
+        "containLabel": true
+      },
+      "xAxis": {
+        "type": "category",
+        "data": "$slot.date.values",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "rotate": 35,
+          "hideOverlap": true,
+          "formatterTemplate": "{value:date}"
+        },
+        "axisLine": {
+          "lineStyle": {
+            "color": "#64748b"
+          }
+        }
+      },
+      "yAxis": {
+        "type": "category",
+        "data": [
+          "Revenue"
+        ],
+        "axisLabel": {
+          "color": "#cbd5e1"
+        }
+      },
+      "visualMap": {
+        "min": "$slot.value.min",
+        "max": "$slot.value.max",
+        "left": "center",
+        "bottom": 100,
+        "orient": "horizontal",
+        "inRange": {
+          "color": [
+            "#172554",
+            "#2dd4bf"
+          ]
+        },
+        "textStyle": {
+          "color": "#cbd5e1"
+        }
+      },
+      "series": [
+        {
+          "type": "heatmap",
+          "data": "$slot.value.cells"
+        }
+      ]
+    }
+  }
+}

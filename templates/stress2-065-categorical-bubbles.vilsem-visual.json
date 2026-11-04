@@ -1,0 +1,148 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_065_categorical-bubbles",
+      "name": "65 - Revenue / profit bubbles - country legend, size by quantity",
+      "description": "65 - Revenue / profit bubbles - country legend, size by quantity",
+      "formatVersion": 2
+    },
+    "slots": {
+      "country": {
+        "kind": "dimension"
+      },
+      "revenue": {
+        "kind": "measure"
+      },
+      "profit": {
+        "kind": "measure"
+      },
+      "quantity": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "65 - Revenue / profit bubbles - country legend, size by quantity",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "show": true,
+        "top": 45,
+        "textStyle": {
+          "color": "#cbd5e1"
+        }
+      },
+      "tooltip": {
+        "trigger": "item",
+        "confine": true,
+        "formatterTemplate": "{name}: revenue {value.0:thousands}, profit {value.1:thousands}, units {value.2:thousands}"
+      },
+      "grid": {
+        "left": 75,
+        "right": 40,
+        "top": 90,
+        "bottom": 75,
+        "containLabel": true
+      },
+      "xAxis": {
+        "type": "value",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "formatterTemplate": "{value:thousands}"
+        },
+        "splitLine": {
+          "lineStyle": {
+            "color": "#263244"
+          }
+        }
+      },
+      "yAxis": {
+        "type": "value",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "formatterTemplate": "{value:thousands}"
+        },
+        "splitLine": {
+          "lineStyle": {
+            "color": "#263244"
+          }
+        }
+      },
+      "visualMap": {
+        "show": false,
+        "dimension": 2,
+        "min": "$slot.quantity.min",
+        "max": "$slot.quantity.max",
+        "inRange": {
+          "symbolSize": [
+            12,
+            65
+          ]
+        }
+      },
+      "series": {
+        "repeat": "$calc.xy.data",
+        "template": {
+          "type": "scatter",
+          "name": "$item.name",
+          "data": [
+            "$item"
+          ],
+          "labelLayout": {
+            "hideOverlap": true
+          },
+          "label": {
+            "show": true,
+            "position": "top",
+            "formatterTemplate": "{name}",
+            "color": "#e2e8f0"
+          }
+        }
+      }
+    },
+    "transforms": [
+      {
+        "points": {
+          "fields": [
+            "revenue",
+            "profit",
+            "quantity"
+          ],
+          "numeric": [
+            "revenue",
+            "profit",
+            "quantity"
+          ],
+          "name": "country"
+        },
+        "as": "xy"
+      }
+    ]
+  }
+}

@@ -1,0 +1,155 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_107_pearson-six",
+      "name": "107 - Pearson correlation of six monthly measures - pairwise complete",
+      "description": "107 - Pearson correlation of six monthly measures - pairwise complete",
+      "formatVersion": 3
+    },
+    "slots": {
+      "month": {
+        "kind": "time"
+      },
+      "m0": {
+        "kind": "measure"
+      },
+      "m1": {
+        "kind": "measure"
+      },
+      "m2": {
+        "kind": "measure"
+      },
+      "m3": {
+        "kind": "measure"
+      },
+      "m4": {
+        "kind": "measure"
+      },
+      "m5": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "107 - Pearson correlation of six monthly measures - pairwise complete",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "axis",
+        "confine": true
+      },
+      "grid": {
+        "left": 140,
+        "right": 40,
+        "top": 90,
+        "bottom": 160,
+        "containLabel": true
+      },
+      "xAxis": {
+        "type": "category",
+        "data": "$calc.correlation.categories",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "rotate": 40,
+          "hideOverlap": true
+        },
+        "axisLine": {
+          "lineStyle": {
+            "color": "#64748b"
+          }
+        }
+      },
+      "yAxis": {
+        "type": "category",
+        "data": "$calc.correlation.categories",
+        "axisLabel": {
+          "color": "#cbd5e1"
+        }
+      },
+      "series": [
+        {
+          "type": "heatmap",
+          "data": "$calc.correlation.data",
+          "label": {
+            "show": true,
+            "formatterTemplate": "{value.2:thousands}",
+            "color": "#fff"
+          }
+        }
+      ],
+      "visualMap": {
+        "min": -1,
+        "max": 1,
+        "bottom": 10,
+        "orient": "horizontal",
+        "left": "center",
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "inRange": {
+          "color": [
+            "#991b1b",
+            "#334155",
+            "#0d9488"
+          ]
+        }
+      }
+    },
+    "transforms": [
+      {
+        "correlation": {
+          "fields": [
+            "m0",
+            "m1",
+            "m2",
+            "m3",
+            "m4",
+            "m5"
+          ],
+          "names": [
+            "Total Revenue",
+            "Total Profit",
+            "Total Cost",
+            "Total Orders",
+            "Quantity Sold",
+            "Total Customers"
+          ]
+        },
+        "as": "correlation"
+      }
+    ]
+  }
+}

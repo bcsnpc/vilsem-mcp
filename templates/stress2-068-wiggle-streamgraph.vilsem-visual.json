@@ -1,0 +1,145 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_068_wiggle-streamgraph",
+      "name": "68 - Monthly country revenue - wiggle-offset streamgraph",
+      "description": "68 - Monthly country revenue - wiggle-offset streamgraph",
+      "formatVersion": 2
+    },
+    "slots": {
+      "date": {
+        "kind": "time"
+      },
+      "country": {
+        "kind": "dimension"
+      },
+      "revenue": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "68 - Monthly country revenue - wiggle-offset streamgraph",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "data": "$slot.country.categories"
+      },
+      "tooltip": {
+        "trigger": "axis",
+        "confine": true
+      },
+      "grid": {
+        "left": 75,
+        "right": 40,
+        "top": 90,
+        "bottom": 75,
+        "containLabel": true
+      },
+      "xAxis": {
+        "type": "category",
+        "data": "$calc.stream.categories",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "rotate": 35,
+          "hideOverlap": true,
+          "formatterTemplate": "{value:date}"
+        },
+        "axisLine": {
+          "lineStyle": {
+            "color": "#64748b"
+          }
+        }
+      },
+      "yAxis": {
+        "type": "value",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "formatterTemplate": "{value:thousands}"
+        },
+        "splitLine": {
+          "lineStyle": {
+            "color": "#263244"
+          }
+        }
+      },
+      "series": {
+        "concat": [
+          [
+            {
+              "type": "line",
+              "name": "Offset",
+              "stack": "stream",
+              "stackStrategy": "all",
+              "data": "$calc.stream.baseline",
+              "symbol": "none",
+              "lineStyle": {
+                "opacity": 0
+              },
+              "areaStyle": {
+                "opacity": 0
+              },
+              "silent": true
+            }
+          ],
+          {
+            "repeat": "$calc.stream.panels",
+            "template": {
+              "type": "line",
+              "name": "$item.name",
+              "stack": "stream",
+              "stackStrategy": "all",
+              "data": "$item.data",
+              "symbol": "none",
+              "smooth": 0.3,
+              "areaStyle": {
+                "opacity": 0.8
+              }
+            }
+          }
+        ]
+      }
+    },
+    "transforms": [
+      {
+        "stream": {
+          "by": "country",
+          "category": "date",
+          "value": "revenue",
+          "offset": "wiggle"
+        },
+        "as": "stream"
+      }
+    ]
+  }
+}

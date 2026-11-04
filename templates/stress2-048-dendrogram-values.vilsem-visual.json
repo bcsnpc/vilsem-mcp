@@ -1,0 +1,116 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_048_dendrogram-values",
+      "name": "48 - Product taxonomy - dendrogram with leaf revenue",
+      "description": "48 - Product taxonomy - dendrogram with leaf revenue",
+      "formatVersion": 2
+    },
+    "slots": {
+      "category": {
+        "kind": "dimension"
+      },
+      "subcategory": {
+        "kind": "dimension"
+      },
+      "revenue": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "48 - Product taxonomy - dendrogram with leaf revenue",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "item",
+        "confine": true
+      },
+      "series": [
+        {
+          "type": "tree",
+          "data": [
+            {
+              "name": "Products",
+              "children": "$calc.tree.children"
+            }
+          ],
+          "top": 90,
+          "bottom": 50,
+          "left": 100,
+          "right": 180,
+          "layout": "orthogonal",
+          "orient": "LR",
+          "edgeShape": "curve",
+          "initialTreeDepth": -1,
+          "expandAndCollapse": true,
+          "symbolSize": 10,
+          "label": {
+            "position": "left",
+            "color": "#cbd5e1",
+            "fontSize": 11
+          },
+          "leaves": {
+            "label": {
+              "position": "right",
+              "formatterTemplate": "{name}: {value:thousands}",
+              "color": "#e2e8f0",
+              "fontSize": 10
+            }
+          },
+          "lineStyle": {
+            "color": "#64748b"
+          },
+          "itemStyle": {
+            "color": "#2dd4bf"
+          }
+        }
+      ]
+    },
+    "transforms": [
+      {
+        "hierarchy": {
+          "levels": [
+            "category",
+            "subcategory"
+          ],
+          "value": "revenue"
+        },
+        "as": "tree"
+      }
+    ]
+  }
+}

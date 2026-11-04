@@ -1,0 +1,153 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_026_linear-gauge",
+      "name": "26 \u00b7 Global profit margin \u00b7 linear threshold gauge",
+      "description": "26 \u00b7 Global profit margin \u00b7 linear threshold gauge",
+      "formatVersion": 2
+    },
+    "slots": {
+      "margin": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "26 \u00b7 Global profit margin \u00b7 linear threshold gauge",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "axis",
+        "confine": true
+      },
+      "grid": {
+        "left": 75,
+        "right": 40,
+        "top": 90,
+        "bottom": 75,
+        "containLabel": true
+      },
+      "xAxis": {
+        "type": "value",
+        "min": 0,
+        "max": 60,
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "formatterTemplate": "{value}%"
+        }
+      },
+      "yAxis": {
+        "type": "category",
+        "data": [
+          "Profit margin"
+        ],
+        "axisLabel": {
+          "color": "#cbd5e1"
+        }
+      },
+      "series": [
+        {
+          "type": "bar",
+          "data": [
+            "$slot.margin.first"
+          ],
+          "barWidth": 35,
+          "itemStyle": {
+            "color": "#2dd4bf"
+          },
+          "label": {
+            "show": true,
+            "position": "right",
+            "color": "#f8fafc",
+            "formatterTemplate": "{value}%"
+          },
+          "markArea": {
+            "silent": true,
+            "data": [
+              [
+                {
+                  "xAxis": 0,
+                  "itemStyle": {
+                    "color": "#f8717122"
+                  }
+                },
+                {
+                  "xAxis": 20
+                }
+              ],
+              [
+                {
+                  "xAxis": 20,
+                  "itemStyle": {
+                    "color": "#f59e0b22"
+                  }
+                },
+                {
+                  "xAxis": 40
+                }
+              ],
+              [
+                {
+                  "xAxis": 40,
+                  "itemStyle": {
+                    "color": "#34d39922"
+                  }
+                },
+                {
+                  "xAxis": 60
+                }
+              ]
+            ]
+          },
+          "markLine": {
+            "symbol": "none",
+            "data": [
+              {
+                "xAxis": 20
+              },
+              {
+                "xAxis": 40
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "measures": {
+    "Stress Global Margin": "ROUND(100 * DIVIDE([Total Profit],[Total Revenue]), 2)"
+  }
+}

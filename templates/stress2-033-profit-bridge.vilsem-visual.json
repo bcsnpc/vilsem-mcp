@@ -1,0 +1,174 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_033_profit-bridge",
+      "name": "33 \u00b7 Profit bridge \u00b7 prior period + country deltas = current",
+      "description": "33 \u00b7 Profit bridge \u00b7 prior period + country deltas = current",
+      "formatVersion": 2
+    },
+    "slots": {
+      "country": {
+        "kind": "dimension"
+      },
+      "current": {
+        "kind": "measure"
+      },
+      "previous": {
+        "kind": "measure"
+      },
+      "start": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "33 \u00b7 Profit bridge \u00b7 prior period + country deltas = current",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "axis",
+        "confine": true
+      },
+      "grid": {
+        "left": 75,
+        "right": 40,
+        "top": 90,
+        "bottom": 75,
+        "containLabel": true
+      },
+      "xAxis": {
+        "type": "category",
+        "data": "$calc.bridge.categories",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "rotate": 35,
+          "hideOverlap": true
+        },
+        "axisLine": {
+          "lineStyle": {
+            "color": "#64748b"
+          }
+        }
+      },
+      "yAxis": {
+        "type": "value",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "formatterTemplate": "{value:thousands}"
+        },
+        "splitLine": {
+          "lineStyle": {
+            "color": "#263244"
+          }
+        }
+      },
+      "series": [
+        {
+          "type": "bar",
+          "stack": "bridge",
+          "stackStrategy": "all",
+          "data": "$calc.bridge.base",
+          "itemStyle": {
+            "opacity": 0
+          },
+          "silent": true
+        },
+        {
+          "type": "bar",
+          "stack": "bridge",
+          "name": "positive",
+          "stackStrategy": "all",
+          "data": "$calc.bridge.positive",
+          "itemStyle": {
+            "color": "#2dd4bf"
+          }
+        },
+        {
+          "type": "bar",
+          "stack": "bridge",
+          "name": "negative",
+          "stackStrategy": "all",
+          "data": "$calc.bridge.negative",
+          "itemStyle": {
+            "color": "#f87171"
+          }
+        },
+        {
+          "type": "bar",
+          "stack": "bridge",
+          "name": "totals",
+          "stackStrategy": "all",
+          "data": "$calc.bridge.totals",
+          "itemStyle": {
+            "color": "#60a5fa"
+          }
+        },
+        {
+          "type": "line",
+          "name": "Running endpoint",
+          "data": "$calc.bridge.endpoints",
+          "step": "end",
+          "lineStyle": {
+            "type": "dashed",
+            "color": "#cbd5e1"
+          },
+          "symbolSize": 4,
+          "itemStyle": {
+            "color": "#cbd5e1"
+          }
+        }
+      ]
+    },
+    "transforms": [
+      {
+        "calculate": "current-previous",
+        "as": "delta"
+      },
+      {
+        "waterfall": {
+          "category": "country",
+          "value": "delta",
+          "start": "start",
+          "total": true
+        },
+        "as": "bridge"
+      }
+    ]
+  },
+  "measures": {
+    "Stress Prior Selected Countries": "CALCULATE([Previous Month Profit], ALLSELECTED('Territory Lookup'[Country]))"
+  }
+}

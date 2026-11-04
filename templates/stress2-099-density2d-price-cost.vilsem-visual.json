@@ -1,0 +1,133 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_099_density2d-price-cost",
+      "name": "99 - Sold product retail price versus cost - bounded 2-D density grid",
+      "description": "99 - Sold product retail price versus cost - bounded 2-D density grid",
+      "formatVersion": 3
+    },
+    "slots": {
+      "product": {
+        "kind": "dimension"
+      },
+      "price": {
+        "kind": "dimension"
+      },
+      "cost": {
+        "kind": "dimension"
+      },
+      "sold": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "99 - Sold product retail price versus cost - bounded 2-D density grid",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "item",
+        "confine": true,
+        "formatterTemplate": "{label}"
+      },
+      "grid": {
+        "left": 75,
+        "right": 40,
+        "top": 90,
+        "bottom": 120,
+        "containLabel": true
+      },
+      "xAxis": {
+        "type": "category",
+        "data": "$calc.binned.columns",
+        "name": "Retail price",
+        "nameLocation": "middle",
+        "nameGap": 45,
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "formatterTemplate": "{value:thousands}",
+          "hideOverlap": true,
+          "rotate": 35
+        }
+      },
+      "yAxis": {
+        "type": "category",
+        "data": "$calc.binned.rows",
+        "name": "Cost",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "formatterTemplate": "{value:thousands}",
+          "hideOverlap": true
+        }
+      },
+      "series": [
+        {
+          "type": "heatmap",
+          "data": "$calc.binned.cells"
+        }
+      ],
+      "visualMap": {
+        "type": "continuous",
+        "dimension": 2,
+        "min": 0,
+        "max": "$calc.binned.max",
+        "orient": "horizontal",
+        "bottom": 15,
+        "left": "center",
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "inRange": {
+          "color": [
+            "#172554",
+            "#14b8a6",
+            "#fef08a"
+          ]
+        }
+      }
+    },
+    "transforms": [
+      {
+        "density2d": {
+          "x": "price",
+          "y": "cost",
+          "bins": 24
+        },
+        "as": "binned"
+      }
+    ]
+  }
+}

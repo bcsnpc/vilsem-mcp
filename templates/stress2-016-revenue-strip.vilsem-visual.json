@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_016_revenue-strip",
+      "name": "16 \u00b7 Distinct sales-line revenue strip per category",
+      "description": "16 \u00b7 Distinct sales-line revenue strip per category",
+      "formatVersion": 2
+    },
+    "slots": {
+      "group": {
+        "kind": "dimension"
+      },
+      "raw": {
+        "kind": "dimension"
+      },
+      "count": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "16 \u00b7 Distinct sales-line revenue strip per category",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "axis",
+        "confine": true
+      },
+      "grid": {
+        "left": 75,
+        "right": 40,
+        "top": 90,
+        "bottom": 75,
+        "containLabel": true
+      },
+      "xAxis": {
+        "type": "value",
+        "axisLabel": {
+          "color": "#cbd5e1"
+        }
+      },
+      "yAxis": {
+        "type": "category",
+        "data": "$slot.group.categories",
+        "axisLabel": {
+          "color": "#cbd5e1"
+        }
+      },
+      "series": [
+        {
+          "type": "scatter",
+          "symbol": "rect",
+          "symbolSize": [
+            2,
+            20
+          ],
+          "data": "$calc.dots.data",
+          "itemStyle": {
+            "opacity": 0.35
+          }
+        }
+      ]
+    },
+    "transforms": [
+      {
+        "points": {
+          "fields": [
+            "raw",
+            "group"
+          ],
+          "numeric": [
+            "raw"
+          ],
+          "name": "group"
+        },
+        "as": "dots"
+      }
+    ]
+  }
+}

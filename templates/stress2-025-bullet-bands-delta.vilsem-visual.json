@@ -1,0 +1,206 @@
+{
+  "version": 1,
+  "type": "custom",
+  "canvasTheme": "dark",
+  "config": {
+    "cardStyle": "plain"
+  },
+  "template": {
+    "meta": {
+      "id": "stress2_025_bullet-bands-delta",
+      "name": "25 \u00b7 Country revenue bullet \u00b7 target and qualitative bands",
+      "description": "25 \u00b7 Country revenue bullet \u00b7 target and qualitative bands",
+      "formatVersion": 2
+    },
+    "slots": {
+      "date": {
+        "kind": "dimension"
+      },
+      "m0": {
+        "kind": "measure"
+      },
+      "m1": {
+        "kind": "measure"
+      },
+      "m2": {
+        "kind": "measure"
+      },
+      "m3": {
+        "kind": "measure"
+      },
+      "m4": {
+        "kind": "measure"
+      },
+      "m5": {
+        "kind": "measure"
+      }
+    },
+    "params": [],
+    "template": {
+      "animation": false,
+      "backgroundColor": "$theme.background",
+      "color": [
+        "#2dd4bf",
+        "#60a5fa",
+        "#f59e0b",
+        "#f472b6",
+        "#a78bfa",
+        "#a3e635"
+      ],
+      "textStyle": {
+        "color": "#e2e8f0",
+        "fontFamily": "Segoe UI"
+      },
+      "title": {
+        "text": "25 \u00b7 Country revenue bullet \u00b7 target and qualitative bands",
+        "left": 18,
+        "top": 12,
+        "textStyle": {
+          "fontSize": 17,
+          "color": "#f8fafc"
+        }
+      },
+      "legend": {
+        "top": 42,
+        "textStyle": {
+          "color": "#cbd5e1"
+        },
+        "data": [
+          "Actual",
+          "Target"
+        ]
+      },
+      "tooltip": {
+        "trigger": "axis",
+        "confine": true
+      },
+      "grid": {
+        "left": 75,
+        "right": 100,
+        "top": 90,
+        "bottom": 75,
+        "containLabel": true
+      },
+      "xAxis": {
+        "type": "value",
+        "axisLabel": {
+          "color": "#cbd5e1",
+          "formatterTemplate": "{value:thousands}"
+        }
+      },
+      "yAxis": [
+        {
+          "type": "category",
+          "data": "$slot.date.categories",
+          "axisLabel": {
+            "color": "#cbd5e1"
+          }
+        },
+        {
+          "type": "category",
+          "data": "$slot.date.categories",
+          "axisLabel": {
+            "color": "#cbd5e1"
+          },
+          "show": false
+        }
+      ],
+      "series": [
+        {
+          "type": "bar",
+          "name": "Qualitative band",
+          "stack": "bands",
+          "data": "$slot.m2.values",
+          "barWidth": 32,
+          "itemStyle": {
+            "color": "#334155"
+          },
+          "silent": true
+        },
+        {
+          "type": "bar",
+          "name": "Qualitative band",
+          "stack": "bands",
+          "data": "$slot.m3.values",
+          "barWidth": 32,
+          "itemStyle": {
+            "color": "#475569"
+          },
+          "silent": true
+        },
+        {
+          "type": "bar",
+          "name": "Qualitative band",
+          "stack": "bands",
+          "data": "$slot.m4.values",
+          "barWidth": 32,
+          "itemStyle": {
+            "color": "#64748b"
+          },
+          "silent": true
+        },
+        {
+          "type": "bar",
+          "name": "Actual",
+          "data": "$slot.m0.values",
+          "barWidth": 12,
+          "barGap": "-100%",
+          "itemStyle": {
+            "color": "#2dd4bf"
+          },
+          "yAxisIndex": 1
+        },
+        {
+          "type": "scatter",
+          "name": "Target",
+          "data": "$slot.m1.pairsSwapped",
+          "symbol": "rect",
+          "symbolSize": [
+            4,
+            40
+          ],
+          "itemStyle": {
+            "color": "#f59e0b"
+          },
+          "yAxisIndex": 1
+        },
+        {
+          "type": "scatter",
+          "name": "Delta vs target",
+          "data": "$calc.labels.data",
+          "encode": {
+            "x": 0,
+            "y": 1
+          },
+          "symbolSize": 1,
+          "label": {
+            "show": true,
+            "position": "right",
+            "color": "#cbd5e1",
+            "formatterTemplate": "\u0394 {value:thousands}"
+          },
+          "yAxisIndex": 1
+        }
+      ]
+    },
+    "transforms": [
+      {
+        "points": {
+          "fields": [
+            "m0",
+            "date",
+            "m5"
+          ],
+          "name": "date"
+        },
+        "as": "labels"
+      }
+    ]
+  },
+  "measures": {
+    "Stress Low Band": "0.6 * [Revenue Target]",
+    "Stress Middle Band": "0.2 * [Revenue Target]",
+    "Stress High Band": "0.4 * [Revenue Target]",
+    "Stress Revenue Delta": "[Total Revenue] - [Revenue Target]"
+  }
+}

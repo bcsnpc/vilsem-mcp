@@ -1,0 +1,200 @@
+[
+  {
+    "id": 87,
+    "errors": [
+      {
+        "tool": "validate_spec",
+        "error": "custom series requires imperative renderItem; executable callbacks are not supported by the declarative format"
+      },
+      {
+        "tool": "explain_visual",
+        "error": "custom series requires imperative renderItem; executable callbacks are not supported by the declarative format"
+      },
+      {
+        "tool": "preview_visual",
+        "error": "custom series requires imperative renderItem; executable callbacks are not supported by the declarative format"
+      },
+      {
+        "tool": "commit_visual",
+        "error": "custom series requires imperative renderItem; executable callbacks are not supported by the declarative format"
+      }
+    ],
+    "noContainerWritten": true
+  },
+  {
+    "id": 88,
+    "errors": [
+      {
+        "tool": "validate_spec",
+        "error": "custom series requires imperative renderItem; executable callbacks are not supported by the declarative format"
+      },
+      {
+        "tool": "explain_visual",
+        "error": "custom series requires imperative renderItem; executable callbacks are not supported by the declarative format"
+      },
+      {
+        "tool": "preview_visual",
+        "error": "custom series requires imperative renderItem; executable callbacks are not supported by the declarative format"
+      },
+      {
+        "tool": "commit_visual",
+        "error": "custom series requires imperative renderItem; executable callbacks are not supported by the declarative format"
+      }
+    ],
+    "noContainerWritten": true
+  },
+  {
+    "id": 111,
+    "errors": [
+      {
+        "tool": "validate_spec",
+        "error": "geo/map rendering requires a shipped registered map asset; the current renderer ships none"
+      },
+      {
+        "tool": "explain_visual",
+        "error": "geo/map rendering requires a shipped registered map asset; the current renderer ships none"
+      },
+      {
+        "tool": "preview_visual",
+        "error": "geo/map rendering requires a shipped registered map asset; the current renderer ships none"
+      },
+      {
+        "tool": "commit_visual",
+        "error": "geo/map rendering requires a shipped registered map asset; the current renderer ships none"
+      }
+    ],
+    "noContainerWritten": true
+  },
+  {
+    "id": 112,
+    "errors": [
+      {
+        "tool": "validate_spec",
+        "error": "geo/map rendering requires a shipped registered map asset; the current renderer ships none"
+      },
+      {
+        "tool": "explain_visual",
+        "error": "geo/map rendering requires a shipped registered map asset; the current renderer ships none"
+      },
+      {
+        "tool": "preview_visual",
+        "error": "geo/map rendering requires a shipped registered map asset; the current renderer ships none"
+      },
+      {
+        "tool": "commit_visual",
+        "error": "geo/map rendering requires a shipped registered map asset; the current renderer ships none"
+      }
+    ],
+    "noContainerWritten": true
+  },
+  {
+    "id": 113,
+    "errors": [
+      {
+        "tool": "validate_spec",
+        "error": "geo/map rendering requires a shipped registered map asset; the current renderer ships none"
+      },
+      {
+        "tool": "explain_visual",
+        "error": "geo/map rendering requires a shipped registered map asset; the current renderer ships none"
+      },
+      {
+        "tool": "preview_visual",
+        "error": "geo/map rendering requires a shipped registered map asset; the current renderer ships none"
+      },
+      {
+        "tool": "commit_visual",
+        "error": "geo/map rendering requires a shipped registered map asset; the current renderer ships none"
+      }
+    ],
+    "noContainerWritten": true
+  },
+  {
+    "id": 114,
+    "errors": [
+      {
+        "tool": "validate_spec",
+        "error": "geo/map rendering requires a shipped registered map asset; the current renderer ships none"
+      },
+      {
+        "tool": "explain_visual",
+        "error": "geo/map rendering requires a shipped registered map asset; the current renderer ships none"
+      },
+      {
+        "tool": "preview_visual",
+        "error": "geo/map rendering requires a shipped registered map asset; the current renderer ships none"
+      },
+      {
+        "tool": "commit_visual",
+        "error": "geo/map rendering requires a shipped registered map asset; the current renderer ships none"
+      }
+    ],
+    "noContainerWritten": true
+  },
+  {
+    "id": 117,
+    "errors": [
+      {
+        "tool": "validate_spec",
+        "error": "custom series requires imperative renderItem; executable callbacks are not supported by the declarative format"
+      },
+      {
+        "tool": "explain_visual",
+        "error": "custom series requires imperative renderItem; executable callbacks are not supported by the declarative format"
+      },
+      {
+        "tool": "preview_visual",
+        "error": "custom series requires imperative renderItem; executable callbacks are not supported by the declarative format"
+      },
+      {
+        "tool": "commit_visual",
+        "error": "custom series requires imperative renderItem; executable callbacks are not supported by the declarative format"
+      }
+    ],
+    "noContainerWritten": true
+  },
+  {
+    "id": 119,
+    "errors": [
+      {
+        "tool": "validate_spec",
+        "error": "series type \"bar3D\" is not shipped by the current renderer; a bounded declarative transform or a sandboxed extension is required"
+      },
+      {
+        "tool": "explain_visual",
+        "error": "series type \"bar3D\" is not shipped by the current renderer; a bounded declarative transform or a sandboxed extension is required"
+      },
+      {
+        "tool": "preview_visual",
+        "error": "series type \"bar3D\" is not shipped by the current renderer; a bounded declarative transform or a sandboxed extension is required"
+      },
+      {
+        "tool": "commit_visual",
+        "error": "series type \"bar3D\" is not shipped by the current renderer; a bounded declarative transform or a sandboxed extension is required"
+      }
+    ],
+    "noContainerWritten": true
+  },
+  {
+    "id": 120,
+    "errors": [
+      {
+        "tool": "validate_spec",
+        "error": "custom series requires imperative renderItem; executable callbacks are not supported by the declarative format"
+      },
+      {
+        "tool": "explain_visual",
+        "error": "custom series requires imperative renderItem; executable callbacks are not supported by the declarative format"
+      },
+      {
+        "tool": "preview_visual",
+        "error": "custom series requires imperative renderItem; executable callbacks are not supported by the declarative format"
+      },
+      {
+        "tool": "commit_visual",
+        "error": "custom series requires imperative renderItem; executable callbacks are not supported by the declarative format"
+      }
+    ],
+    "noContainerWritten": true
+  }
+]
