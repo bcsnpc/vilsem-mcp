@@ -1,12 +1,45 @@
 # vilsem-mcp
 
-vilsem-mcp is the custom-visual layer for agentic Power BI authoring — use it alongside Microsoft's Power BI Report skill for native visuals and the Power BI Modeling MCP for model changes. It previews Vilsem visuals with model data and inserts them into an existing local PBIR report through the shared `@vilsem/core` package.
+Any visual, from a chat, into your existing Power BI report, with real data, with no executable code in the report.
+
+vilsem-mcp doesn't make charts - Claude Code and Codex make charts; vilsem-mcp gives them your model, real data, eyes, and a safe pen. The MCP contains no model and needs no LLM API key. The calling agent's own service/account may have its own costs.
+
+This is the custom-visual layer for agentic Power BI authoring. Use it alongside Microsoft's Power BI Report skill for native visuals and the Power BI Modeling MCP for model changes. The shared, installed renderer executes trusted application code; the authored spec is declarative JSON, not executable source.
+
+## Why not just ask Claude Code / Codex directly?
+
+For a custom visual outside Power BI's native catalog:
+
+| Work | Agent without this custom-visual layer | With vilsem-mcp |
+| --- | --- | --- |
+| Understand the model | Find a connector, inspect fields and recover calculation context | get_schema summary/full with calculations, statistics and relationship context |
+| Choose an analytical design | Work out question, grain, units and alternatives | Still the agent's decision; design_visual and design-guide supply a structured brief |
+| Use real numbers | Implement a query bridge and field normalization | Read-only Desktop/Fabric DAX and actual field bindings |
+| See and improve a draft | Build a renderer and screenshot pipeline | preview_visual, critique and shared-data preview_variants |
+| Put it in a report | Implement/package/import a custom visual and configure queries | commit_visual writes one supported custom visual and missing renderer registration |
+| Edit the visual a month later, in a new chat | Find the old source/chat, re-explain, rebuild, repackage, re-import and rebind | Read the report's spec: "make the Sankey labels bigger"; preview a small patch |
+| What runs inside the report | Each separately authored compiled visual's implementation | One shared renderer plus plain declarative specifications |
+| Security review | Review each executable implementation and its dependencies | Review the shared renderer/dependencies and the bounded format; report policies still apply |
+
+The comparison does not imply native Power BI visuals require custom coding. Microsoft's companion Report skill handles those.
+
+## Three authoring layers
+
+1. **Composition:** a supported chart type and configuration; the smallest spec and maintenance cost.
+2. **Template:** ECharts structure, declared slots, parameters and bounded transforms; more control, with explicit layout and unit responsibilities.
+3. **Expression series:** the Round3 GroupC bounded-geometry language is planned, **not available in0.6 yet**. Arbitrary renderItem/JavaScript remains refused; see the expressiveness gaps.
+
+## Agent workflow
+
+connect_model -> get_schema -> design_visual prompt -> validate_spec -> explain_visual -> preview_visual with critique -> compare variants/iterate -> list_pages -> commit_visual -> Desktop reload and native checks. **Never commit without a preview.** Read vilsem://docs/design-guide and vilsem://docs/workflow.
+
+For edits: list_visuals -> read_visual -> update_visual(dryRun:true) -> inspect before/after and confirm when not already authorized -> update_visual(dryRun:false, etag) -> reload and verify. The report folder is the source of truth. Manual format-pane values win over authored formatting and survive updates unless resetFormatting:true is explicit.
 
 ## Install
 
 Requires Node.js 22.12+, 24, or 26+. Install from GitHub or clone this repository and run `npm install`, then `npm test`. Its `prepare` step builds the server. All model connections run through `@vilsem/core/connect`; no Vilsem app checkout, Electron installation or application path configuration is needed.
 
-The dependency is the immutable public `core-v0.5.0` release tarball. For local core development only, install a locally packed core tarball; restore the public release URL before distributing.
+The dependency is the immutable public `core-v0.6.0` release tarball. For local core development only, install a locally packed core tarball; restore the public release URL before distributing.
 
 ### Model authentication
 
@@ -32,9 +65,9 @@ Quoted connection-string values are supported. Passwords and impersonation setti
 There is no npm-registry publication. Install the tagged GitHub release:
 
 ```sh
-npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.5.0
+npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.6.0
 vilsem-mcp
-# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.5.0 vilsem-mcp
+# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.6.0 vilsem-mcp
 ```
 
 The process serves stdio JSON-RPC; diagnostics go to stderr.
@@ -79,7 +112,13 @@ In Desktop, open File → Options and settings → Options → Preview features.
 
 ## Tools and resources
 
-Tools: connect_model, get_schema, run_dax, list_templates, validate_spec, explain_visual, preview_visual, list_pages, commit_visual, validate_visuals. Resources: `vilsem://templates/<template-id>` and `vilsem://docs/spec-format`.
+Tools: connect_model, get_schema, run_dax, list_templates, validate_spec, explain_visual, preview_visual, preview_variants, list_pages, list_visuals, read_visual, diff_visual, update_visual, commit_visual, validate_visuals. Prompt: design_visual. Resources: vilsem://templates/<template-id>, vilsem://docs/spec-format, vilsem://docs/design-guide and vilsem://docs/workflow.
+
+get_schema defaults to summary (no expressions or relationship graph); use full for business calculation and join semantics. Exact cardinality/BLANK share/ranges are cached60seconds with at most10samples. Permission/provider failures are explicit; internal engine row identities are skipped. page/reportDir adds read-only page query bindings without editing or validating native visuals.
+
+Preview critique checks measured SVG text bounds, ellipses, axis rotation, categorical palette size, null/zero series, empty required slots, missing formats, page-background text contrast, legend/plot intersections, pie slice count and dual-axis review. It includes actionable paths/fixes and explicit coverage limits. It is not analytical correctness, accessibility or host-interaction certification. preview_variants makes one identical data query for up to4candidate specs; scoped definitions must match.
+
+read_visual returns the migrated spec, bindings, pane objects, layout, source-version provenance, etag and live PNG. diff_visual is read-only. update_visual accepts RFC6902operations, defaults to dry run, protects identity/prototype/version paths and checks intervening file changes. It preserves field queries for styling-only edits and refuses implicit rebinding. A legacy inline measure with no stored owning-table metadata returns table:null; the temporary preview namespace is disclosed, not invented as original provenance.
 
 `list_pages` reads all visual positions to help avoid overlap. `validate_visuals` examines only the stable Vilsem Renderer GUID; it does not report native visual validation results. `commit_visual` adds one new visual, rejects collisions and updates only missing renderer resources/registration. It does not rebuild or serialize other report content.
 
@@ -114,7 +153,7 @@ exhaustive formatting, resize, cloud-target or interaction certification.
 See the [120-case results](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/stress2/results.md)
 and [format additions](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/stress2/format-additions.md).
 
-Use core0.5.0 and the bundled renderer4.34. Existing reports keep the same GUID
+Use core0.6.0 and the bundled renderer4.35. Existing reports keep the same GUID
 and primitiveSpec property. New features enforce renderer version floors rather
 than silently replacing an existing report resource. `list_templates` retains
 the template contract and includes `exampleSpec`: use that complete envelope to
@@ -196,3 +235,19 @@ Keyboard additive selection and the other documented native interactions passed;
 Ctrl/clear/highlight/stale-identity paths also have host regression coverage.
 These are explicit verification limits, not claims that every native interaction,
 report font, Service/Fabric target or historical screenshot was retested.
+
+
+## Editable specifications and governance
+
+New commits carry specVersion0.6; readers migrate specs from0.1 onward, including round2 string measure definitions into {expression,format} objects. version:1 remains the separate wire envelope. Migrations are pure, forward-only and tested; unknown future versions are explicitly rejected. Maintaining readable historical specs is a release requirement, not a guarantee that unknown future formats run in an older renderer.
+
+The shared formatting contract has69properties: theme/background, title, chart text, series palette, labels, legend, category/primary/secondary axes, lines and border. Author spec.formatting or patch individual properties; separate Desktop pane objects override only the corresponding properties. Changing secondary-axis percentage formatting preserves a primary currency axis. Common controls apply to ECharts compositions/templates; legacy DOM adapters currently expose only Appearance, Title and Border. Native pane controls do not yet cover every specialized ECharts property. Series palette input currently accepts comma-separated hex colours.
+
+Visual-scoped measures: **yes**. Persistent model measures/changes: **via Microsoft's Power BI Modeling MCP**. Queries and committed bindings use their respective connecting/viewing identities; Power BI owns RLS, workspace access, sensitivity labels, report filters and refresh. A preview query does not replay report-level filters or certify policies.
+
+The write flow stores bindings/specifications, not returned model rows. Author literals/annotations are possible in JSON, so review specs before sharing. The plain spec lives in PBIR and can be versioned with the report in git; ownership belongs to the report, rather than a lost chat or developer's compiled project. An approved shared VILSEM_TEMPLATES_DIR library is a GroupC feature, not shipped in0.6. The MCP does not add a second manifest or list_recent tool.
+
+Core0.6 and MCP0.6 verification is recorded in the [Round3 GroupB log](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/stress3/group-b-status.md). Source/host and real-data SSR editing pass; final native Sankey/manual-pane acceptance is UNVERIFIED because ComputerUse cannot connect and Desktop snapshots are blank/time out. Automatic common-axis bounds can be reset with autoMin/autoMax. Native aggregate-column bindings outside the supported Measure/NativeMeasure shapes are reported as unsupported rather than guessed.
+
+
+Contrast feedback uses4.5for normal text and3for text estimated at24px or larger, informed by [W3C contrast guidance](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html). It deliberately does not relax the threshold for smaller bold text, and it compares against the preview page rather than proving the paint behind every label. This is review assistance, not a WCAG compliance result.

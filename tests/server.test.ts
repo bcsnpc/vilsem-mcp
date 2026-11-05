@@ -29,7 +29,7 @@ const bindings={dimensions:[{table:'Product',column:'Category'}],measures:[{tabl
 async function fixture(){
   const root=await fs.mkdtemp(path.join(os.tmpdir(),'vilsem-mcp-'));temporary.push(root)
   const write=async(file,value)=>{const full=path.join(root,file);await fs.mkdir(path.dirname(full),{recursive:true});await fs.writeFile(full,JSON.stringify(value))}
-  await write('definition/report.json',{resourcePackages:[],themeCollection:{customTheme:{name:'Keep'}}})
+  await write('definition/report.json',{resourcePackages:[],themeCollection:{customTheme:{name:'Keep.json'}}})
   await write('definition/pages/pages.json',{pageOrder:['page1']})
   await write('definition/pages/page1/page.json',{name:'page1',displayName:'Page 1',width:1280,height:720})
   await write('definition/pages/page1/visuals/native/visual.json',{name:'native',position:{x:0,y:0,width:100,height:100},visual:{visualType:'slicer'},deliberatelyNotValidated:'native object'})
@@ -84,6 +84,43 @@ describe('spec and SSR',()=>{
 })
 
 describe('MCP end-to-end contracts',()=>{
+  it('reads and edits a committed custom visual through SDK dry-run/etag/write without touching native objects',async()=>{
+    const root=await fixture(),model=adapter(),client=await clientFor(model)
+    const c=unpack(await client.callTool({name:'connect_model',arguments:{source:{kind:'desktop'}}}))
+    const native=path.join(root,'definition/pages/page1/visuals/native/visual.json'),nativeBefore=await fs.readFile(native)
+    const committed=await client.callTool({name:'commit_visual',arguments:{reportDir:root,pageName:'page1',visualName:'editable',spec:{type:'bar',config:{title:'Before'}},bindings,layout:{x:200,y:100,width:300,height:200}}});expect(committed.isError).toBeFalsy()
+    const file=path.join(root,'definition/pages/page1/visuals/editable/visual.json'),container=JSON.parse(await fs.readFile(file,'utf8'))
+    container.visual.objects.appearance=[{properties:{transparency:{expr:{Literal:{Value:'42D'}}},backgroundColor:{solid:{color:{expr:{Literal:{Value:"'#123456'"}}}}}}}]
+    await fs.writeFile(file,JSON.stringify(container));const before=await fs.readFile(file)
+    const target={reportDir:root,pageName:'page1',visualName:'editable',connectionId:c.connectionId}
+    const list=unpack(await client.callTool({name:'list_visuals',arguments:{reportDir:root,thumbnails:false}}));expect(list.visuals.map(v=>v.name)).toEqual(['editable'])
+    const read=unpack(await client.callTool({name:'read_visual',arguments:target}));expect(read.spec.config.title).toBe('Before');expect(read.formatPaneOverrides.appearance).toEqual(container.visual.objects.appearance)
+    const patch=[{op:'replace',path:'/config/title',value:'After'}]
+    const dry=await client.callTool({name:'update_visual',arguments:{...target,patch}});expect(dry.isError,JSON.stringify(dry.content.filter(c=>c.type==='text'))).toBeFalsy();expect(dry.content.filter(c=>c.type==='image')).toHaveLength(2);expect(unpack(dry).dryRun).toBe(true);expect(await fs.readFile(file)).toEqual(before)
+    const diff=await client.callTool({name:'diff_visual',arguments:{...target,spec:{...read.spec,config:{title:'Compared'}}}});expect(diff.isError).toBeFalsy();expect(diff.content.filter(c=>c.type==='image')).toHaveLength(2);expect(await fs.readFile(file)).toEqual(before)
+    const write=await client.callTool({name:'update_visual',arguments:{...target,patch,dryRun:false,etag:read.etag}});expect(write.isError).toBeFalsy();expect(unpack(write).formattingPreserved).toBe(true)
+    const after=JSON.parse(await fs.readFile(file,'utf8'));expect(after.visual.objects.appearance).toEqual(container.visual.objects.appearance);expect(after.visual.query).toEqual(container.visual.query);expect(await fs.readFile(native)).toEqual(nativeBefore)
+    const stale=await client.callTool({name:'update_visual',arguments:{...target,patch,dryRun:false,etag:read.etag}});expect(stale.isError).toBe(true)
+  },30000)
+  it('previews variants with exactly one shared query, one image and per-variant critique',async()=>{
+    const model=adapter(),client=await clientFor(model)
+    const connection=unpack(await client.callTool({name:'connect_model',arguments:{source:{kind:'desktop'}}}))
+    const args={connectionId:connection.connectionId,bindings,specs:[{type:'bar'},{type:'line'}],labels:['Bars & comparison','Trend <alternative>'],width:300,height:200}
+    const result=await client.callTool({name:'preview_variants',arguments:args})
+    expect(result.isError).toBeFalsy();expect(model.query).toHaveBeenCalledTimes(1)
+    expect(result.content.filter(c=>c.type==='image')).toHaveLength(1)
+    const png=Buffer.from((result.content.find(c=>c.type==='image') as any).data,'base64')
+    expect(png.readUInt32BE(16)).toBe(600);expect(png.readUInt32BE(20)).toBe(236)
+    const detail=unpack(result);expect(detail.sharedData).toBe(true);expect(detail.rowCount).toBe(2);expect(detail.variants).toHaveLength(2);expect(detail.variants[0].critique.findings).toBeInstanceOf(Array)
+    const invalid=await client.callTool({name:'preview_variants',arguments:{...args,labels:['only one']}});expect(invalid.isError).toBe(true);expect(model.query).toHaveBeenCalledTimes(1)
+    const changed=await client.callTool({name:'preview_variants',arguments:{...args,specs:[{type:'bar'},{type:'line',measures:{Net:{expression:'1',format:'0'}}}]}});expect(changed.isError).toBe(true);expect(model.query).toHaveBeenCalledTimes(1)
+  })
+  it('returns preview critique by default and supports explicitly disabling it',async()=>{
+    const model=adapter(),client=await clientFor(model),c=unpack(await client.callTool({name:'connect_model',arguments:{source:{kind:'desktop'}}}))
+    const args={connectionId:c.connectionId,bindings,spec:{type:'bar'},width:300,height:200}
+    const first=unpack(await client.callTool({name:'preview_visual',arguments:args}));expect(first.critique.findings.some(f=>f.code==='missing-format')).toBe(true)
+    const disabled=unpack(await client.callTool({name:'preview_visual',arguments:{...args,critique:false}}));expect(disabled.critique).toBeUndefined()
+  })
   it('advertises the installed package version in the MCP handshake',async()=>{
     const client=await clientFor(adapter())
     const pkg=JSON.parse(await fs.readFile(new URL('../package.json',import.meta.url),'utf8'))
@@ -236,19 +273,19 @@ describe('MCP end-to-end contracts',()=>{
   },20000)
   it('skips engine row identities and samples field-parameter composite keys through row projection',async()=>{
     const model=adapter();model.schema.mockResolvedValueOnce({tables:[{name:'Parameter',columns:[{name:'RowNumber-engine',isHidden:true},{name:'Display',dataType:'string'}]}],measures:[]} as any)
-    model.query.mockImplementation(async(_c,dax)=>{if(dax.includes('VALUES('))throw Error('part of composite key');return [{'[__vilsem_sample]':'Revenue'},{'[__vilsem_sample]':'Revenue'},{'[__vilsem_sample]':'Profit'}]})
+    model.query.mockImplementation(async(_c,dax)=>{if(dax.startsWith('EVALUATE ROW'))return [{'[__rows]':3,'[c0Distinct]':2,'[c0Blanks]':0}];if(dax.includes('VALUES('))throw Error('part of composite key');return [{'[__vilsem_sample]':'Revenue'},{'[__vilsem_sample]':'Revenue'},{'[__vilsem_sample]':'Profit'}]})
     const client=await clientFor(model),connection=unpack(await client.callTool({name:'connect_model',arguments:{source:{kind:'desktop'}}}))
     const result=unpack(await client.callTool({name:'get_schema',arguments:connection}))
     expect(result.tables[0].columns[0].sampleSkipped).toContain('not queryable')
     expect(result.tables[0].columns[1].sampleValues).toEqual(['Revenue','Profit'])
-    expect(model.query).toHaveBeenCalledTimes(2)
-    expect(model.query.mock.calls[1][1]).toContain('SELECTCOLUMNS(TOPN(10,')
+    expect(model.query).toHaveBeenCalledTimes(3)
+    expect(model.query.mock.calls.some(([_c,dax])=>dax.includes('SELECTCOLUMNS(TOPN(10,'))).toBe(true)
   })
   it('does not expose raw model or data-source definitions through get_schema',async()=>{
     const model=adapter();model.schema.mockResolvedValueOnce({tables:[],measures:[],relationships:[],rawModelBim:{dataSources:[{connectionString:'private'}]}} as any)
     const client=await clientFor(model),connection=unpack(await client.callTool({name:'connect_model',arguments:{source:{kind:'desktop'}}}))
     const result=unpack(await client.callTool({name:'get_schema',arguments:connection}))
-    expect(result).toEqual({tables:[],measures:[],relationships:[]})
+    expect(result).toMatchObject({tables:[],measures:[],detail:'summary'});expect(result.relationships).toBeUndefined();expect(result.rawModelBim).toBeUndefined()
   })
   it('explains custom specs and exact measure bindings without querying',async()=>{
     const model=adapter(),client=await clientFor(model)
@@ -265,7 +302,7 @@ describe('MCP end-to-end contracts',()=>{
     const templates:any=await client.callTool({name:'list_templates',arguments:{}})
     expect(unpack(templates)).toHaveLength(EXAMPLE_TEMPLATES.length+SHIPPED_TEMPLATES.length)
     const resources=await client.listResources()
-    expect(resources.resources).toHaveLength(EXAMPLE_TEMPLATES.length+SHIPPED_TEMPLATES.length+1)
+    expect(resources.resources).toHaveLength(EXAMPLE_TEMPLATES.length+SHIPPED_TEMPLATES.length+3)
     const docs=await client.readResource({uri:'vilsem://docs/spec-format'})
     expect((docs.contents[0] as any).text).toContain('_val3')
     const tools=await client.listTools()

@@ -1,17 +1,19 @@
 import crypto from 'node:crypto'
 import { createConnector } from '@vilsem/core/connect'
+import { enrichSchema, schemaDetail } from '@vilsem/core/connect/context'
 
 type Source = {kind:'desktop',port?:number} | {kind:'fabric',workspaceId:string,datasetId:string} | {kind:'report',reportDir:string}
 export interface ModelAdapter {
   connect(source: Source): Promise<any>
   query(connection:any,dax:string,maxRows:number): Promise<any[]>
-  schema(connection:any): Promise<any>
+  schema(connection:any,options?:any): Promise<any>
 }
 
 // Connections own their target IDs. No process-global dataset mutation is used.
 export class Models {
   private connections=new Map<string,any>()
   private metadata=new Map<string,any>()
+  private profiles=new Map<string,{expires:number,promise:Promise<any>}>()
   constructor(private adapter:ModelAdapter=new VilsemAdapter()){}
   async connect(source:Source){const connection=await this.adapter.connect(source);const connectionId=crypto.randomUUID();this.connections.set(connectionId,connection);return {connectionId,kind:source.kind,schemaOnly:!!connection.schemaOnly,...(connection.discovery?{discovery:connection.discovery,...(connection.source.port?{port:connection.source.port}:{})}:{})}}
   private get(id:string){const connection=this.connections.get(id);if(!connection)throw Error('Unknown connectionId; connect_model first');return connection}
@@ -22,48 +24,22 @@ export class Models {
     const rows=await this.adapter.query(this.get(id),dax,maxRows)
     return rows.slice(0,maxRows)
   }
-  async schema(id:string){
-    const connection=this.get(id), discovered=await this.adapter.schema(connection)
-    // Introspection may include raw model definitions for Desktop app export.
-    // The MCP schema contract exposes fields/relationships only, never data sources.
-    const schema={tables:discovered.tables || [],measures:discovered.measures || [],relationships:discovered.relationships || []}
-    this.metadata.set(id,schema)
-    if(connection.schemaOnly){for(const table of schema.tables)for(const column of table.columns||[]){column.sampleValues=[];column.sampleSkipped='Schema-only connection; open the model in Desktop and reconnect for live values'}return schema}
-    const columnTasks:any[]=[]
-    for(const table of schema.tables || [])for(const column of table.columns || []){
-      if(/^RowNumber-/.test(column.name)){column.sampleValues=[];column.sampleSkipped='Internal Analysis Services row identity is not queryable';continue}
-      columnTasks.push({table,column})
+  reportDir(id:string){return this.get(id).reportDir as string|undefined}
+  async schema(id:string,{detail='summary',refresh=false}:{detail?:'summary'|'full',refresh?:boolean}={}){
+    const connection=this.get(id)
+    if(refresh){this.metadata.delete(id);this.profiles.delete(id)}
+    let entry=this.profiles.get(id)
+    if(!entry || entry.expires<Date.now()){
+      const next={expires:Infinity,promise:Promise.resolve(null) as Promise<any>}
+      next.promise=this.fields(id,refresh).then(schema=>enrichSchema(schema,(dax,maxRows)=>this.query(id,dax,maxRows),{schemaOnly:!!connection.schemaOnly})).then(value=>{next.expires=Date.now()+60000;return value}).catch(error=>{if(this.profiles.get(id)===next)this.profiles.delete(id);throw error})
+      this.profiles.set(id,next);entry=next
     }
-    let index=0
-    const quoteTable=name=>`'${String(name).replace(/'/g,"''")}'`
-    const quoteColumn=name=>`[${String(name).replace(/\]/g,']]')}]`
-    await Promise.all(Array.from({length:Math.min(4,columnTasks.length)},async()=>{
-      while(index<columnTasks.length){
-        const {table,column}=columnTasks[index++]
-        const ref=`${quoteTable(table.name)}${quoteColumn(column.name)}`
-        try{
-          const rows=await this.adapter.query(connection,`EVALUATE TOPN(10, VALUES(${ref}), ${ref}, ASC)`,10)
-          column.sampleValues=rows.slice(0,10).map(row=>Object.values(row)[0])
-        }catch(error){
-          // Field-parameter display columns require a row projection, not VALUES
-          // over one member of their composite key. Keep source data types intact.
-          if(/composite key/i.test((error as Error).message)){
-            try{
-              const rows=await this.adapter.query(connection,`EVALUATE SELECTCOLUMNS(TOPN(10, ${quoteTable(table.name)}, ${ref}, ASC), "__vilsem_sample", ${ref})`,10)
-              column.sampleValues=[...new Set(rows.slice(0,10).map(row=>Object.values(row)[0]))]
-              continue
-            }catch(fallback){error=fallback}
-          }
-          column.sampleValues=[];column.sampleError=(error as Error).message
-        }
-      }
-    }))
-    return schema
+    return schemaDetail(structuredClone(await entry.promise),detail)
   }
-  async fields(id:string){
-    if(this.metadata.has(id))return this.metadata.get(id)
-    const discovered=await this.adapter.schema(this.get(id))
-    const schema={tables:discovered.tables || [],measures:discovered.measures || [],relationships:discovered.relationships || []}
+  async fields(id:string,refresh=false){
+    if(!refresh&&this.metadata.has(id))return this.metadata.get(id)
+    const discovered=await this.adapter.schema(this.get(id),{refresh})
+    const schema={tables:discovered.tables || [],measures:discovered.measures || [],relationships:discovered.relationships || [],...(discovered.relationshipWarning?{relationshipWarning:discovered.relationshipWarning}:{})}
     this.metadata.set(id,schema);return schema
   }
 }
@@ -72,5 +48,5 @@ export class VilsemAdapter implements ModelAdapter {
  private connector=createConnector()
  connect(source:Source){return this.connector.connect(source)}
  query(connection:any,dax:string,maxRows:number){return this.connector.query(connection,dax,maxRows)}
- schema(connection:any){return this.connector.schema(connection)}
+ schema(connection:any,options?:any){return this.connector.schema(connection,options)}
 }

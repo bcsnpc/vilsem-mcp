@@ -1306,3 +1306,24 @@ preserve their source unit. Counts, percent-of-total, density and arbitrary
 calculations do **not** inherit it: declare the desired derived formatting
 explicitly, or use a visual-scoped DAX measure with a `format`. Raw data stays
 numeric; formatters never change query values or selection lineage.
+
+
+## Shared formatting and versioned editing (core0.6 / renderer4.35)
+
+New writes set `specVersion:"0.6"`; this is independent of `version:1` (the wire envelope) and `template.meta.formatVersion` (template-language capabilities). Readers migrate unversioned/0.1..0.5 specs forward without mutating the source. The real round2 migration changes a string scoped measure into `{expression:"..."}`. Unknown future versions fail explicitly; do not relabel a future spec to bypass validation.
+
+`spec.formatting` is optional and accepts these groups: appearance, title, typography, seriesColors, labels, legend, categoryAxis, primaryAxis, secondaryAxis, lines, border. Only supplied properties override the original spec. Separate Power BI pane objects merge over their corresponding authored properties; an edit never clears them implicitly.
+
+```json
+{"specVersion":"0.6","version":1,"type":"line","formatting":{"title":{"text":"Monthly revenue","fontSize":20,"bold":true},"seriesColors":{"palette":"#0072b2,#d55e00"},"labels":{"show":true,"fontSize":12,"format":"$#,0"},"legend":{"show":true,"position":"bottom"},"primaryAxis":{"color":"#252423","format":"$#,0","gridlines":true},"secondaryAxis":{"color":"#0072b2","format":"0.0%"},"border":{"show":true,"color":"#cccccc","width":1,"radius":4}}}
+```
+
+Typography has fontFamily/fontSize/color. Title adds show/text/bold/alignment(left|center|right). Labels add show/position/format. Legend adds show/position(top|bottom|left|right). Each axis has show/title/fontFamily/fontSize/color/titleColor/titleSize/gridlines/gridColor; numeric axes also have autoMin/autoMax, min/max/format. Lines have width/style(solid|dashed|dotted)/color. Appearance has useReportTheme/backgroundColor/transparency; border has show/color/width/radius. Colour properties accept a colour string or a dataView-style solid colour. Palette currently accepts comma-separated hex colours. Positive text sizes/line widths are bounded1..200; border radius0..100. Absent controls do not inject defaults into an existing visual. Axis settings apply only when that axis exists; secondary refers to the next numeric axis after the primary Y value axis (or X when no Y value axis exists). Explicit formatting does not create new field roles or measures.
+
+Labels preserve trusted formatter-template text such as `{name}: {value}` when changing number format; name-only labels remain names. A pane format does not redefine the underlying calculation. DOM adapters remain outside this headless resolver and expose a smaller native formatting surface.
+
+`validate_spec` reports structured `errors` with JSON pointers, expected/allowed shapes and suggestions, plus corrected snippets where unambiguous. Validation is not repair: no failed request changes a report. Scoped measure validation also needs a connected DAX engine. Read schema/context to fix a missing field; never substitute a different business measure silently.
+
+`preview_visual` defaults `critique:true`; findings contain code, severity, spec path, message, suggestedFix and evidence. SVG text bounds can report deliberate rich-text overlap; contrast uses the page background, so filled-mark labels need inspection. Dual axes request a business/units review rather than claiming to prove unrelated data. Absence of findings does not certify readability, full query coverage or host behavior.
+
+`preview_variants` requires connectionId, specs(1..4), equally sized labels and common bindings. It uses one query, a labelled2x2 image and per-candidate critique. Scoped measure blocks must match. `diff_visual` returns spec diff and before/after PNGs without writing. `update_visual` patches the stored spec (RFC6902), defaults dryRun:true and returns both PNGs, diff and the read etag; pass that etag with dryRun:false after review. Whole-document replacement, renderer identity/prototype/version edits and implicit rebinding are refused. Manual pane objects survive unless resetFormatting:true is explicit.

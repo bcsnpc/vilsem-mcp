@@ -3,20 +3,13 @@ import path from 'node:path'
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import { injectVisual, validateVisualContainer, RENDERER_GUID, assertReportRenderer } from '@vilsem/core/pbir'
-import { resolveVisualSpec } from '@vilsem/core/spec/resolve'
-import { instantiateVisual, buildThemeContext, slotCount } from '@vilsem/core/templates'
-import { getThemeTokens } from '@vilsem/core/theme'
+import { slotCount } from '@vilsem/core/templates'
+import {validateSpecDetailed} from '@vilsem/core/spec/diagnostics'
 
 export function validateSpec(spec: any) {
-  if (spec?.version != null && spec.version !== 1) throw Error(`Unsupported spec version ${spec.version}; current renderer supports version 1`)
-  const option=resolveVisualSpec(spec)
-  if(spec.template){
-    const resolved=instantiateVisual({template:spec.template,rows:[],params:spec.params||{},theme:buildThemeContext(getThemeTokens(spec.canvasTheme==='light'?'light':'dark'))})
-    // Numeric array indexes may legitimately be absent before data is queried.
-    const errors=resolved.warnings.filter(warning=>/token .*resolved to undefined/.test(warning)&&!/[.]\d+(?:[.]|\b)/.test(warning))
-    if(errors.length)throw Error(errors.join('\n'))
-  }
-  return option
+  const result=validateSpecDetailed(spec)
+  if(!result.valid){const error:any=Error(result.errors.map(e=>`${e.path || '/'}: ${e.message}`).join('\n'));error.diagnostics=result.errors;error.suggestions=result.suggestions;throw error}
+  return result.option
 }
 
 export function validateBindings(spec:any, bindings:any) {
@@ -50,6 +43,32 @@ export async function listPages(reportDir: string) {
     pages.push({name,displayName:page.displayName,width:page.width,height:page.height,visuals})
   }
   return pages
+}
+
+// Read query bindings for context only. Native report objects are never edited
+// or validated here; list_visuals/read_visual remain Vilsem-only operations.
+export async function pageBindings(reportDir:string,page:string) {
+  const pages=await listPages(reportDir)
+  const matches=pages.filter(p=>p.name===page || p.displayName===page)
+  if(matches.length!==1)throw Error('page must identify exactly one existing page; use list_pages for internal names')
+  const selected=matches[0],root=await fs.realpath(reportDir),visuals:any[]=[]
+  for(const item of selected.visuals){
+    if(!/^[\w-]+$/.test(item.name))throw Error('Invalid visual folder name')
+    const file=await fs.realpath(path.join(root,'definition','pages',selected.name,'visuals',item.name,'visual.json'))
+    if(!file.startsWith(root+path.sep))throw Error('Visual binding path resolves outside report')
+    const value=await read(file),dimensions:any[]=[],measures:any[]=[],aggregations:any[]=[]
+    for(const state of Object.values(value.visual?.query?.queryState || {}) as any[])for(const projection of state.projections || []){
+      const field=projection.field
+      const column=field?.Column
+      if(column)dimensions.push({table:column.Expression?.SourceRef?.Entity,column:column.Property})
+      const aggregate=field?.Aggregation?.Expression?.Column
+      if(aggregate)aggregations.push({table:aggregate.Expression?.SourceRef?.Entity,column:aggregate.Property,function:field.Aggregation.Function,queryRef:projection.queryRef})
+      if(field?.Measure)measures.push({table:field.Measure.Expression?.SourceRef?.Entity,name:field.Measure.Property})
+      if(field?.NativeMeasure)measures.push({table:null,name:field.NativeMeasure.ProposedName || projection.nativeQueryRef,inline:true})
+    }
+    visuals.push({name:item.name,type:item.type,dimensions,measures,aggregations})
+  }
+  return {name:selected.name,displayName:selected.displayName,scope:'Read-only query bindings; native visuals and report objects are not validated or edited.',visuals}
 }
 
 export async function validateVisuals(reportDir: string) {
