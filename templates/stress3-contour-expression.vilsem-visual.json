@@ -1,0 +1,287 @@
+{
+  "version": 1,
+  "specVersion": "0.7",
+  "type": "custom",
+  "bindings": {
+    "dimensions": [
+      {
+        "table": "Product Lookup",
+        "column": "ProductKey"
+      },
+      {
+        "table": "Product Lookup",
+        "column": "ProductPrice"
+      },
+      {
+        "table": "Product Lookup",
+        "column": "ProductCost"
+      }
+    ],
+    "measures": [
+      {
+        "table": "Measure Table",
+        "name": "Total Revenue"
+      }
+    ]
+  },
+  "template": {
+    "meta": {
+      "id": "stress3-contour-expression",
+      "name": "contour — sold SKU price vs cost",
+      "formatVersion": 4
+    },
+    "slots": {
+      "sku": {
+        "kind": "dimension"
+      },
+      "price": {
+        "kind": "dimension"
+      },
+      "cost": {
+        "kind": "dimension"
+      },
+      "sold": {
+        "kind": "measure"
+      }
+    },
+    "transforms": [
+      {
+        "as": "grid",
+        "density2d": {
+          "x": "price",
+          "y": "cost",
+          "bins": 16,
+          "contourFractions": [
+            0.2,
+            0.4,
+            0.6,
+            0.8
+          ]
+        }
+      }
+    ],
+    "template": {
+      "animation": false,
+      "title": {
+        "text": "Sold SKU price vs cost — density contours",
+        "subtext": "KDE isolines at20/40/60/80% of sampled peak; not probability or confidence regions",
+        "left": "center",
+        "textStyle": {
+          "fontSize": 18
+        },
+        "subtextStyle": {
+          "fontSize": 11,
+          "color": "#595959"
+        }
+      },
+      "grid": {
+        "left": 85,
+        "right": 45,
+        "top": 90,
+        "bottom": 115
+      },
+      "xAxis": {
+        "type": "value",
+        "min": "$calc.grid.contourXMin",
+        "max": "$calc.grid.contourXMax",
+        "name": "Retail price (USD)",
+        "nameLocation": "middle",
+        "nameGap": 32,
+        "axisLabel": {
+          "formatterTemplate": "{value:thousands}"
+        }
+      },
+      "yAxis": {
+        "type": "value",
+        "min": "$calc.grid.contourYMin",
+        "max": "$calc.grid.contourYMax",
+        "name": "Standard cost (USD)",
+        "nameLocation": "middle",
+        "nameGap": 55,
+        "axisLabel": {
+          "formatterTemplate": "{value:thousands}"
+        }
+      },
+      "tooltip": {
+        "trigger": "item",
+        "formatterTemplate": "{name}; normalized density threshold {value.4:thousands}"
+      },
+      "visualMap": {
+        "type": "piecewise",
+        "dimension": 5,
+        "selectedMode": false,
+        "orient": "horizontal",
+        "left": "center",
+        "bottom": 12,
+        "pieces": [
+          {
+            "value": 0,
+            "label": "20% peak"
+          },
+          {
+            "value": 1,
+            "label": "40% peak"
+          },
+          {
+            "value": 2,
+            "label": "60% peak"
+          },
+          {
+            "value": 3,
+            "label": "80% peak"
+          }
+        ],
+        "inRange": {
+          "color": "$theme.readablePalette"
+        },
+        "textStyle": {
+          "color": "$theme.textPrimary"
+        }
+      },
+      "series": [
+        {
+          "type": "custom",
+          "name": "Sampled KDE contours",
+          "encode": {
+            "x": [
+              0,
+              2
+            ],
+            "y": [
+              1,
+              3
+            ],
+            "tooltip": 4
+          },
+          "data": "$calc.grid.contourData",
+          "renderItem": {
+            "language": "vilsem-expression",
+            "version": 1,
+            "root": {
+              "type": "polyline",
+              "shape": {
+                "points": [
+                  [
+                    {
+                      "op": "at",
+                      "args": [
+                        {
+                          "op": "coord",
+                          "args": [
+                            [
+                              {
+                                "op": "value",
+                                "args": [
+                                  0
+                                ]
+                              },
+                              {
+                                "op": "value",
+                                "args": [
+                                  1
+                                ]
+                              }
+                            ]
+                          ]
+                        },
+                        0
+                      ]
+                    },
+                    {
+                      "op": "at",
+                      "args": [
+                        {
+                          "op": "coord",
+                          "args": [
+                            [
+                              {
+                                "op": "value",
+                                "args": [
+                                  0
+                                ]
+                              },
+                              {
+                                "op": "value",
+                                "args": [
+                                  1
+                                ]
+                              }
+                            ]
+                          ]
+                        },
+                        1
+                      ]
+                    }
+                  ],
+                  [
+                    {
+                      "op": "at",
+                      "args": [
+                        {
+                          "op": "coord",
+                          "args": [
+                            [
+                              {
+                                "op": "value",
+                                "args": [
+                                  2
+                                ]
+                              },
+                              {
+                                "op": "value",
+                                "args": [
+                                  3
+                                ]
+                              }
+                            ]
+                          ]
+                        },
+                        0
+                      ]
+                    },
+                    {
+                      "op": "at",
+                      "args": [
+                        {
+                          "op": "coord",
+                          "args": [
+                            [
+                              {
+                                "op": "value",
+                                "args": [
+                                  2
+                                ]
+                              },
+                              {
+                                "op": "value",
+                                "args": [
+                                  3
+                                ]
+                              }
+                            ]
+                          ]
+                        },
+                        1
+                      ]
+                    }
+                  ]
+                ]
+              },
+              "style": {
+                "stroke": {
+                  "op": "visual",
+                  "args": [
+                    "color"
+                  ]
+                },
+                "fill": "none",
+                "lineWidth": 1.8,
+                "lineCap": "round"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

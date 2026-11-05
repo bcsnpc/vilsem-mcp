@@ -1,0 +1,380 @@
+{
+  "version": 1,
+  "specVersion": "0.7",
+  "type": "custom",
+  "bindings": {
+    "dimensions": [
+      {
+        "table": "Product Categories Lookup",
+        "column": "CategoryName"
+      },
+      {
+        "table": "Product Lookup",
+        "column": "ProductName"
+      },
+      {
+        "table": "Product Lookup",
+        "column": "ProductPrice"
+      }
+    ],
+    "measures": [
+      {
+        "table": "Measure Table",
+        "name": "Total Revenue"
+      }
+    ]
+  },
+  "template": {
+    "meta": {
+      "id": "stress3-beeswarm-expression",
+      "name": "beeswarm from real fields",
+      "formatVersion": 4
+    },
+    "slots": {
+      "category": {
+        "kind": "dimension"
+      },
+      "sku": {
+        "kind": "dimension"
+      },
+      "price": {
+        "kind": "dimension"
+      },
+      "sold": {
+        "kind": "measure"
+      }
+    },
+    "transforms": [
+      {
+        "as": "swarm",
+        "jitter": {
+          "by": "category",
+          "field": "price",
+          "name": "sku",
+          "method": "collision",
+          "width": 860,
+          "height": 500,
+          "radius": 3.5,
+          "expressionGeometry": true
+        }
+      }
+    ],
+    "template": {
+      "animation": false,
+      "title": {
+        "text": "Sold SKU prices — beeswarm",
+        "subtext": "One point per sold SKU; collision layout and radii scale with the plot",
+        "left": "center",
+        "textStyle": {
+          "fontSize": 18
+        },
+        "subtextStyle": {
+          "fontSize": 11,
+          "color": "#595959"
+        }
+      },
+      "grid": {
+        "left": 85,
+        "right": 35,
+        "top": 90,
+        "bottom": 55
+      },
+      "xAxis": {
+        "type": "value",
+        "min": "$calc.swarm.min",
+        "max": "$calc.swarm.max",
+        "name": "Retail price (USD)",
+        "nameLocation": "middle",
+        "nameGap": 32,
+        "axisLabel": {
+          "formatterTemplate": "{value:thousands}"
+        }
+      },
+      "yAxis": {
+        "type": "value",
+        "min": 0,
+        "max": 500,
+        "inverse": true,
+        "show": false
+      },
+      "tooltip": {
+        "formatterTemplate": "{label}"
+      },
+      "series": [
+        {
+          "type": "custom",
+          "data": "$calc.swarm.expressionData",
+          "encode": {
+            "x": 0,
+            "y": 1,
+            "tooltip": 0
+          },
+          "renderItem": {
+            "language": "vilsem-expression",
+            "version": 1,
+            "root": {
+              "type": "circle",
+              "shape": {
+                "cx": {
+                  "op": "at",
+                  "args": [
+                    {
+                      "op": "coord",
+                      "args": [
+                        [
+                          {
+                            "op": "value",
+                            "args": [
+                              0
+                            ]
+                          },
+                          {
+                            "op": "value",
+                            "args": [
+                              1
+                            ]
+                          }
+                        ]
+                      ]
+                    },
+                    0
+                  ]
+                },
+                "cy": {
+                  "op": "at",
+                  "args": [
+                    {
+                      "op": "coord",
+                      "args": [
+                        [
+                          {
+                            "op": "value",
+                            "args": [
+                              0
+                            ]
+                          },
+                          {
+                            "op": "value",
+                            "args": [
+                              1
+                            ]
+                          }
+                        ]
+                      ]
+                    },
+                    1
+                  ]
+                },
+                "r": {
+                  "op": "clamp",
+                  "args": [
+                    {
+                      "op": "mul",
+                      "args": [
+                        {
+                          "op": "value",
+                          "args": [
+                            2
+                          ]
+                        },
+                        {
+                          "op": "min",
+                          "args": [
+                            {
+                              "op": "div",
+                              "args": [
+                                {
+                                  "op": "abs",
+                                  "args": [
+                                    {
+                                      "op": "at",
+                                      "args": [
+                                        {
+                                          "op": "size",
+                                          "args": [
+                                            [
+                                              {
+                                                "op": "value",
+                                                "args": [
+                                                  3
+                                                ]
+                                              },
+                                              0
+                                            ]
+                                          ]
+                                        },
+                                        0
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "op": "value",
+                                  "args": [
+                                    4
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "op": "div",
+                              "args": [
+                                {
+                                  "op": "abs",
+                                  "args": [
+                                    {
+                                      "op": "at",
+                                      "args": [
+                                        {
+                                          "op": "size",
+                                          "args": [
+                                            [
+                                              0,
+                                              {
+                                                "op": "value",
+                                                "args": [
+                                                  5
+                                                ]
+                                              }
+                                            ]
+                                          ]
+                                        },
+                                        1
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "op": "value",
+                                  "args": [
+                                    5
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    0.2,
+                    12
+                  ]
+                }
+              },
+              "style": {
+                "fill": "#118DFF"
+              }
+            }
+          }
+        },
+        {
+          "type": "custom",
+          "clip": false,
+          "dimensions": [
+            "x",
+            "y",
+            {
+              "name": "category",
+              "type": "ordinal"
+            }
+          ],
+          "encode": {
+            "x": 0,
+            "y": 1,
+            "tooltip": []
+          },
+          "data": {
+            "repeat": "$calc.swarm.groups",
+            "template": {
+              "name": "$item.name",
+              "value": [
+                "$calc.swarm.min",
+                "$item.value",
+                "$item.name"
+              ],
+              "rowIndexes": "$item.rowIndexes"
+            }
+          },
+          "renderItem": {
+            "language": "vilsem-expression",
+            "version": 1,
+            "root": {
+              "type": "text",
+              "role": "label",
+              "style": {
+                "text": {
+                  "op": "value",
+                  "args": [
+                    2
+                  ]
+                },
+                "x": {
+                  "op": "sub",
+                  "args": [
+                    {
+                      "op": "at",
+                      "args": [
+                        {
+                          "op": "coord",
+                          "args": [
+                            [
+                              {
+                                "op": "value",
+                                "args": [
+                                  0
+                                ]
+                              },
+                              {
+                                "op": "value",
+                                "args": [
+                                  1
+                                ]
+                              }
+                            ]
+                          ]
+                        },
+                        0
+                      ]
+                    },
+                    8
+                  ]
+                },
+                "y": {
+                  "op": "at",
+                  "args": [
+                    {
+                      "op": "coord",
+                      "args": [
+                        [
+                          {
+                            "op": "value",
+                            "args": [
+                              0
+                            ]
+                          },
+                          {
+                            "op": "value",
+                            "args": [
+                              1
+                            ]
+                          }
+                        ]
+                      ]
+                    },
+                    1
+                  ]
+                },
+                "align": "right",
+                "verticalAlign": "middle",
+                "width": 70,
+                "overflow": "truncate",
+                "fontSize": 12,
+                "fill": "$theme.textPrimary"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

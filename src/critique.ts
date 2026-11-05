@@ -48,6 +48,10 @@ export function critiqueVisual(spec:any,option:any,rows:any[],width:number,heigh
   findings.push({code,severity,path,message,suggestedFix,...(evidence===undefined?{}:{evidence})})
  }
  const series=list(option.series),base=spec.template?'/template/template':'/config'
+ const timeline=list(option.baseOption?.timeline??option.timeline)[0],steps=Array.isArray(option.options)?option.options.length:list(timeline?.data).length
+ if(steps>60)add('timeline-steps','/template/template/options','Timeline has more than60 states.','Aggregate the time grain or filter to at most60 states.',{steps})
+ const definition=spec.template?.animation,duration=Math.max(definition?.enter?.duration??option.animationDuration??0,definition?.update?.duration??option.animationDurationUpdate??0)
+ if(duration>3000||steps>1&&(timeline?.playInterval??1000)*steps>3000)add('animation-duration','/template/animation','Motion sequence exceeds the3-second preview duration.','Shorten durations or inspect selected states and the live animation.',{durationMs:Math.max(duration,steps>1?(timeline?.playInterval??1000)*steps:0)})
  const values=(s:any)=>list(s.data).map(d=>d&&typeof d==='object'&&!Array.isArray(d)&&Object.hasOwn(d,'value')?d.value:d).flatMap(v=>Array.isArray(v)?v.slice(-1):[v])
  for(const [i,s] of series.entries()){
   const p=`${base}/series/${i}`,v=values(s)

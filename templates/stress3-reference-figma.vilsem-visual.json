@@ -1,0 +1,100 @@
+{
+  "version": 1,
+  "specVersion": "0.7",
+  "type": "custom",
+  "bindings": {
+    "dimensions": [
+      {
+        "table": "Territory Lookup",
+        "column": "Country"
+      }
+    ],
+    "measures": [
+      {
+        "table": "Measure Table",
+        "name": "Total Revenue"
+      }
+    ]
+  },
+  "template": {
+    "meta": {
+      "id": "stress3-reference-figma",
+      "name": "Real revenue inspired by figma",
+      "formatVersion": 4
+    },
+    "slots": {
+      "group": {
+        "kind": "dimension"
+      },
+      "revenue": {
+        "kind": "measure"
+      }
+    },
+    "template": {
+      "animation": false,
+      "backgroundColor": "#f5f7fb",
+      "color": [
+        "#6754c8"
+      ],
+      "title": {
+        "text": "Revenue by market",
+        "subtext": "Real model values; reference numbers are not data",
+        "left": 30,
+        "top": 18,
+        "textStyle": {
+          "color": "#17243b",
+          "fontSize": 22
+        },
+        "subtextStyle": {
+          "color": "#53627a"
+        }
+      },
+      "grid": {
+        "left": 155,
+        "right": 35,
+        "top": 105,
+        "bottom": 65
+      },
+      "xAxis": {
+        "type": "value",
+        "splitLine": {
+          "show": false
+        },
+        "name": "Revenue (USD)",
+        "nameLocation": "middle",
+        "nameGap": 35,
+        "axisLabel": {
+          "formatterTemplate": "{value:thousands}"
+        }
+      },
+      "yAxis": {
+        "type": "category",
+        "inverse": true,
+        "data": "$slot.group.categories"
+      },
+      "tooltip": {
+        "trigger": "item",
+        "formatterTemplate": "{name}: USD {value:thousands}"
+      },
+      "series": [
+        {
+          "type": "bar",
+          "data": "$slot.revenue.pieData",
+          "itemStyle": {
+            "color": "#6754c8",
+            "borderRadius": [
+              0,
+              4,
+              4,
+              0
+            ]
+          },
+          "label": {
+            "show": false
+          },
+          "barMaxWidth": 28
+        }
+      ]
+    }
+  }
+}

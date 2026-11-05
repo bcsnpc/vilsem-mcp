@@ -1,0 +1,516 @@
+{
+  "version": 1,
+  "specVersion": "0.7",
+  "type": "custom",
+  "bindings": {
+    "dimensions": [
+      {
+        "table": "Product Lookup",
+        "column": "ProductColor"
+      },
+      {
+        "table": "Product Lookup",
+        "column": "ProductStyle"
+      },
+      {
+        "table": "Product Lookup",
+        "column": "Price Point"
+      },
+      {
+        "table": "Product Lookup",
+        "column": "ProductKey"
+      }
+    ],
+    "measures": [
+      {
+        "table": "Product Lookup",
+        "name": "Venn Product Count"
+      }
+    ]
+  },
+  "measures": {
+    "Venn Product Count": {
+      "expression": "DISTINCTCOUNT('Product Lookup'[ProductKey])",
+      "format": "#,0"
+    }
+  },
+  "template": {
+    "meta": {
+      "id": "stress3-venn-expression",
+      "name": "Exact three-set product overlaps",
+      "formatVersion": 4
+    },
+    "slots": {
+      "color": {
+        "kind": "dimension"
+      },
+      "style": {
+        "kind": "dimension"
+      },
+      "price": {
+        "kind": "dimension"
+      },
+      "sku": {
+        "kind": "dimension"
+      },
+      "products": {
+        "kind": "measure"
+      }
+    },
+    "transforms": [
+      {
+        "as": "overlap",
+        "setOverlaps": {
+          "value": "products",
+          "sets": [
+            {
+              "name": "Black",
+              "field": "color",
+              "equals": "Black"
+            },
+            {
+              "name": "Unisex",
+              "field": "style",
+              "equals": "U"
+            },
+            {
+              "name": "High price",
+              "field": "price",
+              "equals": "High"
+            }
+          ]
+        }
+      }
+    ],
+    "template": {
+      "animation": false,
+      "title": {
+        "text": "Product overlap — exact observed membership",
+        "subtext": "Black colour / Unisex style / High price point; diagram areas are schematic, not proportional",
+        "left": "center",
+        "textStyle": {
+          "fontSize": 18
+        },
+        "subtextStyle": {
+          "fontSize": 11,
+          "color": "#595959"
+        }
+      },
+      "grid": {
+        "left": 70,
+        "right": 70,
+        "top": 90,
+        "bottom": 55
+      },
+      "tooltip": {
+        "trigger": "item",
+        "formatterTemplate": "{name}: {value.2:thousands}"
+      },
+      "xAxis": {
+        "type": "value",
+        "min": 0,
+        "max": 1,
+        "show": false
+      },
+      "yAxis": {
+        "type": "value",
+        "min": 0,
+        "max": 1,
+        "show": false
+      },
+      "series": [
+        {
+          "type": "custom",
+          "name": "Product overlap",
+          "clip": false,
+          "dimensions": [
+            "kind",
+            "index",
+            "count",
+            "x",
+            "y",
+            "radius",
+            {
+              "name": "label",
+              "type": "ordinal"
+            }
+          ],
+          "encode": {
+            "x": 3,
+            "y": 4,
+            "tooltip": 2
+          },
+          "data": "$calc.overlap.data",
+          "renderItem": {
+            "language": "vilsem-expression",
+            "version": 1,
+            "root": {
+              "type": "group",
+              "children": [
+                {
+                  "type": "circle",
+                  "when": {
+                    "op": "eq",
+                    "args": [
+                      {
+                        "op": "value",
+                        "args": [
+                          0
+                        ]
+                      },
+                      0
+                    ]
+                  },
+                  "shape": {
+                    "cx": 0,
+                    "cy": 0,
+                    "r": {
+                      "op": "value",
+                      "args": [
+                        5
+                      ]
+                    }
+                  },
+                  "x": {
+                    "op": "at",
+                    "args": [
+                      {
+                        "op": "coord",
+                        "args": [
+                          [
+                            {
+                              "op": "value",
+                              "args": [
+                                3
+                              ]
+                            },
+                            {
+                              "op": "value",
+                              "args": [
+                                4
+                              ]
+                            }
+                          ]
+                        ]
+                      },
+                      0
+                    ]
+                  },
+                  "y": {
+                    "op": "at",
+                    "args": [
+                      {
+                        "op": "coord",
+                        "args": [
+                          [
+                            {
+                              "op": "value",
+                              "args": [
+                                3
+                              ]
+                            },
+                            {
+                              "op": "value",
+                              "args": [
+                                4
+                              ]
+                            }
+                          ]
+                        ]
+                      },
+                      1
+                    ]
+                  },
+                  "scaleX": {
+                    "op": "abs",
+                    "args": [
+                      {
+                        "op": "at",
+                        "args": [
+                          {
+                            "op": "size",
+                            "args": [
+                              [
+                                1,
+                                1
+                              ]
+                            ]
+                          },
+                          0
+                        ]
+                      }
+                    ]
+                  },
+                  "scaleY": {
+                    "op": "abs",
+                    "args": [
+                      {
+                        "op": "at",
+                        "args": [
+                          {
+                            "op": "size",
+                            "args": [
+                              [
+                                1,
+                                1
+                              ]
+                            ]
+                          },
+                          1
+                        ]
+                      }
+                    ]
+                  },
+                  "style": {
+                    "fill": {
+                      "op": "at",
+                      "args": [
+                        [
+                          "#118DFF",
+                          "#27A69A",
+                          "#C47AC0"
+                        ],
+                        {
+                          "op": "value",
+                          "args": [
+                            1
+                          ]
+                        }
+                      ]
+                    },
+                    "stroke": "#333333",
+                    "opacity": 0.17,
+                    "lineWidth": 1.5
+                  }
+                },
+                {
+                  "type": "text",
+                  "when": {
+                    "op": "eq",
+                    "args": [
+                      {
+                        "op": "value",
+                        "args": [
+                          0
+                        ]
+                      },
+                      0
+                    ]
+                  },
+                  "role": "label",
+                  "style": {
+                    "text": {
+                      "op": "concat",
+                      "args": [
+                        {
+                          "op": "value",
+                          "args": [
+                            6
+                          ]
+                        },
+                        " (",
+                        {
+                          "op": "formatNumber",
+                          "args": [
+                            {
+                              "op": "value",
+                              "args": [
+                                2
+                              ]
+                            },
+                            "#,0"
+                          ]
+                        },
+                        ")"
+                      ]
+                    },
+                    "x": {
+                      "op": "at",
+                      "args": [
+                        {
+                          "op": "coord",
+                          "args": [
+                            [
+                              {
+                                "op": "value",
+                                "args": [
+                                  3
+                                ]
+                              },
+                              0
+                            ]
+                          ]
+                        },
+                        0
+                      ]
+                    },
+                    "y": {
+                      "op": "at",
+                      "args": [
+                        {
+                          "op": "coord",
+                          "args": [
+                            [
+                              0,
+                              {
+                                "op": "add",
+                                "args": [
+                                  {
+                                    "op": "value",
+                                    "args": [
+                                      4
+                                    ]
+                                  },
+                                  {
+                                    "op": "if",
+                                    "args": [
+                                      {
+                                        "op": "eq",
+                                        "args": [
+                                          {
+                                            "op": "value",
+                                            "args": [
+                                              1
+                                            ]
+                                          },
+                                          2
+                                        ]
+                                      },
+                                      0.3,
+                                      -0.3
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          ]
+                        },
+                        1
+                      ]
+                    },
+                    "align": "center",
+                    "fontSize": 12,
+                    "fontWeight": "bold",
+                    "fill": "$theme.textPrimary",
+                    "width": 160,
+                    "overflow": "truncate"
+                  }
+                },
+                {
+                  "type": "text",
+                  "when": {
+                    "op": "eq",
+                    "args": [
+                      {
+                        "op": "value",
+                        "args": [
+                          0
+                        ]
+                      },
+                      1
+                    ]
+                  },
+                  "role": "label",
+                  "style": {
+                    "text": {
+                      "op": "concat",
+                      "args": [
+                        {
+                          "op": "if",
+                          "args": [
+                            {
+                              "op": "eq",
+                              "args": [
+                                {
+                                  "op": "value",
+                                  "args": [
+                                    1
+                                  ]
+                                },
+                                0
+                              ]
+                            },
+                            "Outside: ",
+                            ""
+                          ]
+                        },
+                        {
+                          "op": "formatNumber",
+                          "args": [
+                            {
+                              "op": "value",
+                              "args": [
+                                2
+                              ]
+                            },
+                            "#,0"
+                          ]
+                        }
+                      ]
+                    },
+                    "x": {
+                      "op": "at",
+                      "args": [
+                        {
+                          "op": "coord",
+                          "args": [
+                            [
+                              {
+                                "op": "value",
+                                "args": [
+                                  3
+                                ]
+                              },
+                              {
+                                "op": "value",
+                                "args": [
+                                  4
+                                ]
+                              }
+                            ]
+                          ]
+                        },
+                        0
+                      ]
+                    },
+                    "y": {
+                      "op": "at",
+                      "args": [
+                        {
+                          "op": "coord",
+                          "args": [
+                            [
+                              {
+                                "op": "value",
+                                "args": [
+                                  3
+                                ]
+                              },
+                              {
+                                "op": "value",
+                                "args": [
+                                  4
+                                ]
+                              }
+                            ]
+                          ]
+                        },
+                        1
+                      ]
+                    },
+                    "align": "center",
+                    "verticalAlign": "middle",
+                    "fontSize": 14,
+                    "fill": "$theme.textPrimary",
+                    "width": 130,
+                    "overflow": "truncate"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,151 @@
+{
+  "version": 1,
+  "specVersion": "0.7",
+  "type": "custom",
+  "bindings": {
+    "dimensions": [
+      {
+        "table": "Calendar Lookup",
+        "column": "Start of Month"
+      },
+      {
+        "table": "Territory Lookup",
+        "column": "Country"
+      }
+    ],
+    "measures": [
+      {
+        "table": "Measure Table",
+        "name": "Total Revenue"
+      },
+      {
+        "table": "Measure Table",
+        "name": "Total Profit"
+      },
+      {
+        "table": "Measure Table",
+        "name": "Total Orders"
+      }
+    ]
+  },
+  "template": {
+    "meta": {
+      "id": "stress3-motion-bar",
+      "name": "bar race with real monthly values",
+      "formatVersion": 4
+    },
+    "slots": {
+      "month": {
+        "kind": "dimension"
+      },
+      "country": {
+        "kind": "dimension"
+      },
+      "revenue": {
+        "kind": "measure"
+      },
+      "profit": {
+        "kind": "measure"
+      },
+      "orders": {
+        "kind": "measure"
+      }
+    },
+    "transforms": [
+      {
+        "as": "ranked",
+        "race": {
+          "time": "month",
+          "category": "country",
+          "value": "revenue",
+          "timeFormat": "yyyy-MM",
+          "topN": 10,
+          "history": 12
+        }
+      }
+    ],
+    "animation": {
+      "enter": {
+        "duration": 300
+      },
+      "update": {
+        "duration": 600,
+        "easing": "cubicInOut"
+      }
+    },
+    "template": {
+      "baseOption": {
+        "title": {
+          "text": "bar race — country / month",
+          "subtext": "Actual observations only; top-10 cap; countries absent from a period are not zero-filled",
+          "subtextStyle": {
+            "color": "#555555"
+          }
+        },
+        "timeline": {
+          "axisType": "category",
+          "autoPlay": true,
+          "playInterval": 800,
+          "loop": true,
+          "bottom": 8,
+          "data": "$calc.ranked.labels"
+        },
+        "subtextStyle": {
+          "color": "#555555"
+        },
+        "grid": {
+          "left": 100,
+          "right": 45,
+          "top": 85,
+          "bottom": 100
+        },
+        "tooltip": {
+          "trigger": "item"
+        },
+        "animationDurationUpdate": 600,
+        "xAxis": {
+          "type": "value",
+          "max": "$calc.ranked.maxValue",
+          "name": "Revenue (USD)",
+          "nameLocation": "middle",
+          "nameGap": 30
+        },
+        "yAxis": {
+          "type": "category",
+          "inverse": true
+        }
+      },
+      "options": {
+        "repeat": "$calc.ranked.frames",
+        "template": {
+          "title": {
+            "show": true,
+            "text": "$item.label",
+            "left": "center",
+            "top": 10,
+            "textStyle": {
+              "color": "$theme.textPrimary",
+              "fontSize": 18
+            }
+          },
+          "yAxis": {
+            "data": "$item.categories"
+          },
+          "series": [
+            {
+              "id": "country-race",
+              "type": "bar",
+              "data": "$item.data",
+              "realtimeSort": true,
+              "label": {
+                "show": true,
+                "position": "right",
+                "formatterTemplate": "{value:thousands}"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

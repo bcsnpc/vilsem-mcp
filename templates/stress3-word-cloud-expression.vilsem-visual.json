@@ -1,0 +1,275 @@
+{
+  "version": 1,
+  "specVersion": "0.7",
+  "type": "custom",
+  "bindings": {
+    "dimensions": [
+      {
+        "table": "Product Lookup",
+        "column": "ProductName"
+      }
+    ],
+    "measures": [
+      {
+        "table": "Measure Table",
+        "name": "Total Revenue"
+      }
+    ]
+  },
+  "template": {
+    "meta": {
+      "id": "stress3-word-cloud-expression",
+      "name": "word-cloud from real fields",
+      "formatVersion": 4
+    },
+    "slots": {
+      "product": {
+        "kind": "dimension"
+      },
+      "revenue": {
+        "kind": "measure"
+      }
+    },
+    "transforms": [
+      {
+        "as": "words",
+        "words": {
+          "text": "product",
+          "weight": "revenue",
+          "limit": 18,
+          "width": 750,
+          "height": 400,
+          "minFont": 12,
+          "maxFont": 38,
+          "expressionGeometry": true
+        }
+      }
+    ],
+    "template": {
+      "animation": false,
+      "title": {
+        "text": "Revenue-weighted product-name tokens",
+        "subtext": "Product-name tokens weighted by revenue; font size encodes weight",
+        "left": "center",
+        "textStyle": {
+          "fontSize": 18
+        },
+        "subtextStyle": {
+          "fontSize": 11,
+          "color": "#595959"
+        }
+      },
+      "grid": {
+        "left": 85,
+        "right": 35,
+        "top": 90,
+        "bottom": 55
+      },
+      "xAxis": {
+        "type": "value",
+        "min": 0,
+        "max": 750,
+        "show": false
+      },
+      "yAxis": {
+        "type": "value",
+        "min": 0,
+        "max": 400,
+        "inverse": true,
+        "show": false
+      },
+      "tooltip": {
+        "formatterTemplate": "{name}: USD {value.2:thousands} revenue weight"
+      },
+      "series": [
+        {
+          "type": "custom",
+          "colorBy": "data",
+          "dimensions": [
+            "x",
+            "y",
+            "weight",
+            "font",
+            {
+              "name": "word",
+              "type": "ordinal"
+            },
+            "width",
+            "height"
+          ],
+          "encode": {
+            "x": 0,
+            "y": 1,
+            "tooltip": 2
+          },
+          "data": "$calc.words.expressionData",
+          "renderItem": {
+            "language": "vilsem-expression",
+            "version": 1,
+            "root": {
+              "type": "text",
+              "role": "label",
+              "style": {
+                "text": {
+                  "op": "value",
+                  "args": [
+                    4
+                  ]
+                },
+                "x": {
+                  "op": "at",
+                  "args": [
+                    {
+                      "op": "coord",
+                      "args": [
+                        [
+                          {
+                            "op": "value",
+                            "args": [
+                              0
+                            ]
+                          },
+                          {
+                            "op": "value",
+                            "args": [
+                              1
+                            ]
+                          }
+                        ]
+                      ]
+                    },
+                    0
+                  ]
+                },
+                "y": {
+                  "op": "at",
+                  "args": [
+                    {
+                      "op": "coord",
+                      "args": [
+                        [
+                          {
+                            "op": "value",
+                            "args": [
+                              0
+                            ]
+                          },
+                          {
+                            "op": "value",
+                            "args": [
+                              1
+                            ]
+                          }
+                        ]
+                      ]
+                    },
+                    1
+                  ]
+                },
+                "align": "center",
+                "verticalAlign": "middle",
+                "fontFamily": "Segoe UI",
+                "fontSize": {
+                  "op": "clamp",
+                  "args": [
+                    {
+                      "op": "mul",
+                      "args": [
+                        {
+                          "op": "value",
+                          "args": [
+                            3
+                          ]
+                        },
+                        {
+                          "op": "min",
+                          "args": [
+                            {
+                              "op": "div",
+                              "args": [
+                                {
+                                  "op": "abs",
+                                  "args": [
+                                    {
+                                      "op": "at",
+                                      "args": [
+                                        {
+                                          "op": "size",
+                                          "args": [
+                                            [
+                                              {
+                                                "op": "value",
+                                                "args": [
+                                                  5
+                                                ]
+                                              },
+                                              0
+                                            ]
+                                          ]
+                                        },
+                                        0
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "op": "value",
+                                  "args": [
+                                    5
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "op": "div",
+                              "args": [
+                                {
+                                  "op": "abs",
+                                  "args": [
+                                    {
+                                      "op": "at",
+                                      "args": [
+                                        {
+                                          "op": "size",
+                                          "args": [
+                                            [
+                                              0,
+                                              {
+                                                "op": "value",
+                                                "args": [
+                                                  6
+                                                ]
+                                              }
+                                            ]
+                                          ]
+                                        },
+                                        1
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "op": "value",
+                                  "args": [
+                                    6
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    1,
+                    200
+                  ]
+                },
+                "fill": "$theme.textPrimary"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

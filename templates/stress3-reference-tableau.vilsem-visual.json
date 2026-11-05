@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "specVersion": "0.7",
+  "type": "custom",
+  "bindings": {
+    "dimensions": [
+      {
+        "table": "Calendar Lookup",
+        "column": "Year"
+      }
+    ],
+    "measures": [
+      {
+        "table": "Measure Table",
+        "name": "Total Revenue"
+      }
+    ]
+  },
+  "template": {
+    "meta": {
+      "id": "stress3-reference-tableau",
+      "name": "Real revenue inspired by tableau",
+      "formatVersion": 4
+    },
+    "slots": {
+      "group": {
+        "kind": "time"
+      },
+      "revenue": {
+        "kind": "measure"
+      }
+    },
+    "template": {
+      "animation": false,
+      "backgroundColor": "#ffffff",
+      "color": [
+        "#4e79a7"
+      ],
+      "title": {
+        "text": "Revenue by year",
+        "subtext": "Real model values; reference numbers are not data",
+        "left": 30,
+        "top": 18,
+        "textStyle": {
+          "color": "#17243b",
+          "fontSize": 22
+        },
+        "subtextStyle": {
+          "color": "#53627a"
+        }
+      },
+      "grid": {
+        "left": 90,
+        "right": 35,
+        "top": 105,
+        "bottom": 65
+      },
+      "xAxis": {
+        "type": "category",
+        "data": "$slot.group.categories"
+      },
+      "yAxis": {
+        "type": "value",
+        "name": "Revenue (USD)",
+        "axisLabel": {
+          "formatterTemplate": "{value:thousands}"
+        }
+      },
+      "tooltip": {
+        "trigger": "item",
+        "formatterTemplate": "{name}: USD {value:thousands}"
+      },
+      "series": [
+        {
+          "type": "bar",
+          "data": "$slot.revenue.pieData",
+          "itemStyle": {
+            "color": "#4e79a7",
+            "borderRadius": 0
+          },
+          "label": {
+            "show": false
+          },
+          "barMaxWidth": 60
+        }
+      ]
+    }
+  }
+}

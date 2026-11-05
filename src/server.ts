@@ -1,4 +1,4 @@
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
+import { McpServer,ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
 import fs from 'node:fs/promises'
 import {createRequire} from 'node:module'
@@ -8,6 +8,7 @@ import { SHIPPED_TEMPLATES } from './templates.js'
 import { Models } from './models.js'
 import { listPages, validateVisuals, validateSpec, validateBindings, commitVisual, pageBindings } from './reports.js'
 import { previewRows, variantSheet } from './preview.js'
+import {captureBrowserMotion} from './motionBrowser.js'
 import { readReportTheme } from '@vilsem/core/pbir'
 import { assessInteractions } from './interactions.js'
 import { designBrief } from './design.js'
@@ -15,6 +16,10 @@ import {readStoredVisual,listStoredVisuals,patchVisualSpec,specDiff,writeStoredV
 import {makeVisualContainer,assertReportRenderer,RENDERER_GUID} from '@vilsem/core/pbir'
 import {desktopWarning} from './reports.js'
 import {scopedMeasuresOf} from '@vilsem/core/spec/migrate'
+import {listUserTemplates,readUserTemplate,saveUserTemplate,deleteUserTemplate} from './templateLibrary.js'
+import {referenceImage,structuralDiff} from './referenceImages.js'
+import {decodeDesignImage} from '@vilsem/core/images/decode'
+import {extractDesignTokens} from '@vilsem/core/images'
 
 const object=z.record(z.string(),z.unknown())
 const packageVersion=createRequire(import.meta.url)('../package.json').version
@@ -23,11 +28,12 @@ const text=(value:any)=>({content:[{type:'text' as const,text:JSON.stringify(val
 
 export function createServer(models=new Models()){
   const server=new McpServer({name:'vilsem-mcp',version:packageVersion})
-  server.registerPrompt('design_visual',{description:'Get model context and a structured brief for the CALLING AGENT to design a new Vilsem visual or edit an existing one. No LLM/model/API key inside the MCP.',argsSchema:{intent:z.string().min(1),connectionId:z.string().uuid(),page:z.string().optional(),reportDir:z.string().optional()}},async({intent,connectionId,page,reportDir})=>{
+  server.registerPrompt('design_visual',{description:'Get model context and a structured brief for the CALLING AGENT to design a new Vilsem visual or edit an existing one. Optional reference_image is a local PNG/JPEG path or data URI. No LLM/model/API key inside the MCP.',argsSchema:{intent:z.string().min(1),connectionId:z.string().uuid(),page:z.string().optional(),reportDir:z.string().optional(),reference_image:z.string().optional()}},async({intent,connectionId,page,reportDir,reference_image})=>{
     const context=await models.schema(connectionId,{detail:'summary'})
     let pageContext
     if(page){const root=reportDir || models.reportDir(connectionId);if(!root)throw Error('reportDir is required with page for a non-report connection');pageContext=await pageBindings(root,page)}
-    return {description:'Complete the analytical/design brief using real fields, then validate and preview before writing.',messages:[{role:'user' as const,content:{type:'text' as const,text:JSON.stringify(designBrief(intent,context,pageContext),null,2)}}]}
+    const reference=reference_image?await referenceImage(reference_image):null
+    return {description:'Complete the analytical/design brief using real fields, then validate and preview before writing.',messages:[{role:'user' as const,content:{type:'text' as const,text:JSON.stringify(designBrief(intent,context,pageContext,reference?.tokens),null,2)}},...(reference?[{role:'user' as const,content:{type:'image' as const,data:reference.bytes.toString('base64'),mimeType:reference.mimeType}}]:[])]}
   })
   // Syntax/binding validation belongs to the DAX engine. The static pass adds
   // precise field/cycle errors; it is not presented as a complete DAX parser.
@@ -63,6 +69,17 @@ export function createServer(models=new Models()){
     const measureMetadata=bindings.measures.map(field=>({...field,formatString:schema.measures.find(m=>m.name.toLowerCase()===field.name.toLowerCase()&&m.table?.toLowerCase()===field.table.toLowerCase())?.formatString || field.formatString}))
     return {rows,reportTheme,measureMetadata}
   }
+  tool('extract_design_tokens','Get bounded PNG/JPEG image statistics only: palette/background/light-dark/aspect ratio and approximate text/gridline evidence. No ML/OCR or inferred fields/data. image is a local path or PNG/JPEG data URI.',z.object({image:z.string().min(1)}),async({image})=>text((await referenceImage(image)).tokens))
+  tool('compare_preview','Render with real model data at the reference aspect ratio and return reference/render side by side, critique and a structural diff. The calling agent may supply reference_structure; semantic reference properties otherwise remain unknown. Writes no report.',z.object({connectionId:z.string().uuid(),spec:object,bindings,reference_image:z.string().min(1),reference_structure:z.object({seriesCount:z.number().int().min(0).max(200).optional(),legendPosition:z.string().max(80).optional(),labelPresence:z.boolean().optional()}).optional(),reportDir:z.string().optional(),maxRows:z.number().int().min(1).max(10000).default(200)}),async args=>{
+    validateSpec(args.spec);validateBindings(args.spec,args.bindings);await checkMeasures(args.spec,args.connectionId,args.bindings)
+    const reference=await referenceImage(args.reference_image),aspect=reference.tokens.layout.aspectRatio
+    if(aspect<.1||aspect>10)throw Error('Reference aspect ratio must be0.1..10 for a readable bounded comparison')
+    const width=Math.round(aspect>=1?1000:1000*aspect),height=Math.round(aspect>=1?1000/aspect:1000)
+    const {rows,reportTheme,measureMetadata}=await previewData({...args,theme:args.reportDir?'report':'light'})
+    const rendered=previewRows(args.spec,rows,width,height,{theme:reportTheme.theme??'light',measures:measureMetadata})
+    const tokens=extractDesignTokens({image:decodeDesignImage(rendered.png)}),png=variantSheet([{png:reference.bytes,label:'Reference — design only'},{png:rendered.png,label:'Vilsem — live model data'}],width,height)
+    return {content:[{type:'image' as const,data:png.toString('base64'),mimeType:'image/png'},...text({critique:rendered.critique,structuralDiff:structuralDiff(reference.tokens,rendered.option,tokens,args.reference_structure),rowCount:rows.length,referenceTokens:reference.tokens,warnings:reportTheme.warnings}).content]}
+  })
   tool('connect_model','Connect read-only to an existing model. Prefer source.kind="report" with reportDir to follow definition.pbir: byPath matches the open Desktop model or returns offline schema-only TMDL; byConnection resolves the configured Fabric model or Windows-integrated SSAS endpoint. source.kind="desktop" auto-detects a local port; source.kind="fabric" accepts workspaceId/datasetId. Keep connectionId for schema, DAX and previews. A schemaOnly connection cannot execute queries or live previews. No model objects are created or changed.',z.object({source:z.discriminatedUnion('kind',[z.object({kind:z.literal('report'),reportDir:z.string().min(1)}),z.object({kind:z.literal('desktop'),port:z.number().int().min(1).max(65535).optional()}),z.object({kind:z.literal('fabric'),workspaceId:z.string().uuid(),datasetId:z.string().uuid()})])}),async({source})=>text(await models.connect(source)))
   tool('get_schema','Read model context without writes. Default detail=summary omits measure DAX and relationship graph; ask for full to understand calculations and join paths. Columns include exact DAX cardinality, BLANK share and numeric/date min/max, plus up to10 distinct samples and hidden/key flags. Unavailable fields carry explicit errors. Profiling is cached60s; use refresh after model/data changes. Optional page uses an internal/display page name plus reportDir (or a report-kind connection) to add read-only existing page bindings.',z.object({connectionId:z.string().uuid(),detail:z.enum(['summary','full']).default('summary'),refresh:z.boolean().default(false),page:z.string().min(1).optional(),reportDir:z.string().min(1).optional()}),async({connectionId,detail,refresh,page,reportDir})=>{
     const schema=await models.schema(connectionId,{detail,refresh})
@@ -70,19 +87,28 @@ export function createServer(models=new Models()){
     return text(schema)
   })
   tool('run_dax','Execute a read-only DAX EVALUATE table query against a connected model. Returns at most maxRows rows, default 200. Use it to inspect data and verify visual bindings; this tool does not expose XMLA commands or persistent model changes.',z.object({connectionId:z.string().uuid(),dax:z.string().min(1).max(100000),maxRows:z.number().int().min(1).max(10000).default(200)}),async({connectionId,dax,maxRows})=>text({rows:await models.query(connectionId,dax,maxRows)}))
-  tool('list_templates','List the shared Vilsem declarative visual templates with their slot and parameter contracts. Use these templates as starting points and read vilsem://docs/spec-format before changing token expressions or formatter templates.',z.object({}),async()=>text([...EXAMPLE_TEMPLATES,...SHIPPED_TEMPLATES]))
+  tool('list_templates','List shipped and saved user templates with source and contracts. VILSEM_TEMPLATES_DIR may point to a shared library. Unreadable user files are reported explicitly.',z.object({}),async()=>text([...EXAMPLE_TEMPLATES,...SHIPPED_TEMPLATES].map(t=>({...t,source:'shipped'})).concat(await listUserTemplates())))
+  tool('save_template','Save a validated complete spec to the OS user template library, or VILSEM_TEMPLATES_DIR. Names are lowercase slugs; existing entries are refused. This does not write a report or model.',z.object({name:z.string(),description:z.string().max(2000).default(''),spec:object,tags:z.array(z.string().max(80)).max(20).default([])}),async args=>text(await saveUserTemplate(args)))
+  tool('delete_template','Delete one named user-library template only. Shipped templates, reports and models are never deleted.',z.object({name:z.string()}),async({name})=>text(await deleteUserTemplate(name)))
   tool('validate_spec','Resolve a Vilsem spec without data. With spec.measures, connectionId is required: validates schema references, cycles and scalar DAX using the connected engine. Run before preview_visual.',z.object({spec:object,connectionId:z.string().uuid().optional()}),async({spec,connectionId})=>{const option=validateSpec(spec);await checkMeasures(spec,connectionId);return text({option})})
   tool('explain_visual','Explain a Vilsem custom visual spec, its field bindings, resolved empty-data ECharts option and exact DAX query before preview or commit. Does not inspect or modify native visuals or model objects.',z.object({spec:object,bindings,connectionId:z.string().uuid().optional(),maxRows:z.number().int().min(1).max(10000).default(200)}),async({spec,bindings,connectionId,maxRows})=>{
     const option=validateSpec(spec);validateBindings(spec,bindings);await checkMeasures(spec,connectionId,bindings)
     return text({type:spec.type || 'custom',template:(spec.template as any)?.meta?.id || null,bindings,dax:buildVisualDax({...bindings,scopedMeasures:scopedMeasuresOf(spec),maxRows}),option,interactions:['selection','cross-filter','cross-highlight','native tooltip','context menu']})
   })
-  tool('preview_visual','Validate a Vilsem spec, query actual bound fields and return PNG plus option and actionable critique (default true). Critique uses rendered text bounds and option checks; inspect its limitations and iterate before committing. Theme defaults to the report theme when reportDir is supplied, light otherwise. Explicit spec.canvasTheme overrides unless a stored pane override requests report theme. maxRows is 1..10000 (default 200); bounded queries do not prove population coverage. This does not write a report.',z.object({connectionId:z.string().uuid(),spec:object,bindings,reportDir:z.string().min(1).optional(),theme:z.union([z.enum(['report','light','dark']),object]).optional(),critique:z.boolean().default(true),locale:z.string().min(2).max(64).default('en-US'),width:z.number().int().min(100).max(2400).default(800),height:z.number().int().min(100).max(2400).default(500),maxRows:z.number().int().min(1).max(10000).default(200)}),async({connectionId,spec,bindings,reportDir,theme,critique,locale,width,height,maxRows})=>{
+  tool('preview_visual','motion:auto captures actual animation in an installed fresh network-blocked headless browser when available; motion:states uses discrete timeline states, and motion:browser requires a browser. Optional frames (2..12) also returns a timeline-state contact sheet. Validate a Vilsem spec, query actual bound fields and return PNG plus option and actionable critique (default true). Critique uses rendered text bounds and option checks; inspect its limitations and iterate before committing. Theme defaults to the report theme when reportDir is supplied, light otherwise. Explicit spec.canvasTheme overrides unless a stored pane override requests report theme. maxRows is 1..10000 (default 200); bounded queries do not prove population coverage. This does not write a report.',z.object({connectionId:z.string().uuid(),spec:object,bindings,reportDir:z.string().min(1).optional(),theme:z.union([z.enum(['report','light','dark']),object]).optional(),critique:z.boolean().default(true),motion:z.enum(['auto','states','browser']).default('auto'),frames:z.number().int().min(2).max(12).optional(),locale:z.string().min(2).max(64).default('en-US'),width:z.number().int().min(100).max(2400).default(800),height:z.number().int().min(100).max(2400).default(500),maxRows:z.number().int().min(1).max(10000).default(200)}),async({connectionId,spec,bindings,reportDir,theme,critique,motion,frames,locale,width,height,maxRows})=>{
     validateSpec(spec)
     validateBindings(spec,bindings)
     await checkMeasures(spec,connectionId,bindings)
     const {rows,reportTheme,measureMetadata}=await previewData({connectionId,spec,bindings,reportDir,theme,maxRows})
-    const result=previewRows(spec,rows,width,height,{theme:reportTheme.theme ?? 'light',locale,measures:measureMetadata,critique})
-    return {content:[{type:'image' as const,data:Buffer.from(result.png).toString('base64'),mimeType:'image/png'},...text({option:result.option,critique:result.critique,rowCount:rows.length,maxRows,interactions:assessInteractions(spec,result.option,rows.length),measureFormats:measureMetadata,formattingLocale:locale,themeSource:reportTheme.source,warnings:[...reportTheme.warnings,...(rows.length>=maxRows?[`Preview reached its ${maxRows}-row limit; this is a bounded sample, not proof of complete model coverage.`]:[])]}).content]}
+    const result=previewRows(spec,rows,width,height,{theme:reportTheme.theme ?? 'light',locale,measures:measureMetadata,critique,frames})
+    let animated=result.apng,motionInfo:any=result.motion
+    if(motion!=='states'&&result.option.animation!==false&&((spec.template as any)?.animation||result.option.options?.length)){
+      try{
+        const captured=await captureBrowserMotion(spec,rows,result.option,width,height,{theme:reportTheme.theme??'light',locale,measures:measureMetadata},frames??8)
+        animated=captured.apng;motionInfo={...result.motion,kind:'browser-clock',browser:captured.metadata,contactSheetKind:result.contactSheet?'timeline-state-overview':undefined,warnings:result.motion.warnings.filter(w=>!w.startsWith('Enter/update tween capture'))}
+      }catch(error){if(motion==='browser')throw error;motionInfo={...result.motion,warnings:[...result.motion.warnings,'Browser motion capture unavailable: '+(error as Error).message]}}
+    }
+    return {content:[{type:'image' as const,data:Buffer.from(result.png).toString('base64'),mimeType:'image/png'},...(animated?[{type:'image' as const,data:animated.toString('base64'),mimeType:'image/apng'}]:[]),...(result.contactSheet?[{type:'image' as const,data:result.contactSheet.toString('base64'),mimeType:'image/png'}]:[]),...text({option:result.option,critique:result.critique,motion:motionInfo,rowCount:rows.length,maxRows,interactions:assessInteractions(spec,result.option,rows.length),measureFormats:measureMetadata,formattingLocale:locale,themeSource:reportTheme.source,warnings:[...reportTheme.warnings,...(rows.length>=maxRows?[`Preview reached its ${maxRows}-row limit; this is a bounded sample, not proof of complete model coverage.`]:[])]}).content]}
   })
   tool('preview_variants','Compare1..4 candidate specs using ONE identical bound-data query; returns one labelled2x2 PNG and per-candidate critique. Bindings and visual-scoped measures must be shared, so design differences cannot silently change the numbers. Use this to choose between approaches before committing.',z.object({connectionId:z.string().uuid(),specs:z.array(object).min(1).max(4),labels:z.array(z.string().min(1).max(80)).min(1).max(4),bindings,reportDir:z.string().min(1).optional(),theme:z.union([z.enum(['report','light','dark']),object]).optional(),locale:z.string().min(2).max(64).default('en-US'),width:z.number().int().min(100).max(1200).default(600),height:z.number().int().min(100).max(1200).default(400),maxRows:z.number().int().min(1).max(10000).default(200)}),async({connectionId,specs,labels,bindings,reportDir,theme,locale,width,height,maxRows})=>{
     if(specs.length!==labels.length)throw Error('Provide one label per candidate spec')
@@ -141,13 +167,15 @@ export function createServer(models=new Models()){
     return {content:[...text({dryRun:args.dryRun,written,etag:item.etag,patch:args.patch,diff:specDiff(item.spec,next),formattingPreserved:!args.resetFormatting,beforeCritique:p.before.result.critique,afterCritique:p.after.result.critique,warnings:[...p.after.warnings,...(args.dryRun?[]:await desktopWarning(args.reportDir))]}).content,...p.content]}
   })
   tool('list_pages','Read existing PBIR pages and visual names, types and positions so you can choose a page and avoid overlap. This tool does not edit or validate native visuals, slicers, bookmarks, filters or report themes.',z.object({reportDir:z.string().min(1)}),async({reportDir})=>text(await listPages(reportDir)))
-  tool('commit_visual','Add one Vilsem Renderer visual to one existing PBIR page using @vilsem/core. Existing visual names are refused; the only additional changes are missing renderer resources and registration. Native visuals, slicers, bookmarks, filters, themes and model objects are not edited. If Desktop is open, accept its external-change reload prompt after this call.',z.object({reportDir:z.string().min(1),pageName:z.string().min(1),visualName:z.string().min(1),spec:object,bindings,connectionId:z.string().uuid().optional(),layout:z.object({x:z.number().min(0),y:z.number().min(0),width:z.number().positive(),height:z.number().positive(),z:z.number().min(0).optional(),tabOrder:z.number().min(0).optional()})}),async args=>{
+  tool('commit_visual','Add one Vilsem Renderer visual to one existing PBIR page using @vilsem/core. Existing visual names are refused; the only additional changes are missing renderer resources and registration. Native visuals, slicers, bookmarks, filters, themes and model objects are not edited. If Desktop is open, accept its external-change reload prompt after this call.',z.object({reportDir:z.string().min(1),pageName:z.string().min(1),visualName:z.string().min(1),spec:object,bindings,saveAs:z.string().optional(),connectionId:z.string().uuid().optional(),layout:z.object({x:z.number().min(0),y:z.number().min(0),width:z.number().positive(),height:z.number().positive(),z:z.number().min(0).optional(),tabOrder:z.number().min(0).optional()})}),async args=>{
     await checkMeasures(args.spec,args.connectionId,args.bindings)
     // Preserve preview/native parity for model formats even when canvasTheme
     // deliberately selects a legacy light/dark appearance.
     const schema=args.connectionId?await models.fields(args.connectionId):null
     const formattedBindings={...args.bindings,measures:args.bindings.measures.map(field=>({...field,formatString:schema?.measures.find(m=>m.name?.toLowerCase()===field.name.toLowerCase()&&m.table?.toLowerCase()===field.table.toLowerCase())?.formatString || field.formatString}))}
-    return text(await commitVisual({...args,bindings:formattedBindings}))
+    const committed=await commitVisual({...args,bindings:formattedBindings})
+    if(args.saveAs)try{return text({...committed,savedTemplate:await saveUserTemplate({name:args.saveAs,spec:args.spec})})}catch(error){return text({...committed,templateSaved:false,templateError:(error as Error).message})}
+    return text(committed)
   })
   tool('validate_visuals','Validate only PBIR visual containers whose visualType is the stable Vilsem Renderer GUID. Reports schema errors, unreadable spec literals and unsupported current-renderer specs. Native visuals and all report-level objects are neither validated nor reported.',z.object({reportDir:z.string().min(1)}),async({reportDir})=>text(await validateVisuals(reportDir)))
   for(const template of [...EXAMPLE_TEMPLATES,...SHIPPED_TEMPLATES]){
@@ -155,6 +183,7 @@ export function createServer(models=new Models()){
     server.registerResource(template.meta.id,uri,{mimeType:'application/json'},async uri=>({contents:[{uri:uri.href,mimeType:'application/json',text:JSON.stringify(template)}]}))
   }
   server.registerResource('spec-format','vilsem://docs/spec-format',{mimeType:'text/markdown'},async uri=>({contents:[{uri:uri.href,mimeType:'text/markdown',text:await fs.readFile(new URL('../docs/spec-format.md',import.meta.url),'utf8')}]}))
-  for(const name of ['design-guide','workflow'])server.registerResource(name,`vilsem://docs/${name}`,{mimeType:'text/markdown'},async uri=>({contents:[{uri:uri.href,mimeType:'text/markdown',text:await fs.readFile(new URL(`../docs/${name}.md`,import.meta.url),'utf8')}]}))
+  for(const name of ['design-guide','workflow','expression-language','motion-capture'])server.registerResource(name,`vilsem://docs/${name}`,{mimeType:'text/markdown'},async uri=>({contents:[{uri:uri.href,mimeType:'text/markdown',text:await fs.readFile(new URL(`../docs/${name}.md`,import.meta.url),'utf8')}]}))
+  server.registerResource('user-template',new ResourceTemplate('vilsem://templates/user/{name}',{list:async()=>({resources:(await listUserTemplates()).filter(t=>!t.unreadable).map(t=>({uri:t.uri,name:t.name,mimeType:'application/json'}))})}),{mimeType:'application/json'},async(uri,{name})=>({contents:[{uri:uri.href,mimeType:'application/json',text:JSON.stringify(await readUserTemplate(String(name)))}]}))
   return server
 }

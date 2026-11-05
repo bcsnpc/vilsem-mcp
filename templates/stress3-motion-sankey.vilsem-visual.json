@@ -1,0 +1,128 @@
+{
+  "version": 1,
+  "specVersion": "0.7",
+  "type": "custom",
+  "bindings": {
+    "dimensions": [
+      {
+        "table": "Calendar Lookup",
+        "column": "Start of Month"
+      },
+      {
+        "table": "Territory Lookup",
+        "column": "Country"
+      },
+      {
+        "table": "Product Categories Lookup",
+        "column": "CategoryName"
+      }
+    ],
+    "measures": [
+      {
+        "table": "Measure Table",
+        "name": "Total Revenue"
+      }
+    ]
+  },
+  "template": {
+    "meta": {
+      "id": "stress3-motion-sankey",
+      "name": "sankey real-data motion",
+      "formatVersion": 4
+    },
+    "slots": {
+      "month": {
+        "kind": "time"
+      },
+      "country": {
+        "kind": "dimension"
+      },
+      "category": {
+        "kind": "dimension"
+      },
+      "revenue": {
+        "kind": "measure"
+      }
+    },
+    "transforms": [
+      {
+        "as": "flows",
+        "flows": {
+          "time": "month",
+          "timeFormat": "yyyy-MM",
+          "levels": [
+            "country",
+            "category"
+          ],
+          "value": "revenue"
+        }
+      }
+    ],
+    "animation": {
+      "enter": {
+        "duration": 500
+      },
+      "update": {
+        "duration": 600,
+        "easing": "cubicInOut"
+      }
+    },
+    "template": {
+      "baseOption": {
+        "title": {
+          "text": "Revenue flows by month",
+          "subtext": "Real model values · discrete preview states; live interpolation needs verification",
+          "left": 25,
+          "top": 10,
+          "textStyle": {
+            "fontSize": 18
+          },
+          "subtextStyle": {
+            "color": "#555555",
+            "fontSize": 11
+          }
+        },
+        "timeline": {
+          "axisType": "category",
+          "autoPlay": true,
+          "playInterval": 800,
+          "data": "$calc.flows.labels",
+          "bottom": 5,
+          "label": {
+            "show": false
+          }
+        },
+        "tooltip": {
+          "trigger": "item"
+        }
+      },
+      "options": {
+        "repeat": "$calc.flows.frames",
+        "template": {
+          "title": {
+            "text": "$item.label"
+          },
+          "series": [
+            {
+              "id": "flow",
+              "type": "sankey",
+              "top": 90,
+              "bottom": 80,
+              "left": 130,
+              "right": 130,
+              "data": "$item.nodes",
+              "links": "$item.links",
+              "label": {
+                "formatterTemplate": "{label}"
+              },
+              "lineStyle": {
+                "color": "source",
+                "opacity": 0.35
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

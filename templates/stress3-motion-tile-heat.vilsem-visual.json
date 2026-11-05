@@ -1,0 +1,137 @@
+{
+  "version": 1,
+  "specVersion": "0.7",
+  "type": "custom",
+  "bindings": {
+    "dimensions": [
+      {
+        "table": "Calendar Lookup",
+        "column": "Start of Month"
+      },
+      {
+        "table": "Territory Lookup",
+        "column": "Country"
+      }
+    ],
+    "measures": [
+      {
+        "table": "Measure Table",
+        "name": "Total Revenue"
+      }
+    ]
+  },
+  "template": {
+    "meta": {
+      "id": "stress3-motion-tile-heat",
+      "name": "tile-heat real-data motion",
+      "formatVersion": 4
+    },
+    "slots": {
+      "month": {
+        "kind": "time"
+      },
+      "country": {
+        "kind": "dimension"
+      },
+      "revenue": {
+        "kind": "measure"
+      }
+    },
+    "transforms": [
+      {
+        "as": "ranked",
+        "race": {
+          "time": "month",
+          "category": "country",
+          "value": "revenue",
+          "timeFormat": "yyyy-MM",
+          "topN": 10
+        }
+      }
+    ],
+    "animation": {
+      "enter": {
+        "duration": 500
+      },
+      "update": {
+        "duration": 600,
+        "easing": "cubicInOut"
+      }
+    },
+    "template": {
+      "baseOption": {
+        "title": {
+          "text": "Monthly revenue by market — tile heatmap",
+          "subtext": "Real model values · discrete preview states; live interpolation needs verification",
+          "left": 25,
+          "top": 10,
+          "textStyle": {
+            "fontSize": 18
+          },
+          "subtextStyle": {
+            "color": "#555555",
+            "fontSize": 11
+          }
+        },
+        "timeline": {
+          "axisType": "category",
+          "autoPlay": true,
+          "playInterval": 800,
+          "data": "$calc.ranked.labels",
+          "bottom": 5,
+          "label": {
+            "show": false
+          }
+        },
+        "grid": {
+          "left": 100,
+          "right": 45,
+          "top": 90,
+          "bottom": 140
+        },
+        "xAxis": {
+          "type": "category",
+          "data": "$calc.ranked.categories"
+        },
+        "yAxis": {
+          "type": "category",
+          "data": [
+            "Revenue"
+          ]
+        },
+        "visualMap": {
+          "min": 0,
+          "max": "$calc.ranked.maxValue",
+          "left": "center",
+          "bottom": 65,
+          "orient": "horizontal",
+          "inRange": {
+            "color": [
+              "#edf5fb",
+              "#1264a3"
+            ]
+          }
+        }
+      },
+      "options": {
+        "repeat": "$calc.ranked.frames",
+        "template": {
+          "title": {
+            "text": "$item.label"
+          },
+          "series": [
+            {
+              "id": "tiles",
+              "type": "heatmap",
+              "data": "$item.tileData",
+              "label": {
+                "show": true,
+                "formatterTemplate": "{value.2:thousands}"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

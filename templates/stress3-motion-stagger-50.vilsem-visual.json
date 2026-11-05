@@ -1,0 +1,100 @@
+{
+  "version": 1,
+  "specVersion": "0.7",
+  "type": "custom",
+  "bindings": {
+    "dimensions": [
+      {
+        "table": "Product Lookup",
+        "column": "ProductName"
+      }
+    ],
+    "measures": [
+      {
+        "table": "Measure Table",
+        "name": "Total Revenue"
+      }
+    ]
+  },
+  "template": {
+    "meta": {
+      "id": "stress3-motion-stagger-50",
+      "name": "stagger-50 real-data motion",
+      "formatVersion": 4
+    },
+    "slots": {
+      "product": {
+        "kind": "dimension"
+      },
+      "revenue": {
+        "kind": "measure"
+      }
+    },
+    "transforms": [
+      {
+        "as": "shown",
+        "take": {
+          "field": "revenue",
+          "count": 50
+        }
+      }
+    ],
+    "animation": {
+      "enter": {
+        "duration": 600,
+        "easing": "cubicOut",
+        "delayByIndex": {
+          "milliseconds": 25,
+          "max": 1225
+        }
+      },
+      "update": {
+        "duration": 400
+      }
+    },
+    "template": {
+      "title": {
+        "text": "First 50 queried products — staggered entry",
+        "subtext": "Real model values · discrete preview states; live interpolation needs verification",
+        "left": 25,
+        "top": 10,
+        "textStyle": {
+          "fontSize": 18
+        },
+        "subtextStyle": {
+          "color": "#555555",
+          "fontSize": 11
+        }
+      },
+      "grid": {
+        "left": 85,
+        "right": 25,
+        "top": 80,
+        "bottom": 70
+      },
+      "xAxis": {
+        "type": "category",
+        "data": "$calc.shown.categories",
+        "axisLabel": {
+          "show": false
+        }
+      },
+      "yAxis": {
+        "type": "value",
+        "axisLabel": {
+          "formatterTemplate": "{value:thousands}"
+        }
+      },
+      "tooltip": {
+        "trigger": "item",
+        "formatterTemplate": "{name}: USD {value:thousands}"
+      },
+      "series": [
+        {
+          "type": "bar",
+          "data": "$calc.shown.values"
+        }
+      ]
+    }
+  }
+}

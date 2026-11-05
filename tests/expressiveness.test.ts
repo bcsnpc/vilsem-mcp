@@ -198,7 +198,7 @@ describe('shipped expressiveness specs',()=>{
  })
  it('returns an exact category-c failure for the separately recorded unsupported template',()=>{
   const spec=JSON.parse(fs.readFileSync(new URL('../docs/expressiveness/marimekko.vilsem-visual.json',import.meta.url),'utf8'))
-  expect(()=>validateSpec(spec)).toThrow('custom series requires imperative renderItem; executable callbacks are not supported by the declarative format')
+  expect(()=>validateSpec(spec)).toThrow('custom series requires a bounded expression AST')
  })
 })
 

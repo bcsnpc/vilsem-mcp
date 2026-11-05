@@ -1,0 +1,591 @@
+{
+  "version": 1,
+  "specVersion": "0.7",
+  "type": "custom",
+  "bindings": {
+    "dimensions": [
+      {
+        "table": "Territory Lookup",
+        "column": "Country"
+      },
+      {
+        "table": "Product Categories Lookup",
+        "column": "CategoryName"
+      }
+    ],
+    "measures": [
+      {
+        "table": "Measure Table",
+        "name": "Total Revenue"
+      }
+    ]
+  },
+  "template": {
+    "meta": {
+      "id": "stress3-voronoi-expression",
+      "name": "Country / category weighted Voronoi revenue",
+      "formatVersion": 4
+    },
+    "slots": {
+      "country": {
+        "kind": "dimension"
+      },
+      "category": {
+        "kind": "dimension"
+      },
+      "revenue": {
+        "kind": "measure"
+      }
+    },
+    "transforms": [
+      {
+        "as": "cells",
+        "voronoi": {
+          "levels": [
+            "country",
+            "category"
+          ],
+          "value": "revenue",
+          "limit": 80
+        }
+      }
+    ],
+    "template": {
+      "animation": false,
+      "title": {
+        "text": "Revenue by country and category",
+        "subtext": "Weighted Voronoi cells: polygon area represents revenue; outlines group countries",
+        "left": "center",
+        "textStyle": {
+          "fontSize": 18
+        },
+        "subtextStyle": {
+          "fontSize": 11,
+          "color": "$theme.textPrimary"
+        }
+      },
+      "grid": {
+        "left": 20,
+        "right": 20,
+        "top": 75,
+        "bottom": 20
+      },
+      "xAxis": {
+        "type": "value",
+        "min": 0,
+        "max": 1,
+        "show": false
+      },
+      "yAxis": {
+        "type": "value",
+        "min": 0,
+        "max": 1,
+        "show": false
+      },
+      "tooltip": {
+        "trigger": "item",
+        "formatterTemplate": "{name}: USD {value.2:thousands}"
+      },
+      "series": [
+        {
+          "type": "custom",
+          "dimensions": [
+            "cx",
+            "cy",
+            "revenue",
+            "depth",
+            "colour",
+            "leaf",
+            {
+              "name": "outline",
+              "type": "ordinal"
+            },
+            {
+              "name": "label",
+              "type": "ordinal"
+            },
+            "labelWidth",
+            "labelHeight"
+          ],
+          "encode": {
+            "x": 0,
+            "y": 1,
+            "tooltip": 2
+          },
+          "data": "$calc.cells.data",
+          "renderItem": {
+            "language": "vilsem-expression",
+            "version": 1,
+            "root": {
+              "type": "group",
+              "clipPath": {
+                "type": "path",
+                "shape": {
+                  "pathData": {
+                    "op": "value",
+                    "args": [
+                      6
+                    ]
+                  }
+                },
+                "x": {
+                  "op": "at",
+                  "args": [
+                    {
+                      "op": "coord",
+                      "args": [
+                        [
+                          0,
+                          1
+                        ]
+                      ]
+                    },
+                    0
+                  ]
+                },
+                "y": {
+                  "op": "at",
+                  "args": [
+                    {
+                      "op": "coord",
+                      "args": [
+                        [
+                          0,
+                          1
+                        ]
+                      ]
+                    },
+                    1
+                  ]
+                },
+                "scaleX": {
+                  "op": "abs",
+                  "args": [
+                    {
+                      "op": "at",
+                      "args": [
+                        {
+                          "op": "size",
+                          "args": [
+                            [
+                              1,
+                              1
+                            ]
+                          ]
+                        },
+                        0
+                      ]
+                    }
+                  ]
+                },
+                "scaleY": {
+                  "op": "abs",
+                  "args": [
+                    {
+                      "op": "at",
+                      "args": [
+                        {
+                          "op": "size",
+                          "args": [
+                            [
+                              1,
+                              1
+                            ]
+                          ]
+                        },
+                        1
+                      ]
+                    }
+                  ]
+                }
+              },
+              "children": [
+                {
+                  "type": "path",
+                  "shape": {
+                    "pathData": {
+                      "op": "value",
+                      "args": [
+                        6
+                      ]
+                    }
+                  },
+                  "x": {
+                    "op": "at",
+                    "args": [
+                      {
+                        "op": "coord",
+                        "args": [
+                          [
+                            0,
+                            1
+                          ]
+                        ]
+                      },
+                      0
+                    ]
+                  },
+                  "y": {
+                    "op": "at",
+                    "args": [
+                      {
+                        "op": "coord",
+                        "args": [
+                          [
+                            0,
+                            1
+                          ]
+                        ]
+                      },
+                      1
+                    ]
+                  },
+                  "scaleX": {
+                    "op": "abs",
+                    "args": [
+                      {
+                        "op": "at",
+                        "args": [
+                          {
+                            "op": "size",
+                            "args": [
+                              [
+                                1,
+                                1
+                              ]
+                            ]
+                          },
+                          0
+                        ]
+                      }
+                    ]
+                  },
+                  "scaleY": {
+                    "op": "abs",
+                    "args": [
+                      {
+                        "op": "at",
+                        "args": [
+                          {
+                            "op": "size",
+                            "args": [
+                              [
+                                1,
+                                1
+                              ]
+                            ]
+                          },
+                          1
+                        ]
+                      }
+                    ]
+                  },
+                  "style": {
+                    "fill": {
+                      "op": "if",
+                      "args": [
+                        {
+                          "op": "eq",
+                          "args": [
+                            {
+                              "op": "value",
+                              "args": [
+                                5
+                              ]
+                            },
+                            1
+                          ]
+                        },
+                        {
+                          "op": "colorScale",
+                          "args": [
+                            {
+                              "op": "value",
+                              "args": [
+                                4
+                              ]
+                            },
+                            0,
+                            8,
+                            "$theme.readablePalette"
+                          ]
+                        },
+                        "none"
+                      ]
+                    },
+                    "stroke": "$theme.textPrimary",
+                    "lineWidth": {
+                      "op": "if",
+                      "args": [
+                        {
+                          "op": "eq",
+                          "args": [
+                            {
+                              "op": "value",
+                              "args": [
+                                5
+                              ]
+                            },
+                            1
+                          ]
+                        },
+                        0.8,
+                        3
+                      ]
+                    }
+                  }
+                },
+                {
+                  "type": "text",
+                  "role": "label",
+                  "when": {
+                    "op": "and",
+                    "args": [
+                      {
+                        "op": "eq",
+                        "args": [
+                          {
+                            "op": "value",
+                            "args": [
+                              5
+                            ]
+                          },
+                          1
+                        ]
+                      },
+                      {
+                        "op": "gt",
+                        "args": [
+                          {
+                            "op": "mul",
+                            "args": [
+                              {
+                                "op": "value",
+                                "args": [
+                                  8
+                                ]
+                              },
+                              {
+                                "op": "abs",
+                                "args": [
+                                  {
+                                    "op": "at",
+                                    "args": [
+                                      {
+                                        "op": "size",
+                                        "args": [
+                                          [
+                                            1,
+                                            1
+                                          ]
+                                        ]
+                                      },
+                                      0
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          95
+                        ]
+                      },
+                      {
+                        "op": "gt",
+                        "args": [
+                          {
+                            "op": "mul",
+                            "args": [
+                              {
+                                "op": "value",
+                                "args": [
+                                  9
+                                ]
+                              },
+                              {
+                                "op": "abs",
+                                "args": [
+                                  {
+                                    "op": "at",
+                                    "args": [
+                                      {
+                                        "op": "size",
+                                        "args": [
+                                          [
+                                            1,
+                                            1
+                                          ]
+                                        ]
+                                      },
+                                      1
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          42
+                        ]
+                      }
+                    ]
+                  },
+                  "style": {
+                    "x": {
+                      "op": "at",
+                      "args": [
+                        {
+                          "op": "coord",
+                          "args": [
+                            [
+                              {
+                                "op": "value",
+                                "args": [
+                                  0
+                                ]
+                              },
+                              {
+                                "op": "value",
+                                "args": [
+                                  1
+                                ]
+                              }
+                            ]
+                          ]
+                        },
+                        0
+                      ]
+                    },
+                    "y": {
+                      "op": "at",
+                      "args": [
+                        {
+                          "op": "coord",
+                          "args": [
+                            [
+                              {
+                                "op": "value",
+                                "args": [
+                                  0
+                                ]
+                              },
+                              {
+                                "op": "value",
+                                "args": [
+                                  1
+                                ]
+                              }
+                            ]
+                          ]
+                        },
+                        1
+                      ]
+                    },
+                    "text": {
+                      "op": "concat",
+                      "args": [
+                        {
+                          "op": "value",
+                          "args": [
+                            7
+                          ]
+                        },
+                        "\n",
+                        {
+                          "op": "formatNumber",
+                          "args": [
+                            {
+                              "op": "value",
+                              "args": [
+                                2
+                              ]
+                            },
+                            {
+                              "op": "literal",
+                              "args": [
+                                "$#,0,,.0\"M\""
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "width": {
+                      "op": "mul",
+                      "args": [
+                        {
+                          "op": "value",
+                          "args": [
+                            8
+                          ]
+                        },
+                        {
+                          "op": "abs",
+                          "args": [
+                            {
+                              "op": "at",
+                              "args": [
+                                {
+                                  "op": "size",
+                                  "args": [
+                                    [
+                                      1,
+                                      1
+                                    ]
+                                  ]
+                                },
+                                0
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "height": {
+                      "op": "mul",
+                      "args": [
+                        {
+                          "op": "value",
+                          "args": [
+                            9
+                          ]
+                        },
+                        {
+                          "op": "abs",
+                          "args": [
+                            {
+                              "op": "at",
+                              "args": [
+                                {
+                                  "op": "size",
+                                  "args": [
+                                    [
+                                      1,
+                                      1
+                                    ]
+                                  ]
+                                },
+                                1
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "align": "center",
+                    "verticalAlign": "middle",
+                    "fontSize": 11,
+                    "lineHeight": 13,
+                    "fill": "#FFFFFF",
+                    "stroke": "#111111",
+                    "lineWidth": 2,
+                    "overflow": "truncate"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "version": 1,
+  "specVersion": "0.7",
+  "type": "custom",
+  "bindings": {
+    "dimensions": [
+      {
+        "table": "Calendar Lookup",
+        "column": "Start of Month"
+      }
+    ],
+    "measures": [
+      {
+        "table": "Measure Table",
+        "name": "Total Revenue"
+      }
+    ]
+  },
+  "template": {
+    "meta": {
+      "id": "stress3-motion-kpi-sparkline",
+      "name": "kpi-sparkline real-data motion",
+      "formatVersion": 4
+    },
+    "slots": {
+      "month": {
+        "kind": "time"
+      },
+      "revenue": {
+        "kind": "measure"
+      }
+    },
+    "transforms": [
+      {
+        "as": "revenueTotal",
+        "stat": {
+          "field": "revenue",
+          "op": "sum",
+          "records": true
+        }
+      }
+    ],
+    "animation": {
+      "enter": {
+        "duration": 500
+      },
+      "update": {
+        "duration": 600,
+        "easing": "cubicInOut"
+      }
+    },
+    "template": {
+      "title": {
+        "text": "Revenue across shown months",
+        "subtext": "Real model values · native host acceptance pending",
+        "left": 25,
+        "top": 10,
+        "textStyle": {
+          "fontSize": 18
+        },
+        "subtextStyle": {
+          "color": "#555555",
+          "fontSize": 11
+        }
+      },
+      "grid": [
+        {
+          "left": 65,
+          "right": 35,
+          "top": 240,
+          "bottom": 45
+        },
+        {
+          "left": 60,
+          "right": 40,
+          "top": 90,
+          "height": 80
+        }
+      ],
+      "xAxis": [
+        {
+          "type": "category",
+          "gridIndex": 0,
+          "data": "$slot.month.categories",
+          "axisLabel": {
+            "formatterTemplate": "{value:date}"
+          }
+        },
+        {
+          "type": "category",
+          "gridIndex": 1,
+          "data": [
+            "Total"
+          ],
+          "show": false
+        }
+      ],
+      "yAxis": [
+        {
+          "type": "value",
+          "axisLabel": {
+            "formatterTemplate": "{value:thousands}"
+          },
+          "gridIndex": 0
+        },
+        {
+          "type": "value",
+          "gridIndex": 1,
+          "show": false
+        }
+      ],
+      "series": [
+        {
+          "id": "spark",
+          "type": "line",
+          "data": "$slot.revenue.values",
+          "showSymbol": false,
+          "areaStyle": {
+            "opacity": 0.12
+          },
+          "lineStyle": {
+            "width": 3
+          }
+        },
+        {
+          "id": "count",
+          "type": "bar",
+          "xAxisIndex": 1,
+          "yAxisIndex": 1,
+          "data": "$calc.revenueTotal.data",
+          "itemStyle": {
+            "color": "transparent"
+          },
+          "label": {
+            "show": true,
+            "position": "inside",
+            "fontSize": 36,
+            "color": "#17243b",
+            "valueAnimation": true,
+            "formatterTemplate": "{value:thousands}"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,278 @@
+{
+  "version": 1,
+  "specVersion": "0.7",
+  "type": "custom",
+  "bindings": {
+    "dimensions": [
+      {
+        "table": "Product Lookup",
+        "column": "ProductKey"
+      },
+      {
+        "table": "Product Lookup",
+        "column": "ProductPrice"
+      },
+      {
+        "table": "Product Lookup",
+        "column": "ProductCost"
+      }
+    ],
+    "measures": [
+      {
+        "table": "Measure Table",
+        "name": "Total Revenue"
+      }
+    ]
+  },
+  "template": {
+    "meta": {
+      "id": "stress3-hexbin-expression",
+      "name": "hexbin — sold SKU price vs cost",
+      "formatVersion": 4
+    },
+    "slots": {
+      "sku": {
+        "kind": "dimension"
+      },
+      "price": {
+        "kind": "dimension"
+      },
+      "cost": {
+        "kind": "dimension"
+      },
+      "sold": {
+        "kind": "measure"
+      }
+    },
+    "transforms": [
+      {
+        "as": "grid",
+        "hexbin": {
+          "x": "price",
+          "y": "cost",
+          "bins": 14,
+          "expressionGeometry": true
+        }
+      }
+    ],
+    "template": {
+      "animation": false,
+      "title": {
+        "text": "Sold SKU price vs cost — hexagonal counts",
+        "subtext": "One observation per sold SKU; counts in normalized price/cost hexagonal cells",
+        "left": "center",
+        "textStyle": {
+          "fontSize": 18
+        },
+        "subtextStyle": {
+          "fontSize": 11,
+          "color": "#595959"
+        }
+      },
+      "grid": {
+        "left": 85,
+        "right": 45,
+        "top": 90,
+        "bottom": 115
+      },
+      "xAxis": {
+        "type": "value",
+        "min": "$calc.grid.expressionXMin",
+        "max": "$calc.grid.expressionXMax",
+        "name": "Retail price (USD)",
+        "nameLocation": "middle",
+        "nameGap": 32,
+        "axisLabel": {
+          "formatterTemplate": "{value:thousands}"
+        }
+      },
+      "yAxis": {
+        "type": "value",
+        "min": "$calc.grid.expressionYMin",
+        "max": "$calc.grid.expressionYMax",
+        "name": "Standard cost (USD)",
+        "nameLocation": "middle",
+        "nameGap": 55,
+        "axisLabel": {
+          "formatterTemplate": "{value:thousands}"
+        }
+      },
+      "tooltip": {
+        "trigger": "item",
+        "formatterTemplate": "{value.2:thousands} SKUs; price USD {value.0:thousands}; cost USD {value.1:thousands}"
+      },
+      "visualMap": {
+        "type": "continuous",
+        "dimension": 2,
+        "min": 1,
+        "max": "$calc.grid.max",
+        "calculable": false,
+        "orient": "horizontal",
+        "left": "center",
+        "bottom": 8,
+        "text": [
+          "More SKUs",
+          "Fewer SKUs"
+        ],
+        "inRange": {
+          "color": [
+            "#deebf7",
+            "#3182bd",
+            "#08519c"
+          ]
+        },
+        "textStyle": {
+          "color": "$theme.textPrimary"
+        }
+      },
+      "series": [
+        {
+          "type": "custom",
+          "name": "SKU counts",
+          "dimensions": [
+            "price",
+            "cost",
+            "count",
+            "radiusX",
+            "radiusY",
+            {
+              "name": "outline",
+              "type": "ordinal"
+            }
+          ],
+          "encode": {
+            "x": 0,
+            "y": 1,
+            "tooltip": 2
+          },
+          "data": "$calc.grid.expressionData",
+          "renderItem": {
+            "language": "vilsem-expression",
+            "version": 1,
+            "root": {
+              "type": "path",
+              "shape": {
+                "pathData": {
+                  "op": "value",
+                  "args": [
+                    5
+                  ]
+                }
+              },
+              "x": {
+                "op": "at",
+                "args": [
+                  {
+                    "op": "coord",
+                    "args": [
+                      [
+                        {
+                          "op": "value",
+                          "args": [
+                            0
+                          ]
+                        },
+                        {
+                          "op": "value",
+                          "args": [
+                            1
+                          ]
+                        }
+                      ]
+                    ]
+                  },
+                  0
+                ]
+              },
+              "y": {
+                "op": "at",
+                "args": [
+                  {
+                    "op": "coord",
+                    "args": [
+                      [
+                        {
+                          "op": "value",
+                          "args": [
+                            0
+                          ]
+                        },
+                        {
+                          "op": "value",
+                          "args": [
+                            1
+                          ]
+                        }
+                      ]
+                    ]
+                  },
+                  1
+                ]
+              },
+              "scaleX": {
+                "op": "abs",
+                "args": [
+                  {
+                    "op": "at",
+                    "args": [
+                      {
+                        "op": "size",
+                        "args": [
+                          [
+                            {
+                              "op": "value",
+                              "args": [
+                                3
+                              ]
+                            },
+                            0
+                          ]
+                        ]
+                      },
+                      0
+                    ]
+                  }
+                ]
+              },
+              "scaleY": {
+                "op": "abs",
+                "args": [
+                  {
+                    "op": "at",
+                    "args": [
+                      {
+                        "op": "size",
+                        "args": [
+                          [
+                            0,
+                            {
+                              "op": "value",
+                              "args": [
+                                4
+                              ]
+                            }
+                          ]
+                        ]
+                      },
+                      1
+                    ]
+                  }
+                ]
+              },
+              "style": {
+                "fill": {
+                  "op": "visual",
+                  "args": [
+                    "color"
+                  ]
+                },
+                "stroke": "$theme.textPrimary",
+                "lineWidth": 0.6
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

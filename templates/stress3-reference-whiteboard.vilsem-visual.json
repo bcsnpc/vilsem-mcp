@@ -1,0 +1,124 @@
+{
+  "version": 1,
+  "specVersion": "0.7",
+  "type": "custom",
+  "bindings": {
+    "dimensions": [],
+    "measures": [
+      {
+        "table": "Measure Table",
+        "name": "Total Revenue"
+      },
+      {
+        "table": "Measure Table",
+        "name": "Total Profit"
+      }
+    ]
+  },
+  "template": {
+    "meta": {
+      "id": "stress3-reference-whiteboard",
+      "name": "Whiteboard-inspired paired model scorecard",
+      "formatVersion": 4
+    },
+    "slots": {
+      "revenue": {
+        "kind": "measure"
+      },
+      "profit": {
+        "kind": "measure"
+      }
+    },
+    "template": {
+      "animation": false,
+      "backgroundColor": "#ffffff",
+      "title": {
+        "text": "Model revenue and profit",
+        "subtext": "Paired scorecards inspired by a whiteboard\nNo experiment fields: these are model totals, not A/B results",
+        "left": "center",
+        "top": 35,
+        "textStyle": {
+          "fontSize": 24,
+          "color": "#1d4f75"
+        },
+        "subtextStyle": {
+          "fontSize": 13,
+          "color": "#555555",
+          "lineHeight": 19
+        }
+      },
+      "graphic": [
+        {
+          "type": "rect",
+          "left": "10%",
+          "top": "28%",
+          "shape": {
+            "width": 380,
+            "height": 180,
+            "r": 18
+          },
+          "style": {
+            "fill": "#ffffff",
+            "stroke": "#1d4f75",
+            "lineWidth": 2
+          }
+        },
+        {
+          "type": "text",
+          "left": "15%",
+          "top": "32%",
+          "style": {
+            "text": "Revenue (USD)",
+            "fontSize": 20,
+            "fill": "#1d4f75"
+          }
+        },
+        {
+          "type": "text",
+          "left": "15%",
+          "top": "39%",
+          "style": {
+            "text": "$slot.revenue.sumLabel",
+            "fontSize": 36,
+            "fill": "#1d4f75"
+          }
+        },
+        {
+          "type": "rect",
+          "left": "10%",
+          "top": "58%",
+          "shape": {
+            "width": 380,
+            "height": 180,
+            "r": 18
+          },
+          "style": {
+            "fill": "#ffffff",
+            "stroke": "#1d4f75",
+            "lineWidth": 2
+          }
+        },
+        {
+          "type": "text",
+          "left": "15%",
+          "top": "62%",
+          "style": {
+            "text": "Profit (USD)",
+            "fontSize": 20,
+            "fill": "#1d4f75"
+          }
+        },
+        {
+          "type": "text",
+          "left": "15%",
+          "top": "69%",
+          "style": {
+            "text": "$slot.profit.sumLabel",
+            "fontSize": 36,
+            "fill": "#1d4f75"
+          }
+        }
+      ]
+    }
+  }
+}

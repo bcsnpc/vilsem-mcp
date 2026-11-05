@@ -1,8 +1,14 @@
 /** Capability assessment, not a simulated Power BI host or certification. */
+import { collectTimelineSeries } from '@vilsem/core/templates';
 export function assessInteractions(spec, option, rowCount) {
-    const series = Array.isArray(option?.series) ? option.series : option?.series ? [option.series] : [];
+    const series = collectTimelineSeries(option ?? {});
     const active = series.filter(s => !s.silent && Array.isArray(s.data) && s.data.length);
     const warnings = [];
+    const aggregate = active.some(s => s.data.some(d => Array.isArray(d?.rowIndexes) && d.rowIndexes.length > 1));
+    if (aggregate)
+        warnings.push('Aggregate marks select their contributing rows on click, but the current native context menu uses one source identity. Whole-group drill-through is not verified; do not assume it represents the entire aggregate.');
+    if (spec.template?.transforms?.some(t => t.density2d?.contourFractions))
+        warnings.push('Contour selection refers to local sampled-kernel contributors, not every entity inside a contour or a confidence region.');
     let selectable = active.length > 0;
     if (!selectable)
         warnings.push('No interactive data marks: graphics-only or silent series cannot select report rows.');
@@ -20,7 +26,7 @@ export function assessInteractions(spec, option, rowCount) {
         crossFilterOut: selectable ? 'supported; report interaction settings control targets' : 'unavailable',
         crossHighlightIn: active.some(s => s.type === 'radar') ? 'limited' : 'supported for data marks',
         nativeTooltip: selectable ? 'supported; report-page tooltips require report configuration' : 'unavailable',
-        contextMenu: selectable ? 'supported; drill-through requires a configured destination' : 'unavailable',
+        contextMenu: selectable ? (aggregate ? 'available for one source identity; whole-group drill-through unverified' : 'supported; drill-through requires a configured destination') : 'unavailable',
         bookmarks: selectable ? 'host selection callback supported; bookmark must capture Data state' : 'no selectable data marks',
         keyboard: selectable ? 'Tab to focus; arrows choose, Enter/Space select, Escape clears' : 'focusable empty state',
         filteredEmpty: 'explicit empty state', resize: 'uses host-supplied dataView; no query from renderer', warnings,

@@ -1,6 +1,6 @@
 {
   "name": "vilsem-mcp",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Custom-visual authoring for local Power BI projects over MCP",
   "type": "module",
   "license": "MIT",
@@ -16,7 +16,7 @@
     "templates"
   ],
   "scripts": {
-    "build": "tsc && node -e \"require('fs').copyFileSync('src/rasterize.cjs','dist/rasterize.cjs')\"",
+    "build": "tsc && node -e \"require('fs').copyFileSync('src/rasterize.cjs','dist/rasterize.cjs')\" && node scripts/build-motion-runtime.mjs",
     "prepare": "npm run build",
     "start": "node dist/index.js",
     "thumbnails": "npm run build && node scripts/render-thumbnails.mjs",
@@ -28,10 +28,12 @@
     "@vilsem/core": "https://github.com/bcsnpc/vilsem/releases/download/core-v0.6.0/vilsem-core-0.6.0.tgz",
     "echarts": "6.1.0",
     "fast-json-patch": "^3.1.1",
+    "playwright-core": "1.64.1",
     "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "esbuild": "0.28.2",
     "typescript": "^5.9.0",
     "vitest": "^5.1.0"
   }

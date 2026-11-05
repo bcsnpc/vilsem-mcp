@@ -251,3 +251,38 @@ Core0.6 and MCP0.6 verification is recorded in the [Round3 GroupB log](https://g
 
 
 Contrast feedback uses4.5for normal text and3for text estimated at24px or larger, informed by [W3C contrast guidance](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html). It deliberately does not relax the threshold for smaller bold text, and it compares against the preview page rather than proving the paint behind every label. This is review assistance, not a WCAG compliance result.
+
+## GroupC0.7 development status
+
+This branch implements the bounded expression series language, declarative
+race/timeline motion, reusable user/shared template memory, and image-statistics
+reference workflows. Published0.6 releases retain their documented0.6 behavior;
+0.7 has not been released from this development checkpoint.
+
+The dependency URL still pins published core0.6 while the coordinated0.7
+release is pending. Development package acceptance uses paired local0.7
+tarballs with an explicit core override; it is not verification of a published
+0.7 install. Do not install this feature branch as a production0.7 release.
+
+Expression renderItem is a closed JSON AST, not arbitrary JavaScript. It shares
+one bounded interpreter between renderer and previews. The11 former(c) visual
+families have real-model tool passes, including weighted Voronoi. Venn circles
+are schematic; arbitrary exact area-proportional Euler fitting is still absent.
+Native Desktop acceptance is separate from SSR and successful commits.
+
+preview_visual motion:auto can capture actual enter/stagger/timeline canvas
+animation in a fresh headless Chrome/Edge/Chromium profile. It uses the same
+shipped core resolver, a controlled clock and blocked page HTTP/WebSocket
+requests/service workers. No model credentials/Node bridge enter the page.
+Install no browser through this package: use an installed browser, or set
+VILSEM_PREVIEW_BROWSER_PATH to its executable. It never attaches to user tabs.
+motion:states avoids browser launch; motion:browser requires it. Auto fallback
+is explicit. APNG <=3seconds/2MiB; contact sheets label timeline states, rather
+than claiming they are captured interpolation. Capture is not an FPS benchmark.
+See docs/motion-capture.md. No app checkout or VILSEM_APP_PATH is required.
+
+The separate real-clock5000-point animated-canvas probes missed60fps on this
+laptop (about25RAFfps in normal headless Chromium; also failed Electron
+offscreen). This target remains OPEN. Desktop has unsaved state and unavailable
+window automation; native gestures/renderer acceptance remain UNVERIFIED.
+Do not interpret0.7 development as production/certification completion.

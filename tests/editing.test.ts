@@ -3,6 +3,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import os from 'node:os'
 import {makeVisualContainer,RENDERER_GUID} from '@vilsem/core/pbir'
+import {CURRENT_SPEC_VERSION} from '@vilsem/core/spec/migrate'
 import {readStoredVisual,listStoredVisuals,patchVisualSpec,writeStoredVisual,specDiff} from '../src/editing.js'
 const folders:string[]=[]
 afterEach(async()=>{for(const root of folders.splice(0))await fs.rm(root,{recursive:true,force:true})})
@@ -17,7 +18,7 @@ async function fixture(){
 describe('persistent custom visual editing',()=>{
  it('reads migrated spec, bindings and separate manual objects without changing bytes',async()=>{
   const {root,file,value}=await fixture(),bytes=await fs.readFile(file),r=await readStoredVisual(root,'p1','bar1')
-  expect(r.bindings.measures[0]).toMatchObject({table:'Sales',name:'Revenue'});expect(r.specVersion).toBe('0.6');expect(r.formatPaneOverrides.appearance).toEqual(value.visual.objects.appearance)
+  expect(r.bindings.measures[0]).toMatchObject({table:'Sales',name:'Revenue'});expect(r.specVersion).toBe(CURRENT_SPEC_VERSION);expect(r.formatPaneOverrides.appearance).toEqual(value.visual.objects.appearance)
   expect(await fs.readFile(file)).toEqual(bytes);const list=await listStoredVisuals(root);expect(list[0]).toMatchObject({name:'bar1',layer:'composition',summary:'bar: Category by Revenue'})
  })
  it('applies real RFC6902 operations and preserves manual formatting through recommit',async()=>{

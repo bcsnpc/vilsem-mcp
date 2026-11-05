@@ -1327,3 +1327,145 @@ Labels preserve trusted formatter-template text such as `{name}: {value}` when c
 `preview_visual` defaults `critique:true`; findings contain code, severity, spec path, message, suggestedFix and evidence. SVG text bounds can report deliberate rich-text overlap; contrast uses the page background, so filled-mark labels need inspection. Dual axes request a business/units review rather than claiming to prove unrelated data. Absence of findings does not certify readability, full query coverage or host behavior.
 
 `preview_variants` requires connectionId, specs(1..4), equally sized labels and common bindings. It uses one query, a labelled2x2 image and per-candidate critique. Scoped measure blocks must match. `diff_visual` returns spec diff and before/after PNGs without writing. `update_visual` patches the stored spec (RFC6902), defaults dryRun:true and returns both PNGs, diff and the read etag; pass that etag with dryRun:false after review. Whole-document replacement, renderer identity/prototype/version edits and implicit rebinding are refused. Manual pane objects survive unless resetFormatting:true is explicit.
+
+##0.7 development: expression graphics and joint-area layout
+
+These additions require renderer4.36 or later and are not part of the0.6
+release. New0.7 writes use specVersion0.7; historical readers migrate forward.
+Read vilsem://docs/expression-language for the full closed grammar and budgets.
+Set template.meta.formatVersion4. A custom series accepts only this JSON AST,
+not source text or an authored function:
+
+```json
+{"type":"custom","data":"$slot.amount.values","renderItem":{"language":"vilsem-expression","version":1,"root":{"type":"circle","shape":{"cx":{"op":"add","args":[20,{"op":"mul","args":[{"op":"dataIndex","args":[]},30]}]},"cy":40,"r":5},"style":{"fill":"$theme.accent"}}}}
+```
+
+This syntax-only example uses dataIndex for fixed positions. Use api coordinate
+operations and explicit encode/dimensions for scaled real measurements. Data
+identity comes from the datum's source position or bounded rowIndexes; drawing
+a shape does not invent a new report selection identity. Literal strings
+starting with$ use {"op":"literal","args":["$#,0"]}, including currency formats.
+validate_spec returns exact AST pointers and expected operations/types; it
+rejects loops, code, property dereferences, prototype keys and budget overflow.
+
+The mosaic transform preserves actual joint additive weights as unit-square
+areas. It supports Marimekko/mosaic geometry without an imperative callback:
+
+```json
+{"as":"cells","mosaic":{"x":"country","y":"category","value":"revenue","limit":200}}
+```
+
+Use$calc.cells.data as series.data. Each object has name,rowIndexes and
+value:[left,bottom,width,height,weight,xIndex,yIndex]. Widths are X marginal
+shares, heights are conditional Y shares and width*height=weight/total.
+xCategories/yCategories expose the ordered names. Nulls and zero weights make
+no cells; negative/nonfinite weights and overflowing totals fail explicitly.
+The limit is1..2000 cells, default2000. Use additive measures; ratios/distinct
+counts across joint groups cannot be assumed additive. No missing intersection
+or independence-based cell is fabricated. Empty input produces an empty result.
+
+
+# Group C format additions (development, not a released contract)
+
+All examples use `template.meta.formatVersion:4`, specVersion `0.7`, and native
+renderer 4.36 or newer. Call validate_spec before preview. Exact field names
+below are slot names, not DAX expressions. Transforms never rewrite the model.
+
+## Expression geometry
+
+An expression series uses `type:"custom"` and a renderItem JSON AST:
+`{language:"vilsem-expression",version:1,root:{type:"rect",shape:{x:0,y:0,width:20,height:20},style:{fill:"$theme.textPrimary"}}}`.
+See the expression-language resource for the full operation grammar and budgets.
+No executable callback is accepted. Compilers operate on timeline baseOption
+and options as well as root series, sharing one whole-visual resource budget.
+Paths default to strokeNoScale:true. Use common x/y/scaleX/scaleY transforms to
+place normalized paths; shape width/height fitting changes their meaning.
+
+- `{as:"cells",mosaic:{x:"country",y:"category",value:"revenue",limit:200}}`
+  gives `data` values `[left,bottom,width,height,weight,xIndex,yIndex,xName,yName]`.
+  Joint weights determine area; this does not invent independence estimates.
+- `{as:"curve",density:{by:"category",field:"price",layout:"violin",samples:32,expressionGeometry:true}}`
+  adds geometryData `[left,top,width,height,index,path]` and geometryXMin/Max,
+  geometryYMin/Max. Layout may instead be ridgeline. The path is an unused
+  ordinal dimension; coordinate/scaling dimensions remain numeric.
+- `{as:"packed",jitter:{by:"category",field:"price",method:"collision",expressionGeometry:true}}`
+  adds expressionData `[price,packedY,radius,priceRange,packingWidth,packingHeight]`.
+  Scale the radius for the actual plot dimensions; keep source rowIndexes.
+- `{as:"labels",words:{text:"product",weight:"revenue",expressionGeometry:true}}`
+  adds expressionData `[x,y,weight,fontSize,word,width,height]` without copying
+  hidden legacy text styles. Label fonts must scale with the packed extent.
+- `{as:"tree",hierarchy:{levels:["category","subcategory","product"],value:"revenue",layout:"partition",expressionGeometry:true}}`
+  adds expressionData `[offset,depth,span,weight,name]` for a flame display.
+- `{as:"bins",hexbin:{x:"price",y:"cost",bins:14,expressionGeometry:true}}`
+  adds expressionData `[x,y,count,radiusX,radiusY,path]` and expressionX/YMin/Max.
+  Cells are hexagonal in normalized data coordinates; affine pixel scaling can
+  change their aspect. Counts and contributing row identities are preserved.
+- `{as:"density",density2d:{x:"price",y:"cost",contourFractions:[0.2,0.4,0.6,0.8]}}`
+  adds contourData `[x1,y1,x2,y2,threshold,levelIndex]`, contour bounds and levels.
+  Marching squares uses an asymptotic saddle decider. Levels are fractions of
+  peak KDE, **not probability/confidence regions**. Selection denotes local
+  kernel contributors, not every entity geometrically inside a contour.
+- `{as:"sets",setOverlaps:{value:"count",sets:[{name:"Black",field:"colour",equals:"Black"},{name:"Unisex",field:"style",equals:"U"}]}}`
+  accepts two or three predicates and returns exact observed membership regions,
+  inclusive set counts and schematic circle positions. Circle areas are not
+  proportional to cardinalities; arbitrary exact Euler fitting is not provided.
+- `{as:"cells",voronoi:{levels:["country","category"],value:"revenue",limit:80}}`
+  returns weighted convex hierarchical cells with values
+  `[cx,cy,weight,depth,colourIndex,isLeaf,path,label,labelWidth,labelHeight]`.
+  Paths use unit-square coordinates with SVG Y inverted. Use numeric cx/cy for
+  labels and common plot transforms for paths. Parent/leaf rowIndexes remain
+  exact. At most 24 siblings, 128 nodes, two or three levels, sibling/root
+  fractions at least 1e-7, 2 million geometric work units. Results exceeding
+  0.1% relative area error are refused. Zero weights are omitted; negatives fail.
+
+`$theme.readablePalette` is an opt-in palette adjusted toward at least 3:1
+non-text contrast against a known opaque page background. `$theme.palette`
+continues to preserve the report palette exactly. Unknown/translucent
+backgrounds cannot guarantee contrast. `$theme.pageBackground` exposes the
+known report background for explicit design decisions.
+
+## Declarative motion and race frames
+
+Animation lives alongside slots/transforms, outside the ECharts option:
+
+```json
+{"animation":{"enabled":true,"enter":{"duration":400,"easing":"cubicOut","delayByIndex":{"milliseconds":10,"max":500}},"update":{"duration":600,"easing":"cubicInOut"},"animationThreshold":5000}}
+```
+
+Durations are 0..30000 ms, stagger increments 0..1000 ms and stagger caps
+0..30000 ms. Easing is a closed whitelist; see the expression/motion docs.
+Animation and Reduce motion pane switches apply to nested timeline frames and
+series, and the native renderer also observes prefers-reduced-motion.
+
+`{as:"ranked",race:{time:"month",category:"country",value:"revenue",topN:10,history:12}}`
+returns timeLabels, categories, maxValue and frames. Each frame contains name,
+index, data, categories, timeLabels and line-history series. Marks have stable
+id/name and source rowIndexes. Repeated time/category grains fail: ratios and
+distinct counts must be computed by DAX, never silently summed. Missing history
+observations remain null. Optional x/y slots must be supplied together; size
+is optional and nonnegative. Frames <=120, topN <=100, history <=120, derived
+points <=50000. Unknown transform settings fail validation.
+
+Bind `baseOption.timeline.data:"$calc.ranked.timeLabels"` and
+`options:{repeat:"$calc.ranked.frames",template:{yAxis:{data:"$item.categories"},series:[{id:"race",type:"bar",data:"$item.data"}]}}`.
+For line history, repeat `$item.series`, using `$item.id`, `$item.name` and
+`$item.data`. Bubble size can use a visualMap on dimension 2, not an arbitrary
+symbolSize callback. Timeline and UniversalTransition modules are registered
+in the web and native renderers. Live update retention, hidden-state behavior
+and full motion acceptance remain under test; registration is not acceptance.
+
+`preview_visual({...,frames:6})` returns a final timeline-state PNG, a bounded
+APNG when feasible, and a sampled-state contact sheet. The APNG is <=3 seconds,
+<=2 MiB and <=12 states / 12 million decoded pixels. `motion: "states"` samples
+discrete settled states. `motion: "browser"` captures actual browser interpolation
+with a controlled animation clock; `motion: "auto"` attempts browser capture
+and explicitly reports any fallback. Capture is not a frame-rate benchmark.
+Critique warns about sequences over 3 seconds and timelines exceeding 60 states.
+
+Tests: race-template-integration, race-transform, expression-geometry,
+voronoi-layout, grid-geometry, expression-layout-data, set-overlaps,
+animation-contract, animated-preview and MCP motion-preview. See regression
+status for actual runs and native verification boundaries.
+
+
+Browser capture: preview_visual also accepts motion:auto|states|browser (default auto). When a supported installed Chromium executable is available, auto returns a bounded actual canvas APNG for authored motion. VILSEM_PREVIEW_BROWSER_PATH is an optional executable override. Missing-browser auto fallback is explicit; browser mode errors. Capture uses a fresh profile, blocked HTTP/WebSocket/service workers, stripped credentials and controlled requestAnimationFrame time. It is not an FPS measurement. Source durations exceeding3seconds are marked truncated. Timeline contact sheets remain sampled state overviews. See the packaged motion-capture.md design/security notes.

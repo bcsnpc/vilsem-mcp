@@ -1,6 +1,10 @@
 import {describe,it,expect} from 'vitest'
 import {assessInteractions} from '../src/interactions.js'
 describe('honest preview interaction assessment',()=>{
+ it('does not promise whole-group context menus for aggregate marks',()=>{
+  const result=assessInteractions({}, {series:[{type:'custom',data:[{value:3,rowIndexes:[0,1]}]}]},2)
+  expect(result.selection).toBe('supported');expect(result.contextMenu).toContain('unverified');expect(result.warnings.join()).toContain('one source identity')
+ })
  it('reports selectable native-host capabilities without pretending SSR exercised them',()=>{
   const result=assessInteractions({type:'column'},{series:[{type:'bar',data:[3,2]}]},2)
   expect(result.selection).toBe('supported');expect(result.assessment).toContain('does not verify')
@@ -16,6 +20,7 @@ describe('honest preview interaction assessment',()=>{
  it('warns about transformed marks lacking explicit provenance but accepts row-indexed marks',()=>{
   const spec={template:{transforms:[{stat:{op:'sum'},as:'s'}]}}
   expect(assessInteractions(spec,{series:[{data:[{value:3}]}]},2).warnings.join()).toContain('rowIndexes')
-  expect(assessInteractions(spec,{series:[{data:[{value:3,rowIndexes:[0,1]}]}]},2).warnings).toEqual([])
+  const warnings=assessInteractions(spec,{series:[{data:[{value:3,rowIndexes:[0,1]}]}]},2).warnings.join()
+  expect(warnings).not.toContain('incomplete source identity');expect(warnings).toContain('context menu')
  })
 })

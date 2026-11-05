@@ -81,7 +81,7 @@ export async function listStoredVisuals(reportDir) {
                 continue;
             try {
                 const item = await readStoredVisual(reportDir, page.name, visual.name);
-                const t = item.spec.template, layer = t ? 'template' : 'composition';
+                const t = item.spec.template, layer = t ? (JSON.stringify(t.template).includes('"language":"vilsem-expression"') ? 'expression' : 'template') : 'composition';
                 const family = t?.meta?.name || t?.meta?.id || item.spec.type;
                 result.push({ page: page.name, pageName: page.displayName, name: visual.name, layer, summary: `${family}: ${item.bindings.dimensions.map(d => d.column).join(' → ') || 'KPI'} by ${item.bindings.measures.map(m => m.name).join(', ')}`, bindings: item.bindings, lastModified: item.lastModified, specVersion: item.specVersion, layout: item.layout, warnings: item.warnings });
             }
