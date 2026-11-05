@@ -1,0 +1,728 @@
+{
+  "theme": "light",
+  "dataSource": "Deterministic synthetic regression fixtures, not model/client data",
+  "width": 900,
+  "height": 600,
+  "items": [
+    {
+      "id": "expressiveness_bullet",
+      "status": "rendered",
+      "sha256": "c6c37b56979267e9df54ed352a64c5eedf77a84a65b43d9962202c1c2835af17",
+      "specSha256": "6162c3abca7c84f9771c6453ca9dc75fcf7af3c3642f240867503b512626dcd0"
+    },
+    {
+      "id": "expressiveness_dual_axis",
+      "status": "rendered",
+      "sha256": "58d5acaa5a354506932515f3b82bff8ef2ecefe4246f4a8571f3f4503ada116a",
+      "specSha256": "7184fe977ae78632e35dca08bb0786672cc7b6fe91aaf38e6567b72557747b6a"
+    },
+    {
+      "id": "expressiveness_gantt",
+      "status": "rendered",
+      "sha256": "03f19481032d19ba6400dcd6d1829079d5361a021d5fe7298b9b7a3e519804eb",
+      "specSha256": "6a728271f37fcd02ae59ff8d8050a371b7a2e8252dc91af5b14c5aed28433f97"
+    },
+    {
+      "id": "expressiveness_network",
+      "status": "rendered",
+      "sha256": "675a8ea519ba3c1b2c165fca6cd30f1183b7aefe35fc27288c7a85a9ae2df0db",
+      "specSha256": "8d44fce1a401619e873c784d4b5422acc81ae55379967e2e1652902e7cbcee82"
+    },
+    {
+      "id": "expressiveness_radial_progress",
+      "status": "rendered",
+      "sha256": "3f8e99f1afaf292a1aed0f5a24c68ee79278c4389dbf59e8fab3fc0c37f86005",
+      "specSha256": "84036f8a078271301cb1be168026663db61446b26ad1b7d05d5e273093f457a4"
+    },
+    {
+      "id": "expressiveness_sankey",
+      "status": "rendered",
+      "sha256": "bd996283ea257a0691930a16848baf97b900978ab921359706fbc834e5230e18",
+      "specSha256": "275537711f1dcc1e5cc9d8fa2a84829919ec90174e98641aec84f7f742fc3748"
+    },
+    {
+      "id": "expressiveness_small_multiples",
+      "status": "rendered",
+      "sha256": "3fe827cd2f0fd5745e99301eb4dcdecdd7498e63903970da8ad4a13d807dc2a0",
+      "specSha256": "67d172a1eafcdab03ab55a0a6607b4716b17b549c1dae844ddd1ae9095ae67e6"
+    },
+    {
+      "id": "stress2_001_step-line",
+      "status": "rendered",
+      "sha256": "e060fa69a4d5c4c241f7d74fa7fc8de038ffb274e128258108d3540c177acfcb",
+      "specSha256": "9733172ca78ab080a47ff097fb893aa3527269bae7402486b8fb2f244a040370"
+    },
+    {
+      "id": "stress2_002_spline-gradient",
+      "status": "rendered",
+      "sha256": "1c06631ede66a95941365aa0e2c2c02ee4bb2729e6dd6d4d58a469aa905bb57a",
+      "specSha256": "6829995fce76d2c95a5ed3399c1ad44b7a47a805361efc918b4c30d189333613"
+    },
+    {
+      "id": "stress2_003_rolling-line",
+      "status": "rendered",
+      "sha256": "474a4aab65e14d257cee6591aaa696bf7903669a28b34e1d2b6e9dc7decea84a",
+      "specSha256": "e6f7b9129cfc714f7371e3e88cf1df37adbf47671d3cf4deeb919c3b60e3c216"
+    },
+    {
+      "id": "stress2_004_confidence-band",
+      "status": "rendered",
+      "sha256": "8e8c82fe89955ff908673fca706b43c023a8f576213758f446a1b4639557355d",
+      "specSha256": "1adba015c4f154281f732ea3a4b536b2b10063a9b8ca861d1ad9e0b6f37ae8e1"
+    },
+    {
+      "id": "stress2_005_fan-chart",
+      "status": "rendered",
+      "sha256": "3123f666439459424fac03acc12c35ce2a776dca57d9829fc4ba61db0ab1ce55",
+      "specSha256": "74c442577dfdb935daed5051ce9442aa5ffa7b682b95d003872a097ec9b2881d"
+    },
+    {
+      "id": "stress2_006_horizon",
+      "status": "rendered",
+      "sha256": "b2f845f7972e13837215622378c68a77a8df3160f9b8bc1725eb814887336a48",
+      "specSha256": "38218d078be91aafa10c73ce94dab5876f7ee1db82638e86e0f9026525638f80"
+    },
+    {
+      "id": "stress2_007_sparkline-grid",
+      "status": "rendered",
+      "sha256": "428e527a22bd0977881db3d586a50e00f72b89907b752fd6cf76bbe2969eb9b7",
+      "specSha256": "a22ab6b0311f3f7b4be1c1be4f79e01044c3186f9c6e41802ad2d56af9df0e86"
+    },
+    {
+      "id": "stress2_008_100-percent-column",
+      "status": "rendered",
+      "sha256": "97757bb5e15bce0283b4e3334c652858fe94a2b1acb851d8518c491c19268dca",
+      "specSha256": "0c3da94eeaafc0ad51efdba3747ad4f104ce6172dbb0497fbfbb77ed709f5201"
+    },
+    {
+      "id": "stress2_009_diverging-stack",
+      "status": "rendered",
+      "sha256": "53cdfd808ef8c8c0a02e17e0f9646f0ff9d1e3c90d2fae7778a7db95c2a1fde7",
+      "specSha256": "32e61261718346cd87b15acfe8a1b98380ac50fc579cf08908c825e2342d0dda"
+    },
+    {
+      "id": "stress2_010_population-pyramid",
+      "status": "rendered",
+      "sha256": "97d16408969c0ad7c50dfa0ba163afed2aa6e0209256a315bfdf03197a3d76f3",
+      "specSha256": "5f81dc4a336907c8a3d914417b08b688614c0df8b09f5a5402c6fdbafb630ae9"
+    },
+    {
+      "id": "stress2_011_grouped-stacked",
+      "status": "rendered",
+      "sha256": "1d511ed88506666b5b9f004e3b33078b845b581167f7fd11172cf63f408b3441",
+      "specSha256": "19629b35c1236023b4cb390ea6c10989e557c28ef6b2695edd7801f356914718"
+    },
+    {
+      "id": "stress2_012_lollipop-target",
+      "status": "rendered",
+      "sha256": "2e82055ff510c409aa891eb0b00768611eb2071d73a7abe3cfa6dd780a826af9",
+      "specSha256": "3b3caa92c3b27c12f9d400277abd8aadb00a5663caa2b626cb70c8c090a4586a"
+    },
+    {
+      "id": "stress2_013_cleveland-dots",
+      "status": "rendered",
+      "sha256": "710e0899a5fd669af99fcae421c96dec750de289156588b4312146094e61c20e",
+      "specSha256": "a5022cb3328d457315a074a96f6dd495032be438291c958cc3cd5df3f7f16dc4"
+    },
+    {
+      "id": "stress2_014_range-delta",
+      "status": "rendered",
+      "sha256": "ea87e9d7140570e1be9aa0d3f456a2004dd071327db5b8e810c80db53cf1674d",
+      "specSha256": "4aeb0d63db8875764cc826d6f40dd7491c9c2a015f5788cfd61e990f88ae0c66"
+    },
+    {
+      "id": "stress2_015_wrapped-bar",
+      "status": "rendered",
+      "sha256": "24185d22fd4108c0b118f2def8bcaba5dc54abf3b539678434c19f1bb510a1b0",
+      "specSha256": "9e62984a75a51bf066840d6ac9b1b603178bb595278ce2fd2558b0d4c1655905"
+    },
+    {
+      "id": "stress2_016_revenue-strip",
+      "status": "rendered",
+      "sha256": "bd0cfd9c5769f26d4c816ea887d59c0aa63056cb23c1e934a9537df59f7c0fb0",
+      "specSha256": "c073dba175686c29e079fa35d1d9b0524046407a43097c86dbfb4491be775f44"
+    },
+    {
+      "id": "stress2_017_polar-column",
+      "status": "rendered",
+      "sha256": "7e532f9b11dc54eda059da8f4cb1c242edd8d744431ae9ab91befc38139712a3",
+      "specSha256": "197dd66a11c8aa3657ea25285830ecc80bb23eac20ed929fc5a217be13e7bd74"
+    },
+    {
+      "id": "stress2_018_nightingale-rose",
+      "status": "rendered",
+      "sha256": "a0476559e7832346f7ea0c44a4ef0a01979a3e47107d543ee9715cd1e446c6bd",
+      "specSha256": "42b67b1311c42dfe3202bc336ffd16fe8dfa4b87ada5b9c8d6ec87bd76efc91c"
+    },
+    {
+      "id": "stress2_019_semi-donut-kpi",
+      "status": "rendered",
+      "sha256": "1b16914dc4af7bb10a7102671165e9d711d26eccad1cc0fb86e4911000a1edd2",
+      "specSha256": "aa0a4921a31956163d308f2385f5d473905acc240b789e1815362947361bc454"
+    },
+    {
+      "id": "stress2_020_nested-donut",
+      "status": "rendered",
+      "sha256": "19fced1d80a478b207bafe63ba83816840e527348d4691ce4fb8ea6808dec4ca",
+      "specSha256": "d40ef3d52834ba16f54e6e7a72726d813a1a0c1d8eba9ea4da541bcbc772688f"
+    },
+    {
+      "id": "stress2_021_pie-top-other",
+      "status": "rendered",
+      "sha256": "72af5c62137da6772af4f1cf436f04abe49e22dff550d0889570821fddd2b92e",
+      "specSha256": "4a6908830b12196a1c37ad2c3ca1b165a7324e014b64c012463d877164a66255"
+    },
+    {
+      "id": "stress2_022_pictogram-icons",
+      "status": "rendered",
+      "sha256": "222dacec7d2c05af5dfe2534da0fdfc2fea28026142c2c6a2cb742f71dd7a114",
+      "specSha256": "b0ed36d139037c3888c14343071b3b63cc4d5207802f0a739e3250c530cd4ceb"
+    },
+    {
+      "id": "stress2_023_waffle-share",
+      "status": "rendered",
+      "sha256": "3288176f6b6dd66b8e4dfe776c571787edac2d9ea291c26add233e2fd3fc82e4",
+      "specSha256": "bb05a58a15d5f791f661f9cbc3f1a2378b99629513257b94790d28a4f9b62077"
+    },
+    {
+      "id": "stress2_024_hemicycle",
+      "status": "rendered",
+      "sha256": "3f2f8ed2727233a52fb41b6c033ca9044199d92568e8932d2c1a2fccfeb328bc",
+      "specSha256": "82482c5437b982ccfd88aeeb32da50faf873cfef8ac61e63bb1dd4301d9fd2f3"
+    },
+    {
+      "id": "stress2_025_bullet-bands-delta",
+      "status": "rendered",
+      "sha256": "60d2a39c6055ca313a9d5c33145b64fd8811ac955f916b4f04438513e4e1b7e6",
+      "specSha256": "b3ef00289b4fb2d1f7f713623747aea1f55fb57e88665fa0b646c3a8e6a4b784"
+    },
+    {
+      "id": "stress2_026_linear-gauge",
+      "status": "rendered",
+      "sha256": "5c538de199a38e0c3ad6944ef4eeddd26865914016e3eb2de2a00067efc87850",
+      "specSha256": "26e70736fade05acbc2b16bf4e8e329cbc3933235ce6520b2f3a844a98c77cd1"
+    },
+    {
+      "id": "stress2_027_multi-ring-progress",
+      "status": "rendered",
+      "sha256": "2c8ba3bb992138704217a107b15dfd23bd064c913c3d8cc4ea4540bfbe2b71b1",
+      "specSha256": "a87eac64e683d3074d73bb34812b0c795a77c90caca25d3e9af26c8b16b66fa4"
+    },
+    {
+      "id": "stress2_028_gauge-target-bands",
+      "status": "rendered",
+      "sha256": "17fac6fdea73128dfcfa113d387ae3c117c9121a35efff47bcf17b0d3b03e94f",
+      "specSha256": "cd40f3bcee968447163e6a7df23cb10ae8d178909854f0ae3e7cba356e56b05d"
+    },
+    {
+      "id": "stress2_029_dual-axis-reference",
+      "status": "rendered",
+      "sha256": "9e36d6477536a787c1f7340729c301d2298f941d46e03af02768d850cf0d5f96",
+      "specSha256": "22b68aeaafce1c0556c8bda63c7a3fdf82aaef93c5f97a54d1d83ecd97b385ce"
+    },
+    {
+      "id": "stress2_030_pareto",
+      "status": "rendered",
+      "sha256": "a18a061a10feaf42c3d792697d86f82fee630f509cf1e3405d028877145c82f1",
+      "specSha256": "f18776ae76609e6e012af84617ba78f2cd585ae1f505eb29a269b4e56fef3757"
+    },
+    {
+      "id": "stress2_031_waterfall-subtotals",
+      "status": "rendered",
+      "sha256": "d17c37736f0bf1e05fee4691470c35b0b52ccb396ae64ecc2a7633e87f825fb1",
+      "specSha256": "a100741e66af37e1ef976fa6f9cae13268dd7cb352c8c322451cef523e22bc70"
+    },
+    {
+      "id": "stress2_032_double-waterfall",
+      "status": "rendered",
+      "sha256": "12b58a8a77c5af250968e1b9b44b5a719ae08d02df5a9c44f53458831334c653",
+      "specSha256": "ad70232fa18a013089b9bdef7ac6768f3607b3b67e3f3c1daaaf386b767d5110"
+    },
+    {
+      "id": "stress2_033_profit-bridge",
+      "status": "rendered",
+      "sha256": "57a01397e357133f73ae4958117484b24038eca298ebdfe9e9b51552b087a2d0",
+      "specSha256": "2a7603f3abeb1775d8224548c5ea3dcd26c2f34e3c97d26d445e72a8e3b44319"
+    },
+    {
+      "id": "stress2_034_revenue-ohlc",
+      "status": "rendered",
+      "sha256": "9e51edcb8d6b5359aecb09dc1aedee1181f518b510e09c5bdf62a3ab1e678b47",
+      "specSha256": "7e6b072ac738bbe55e811697338e9c5e0fcf061b9bb4000e2a98f90b2e84e1f7"
+    },
+    {
+      "id": "stress2_035_heikin-ashi",
+      "status": "rendered",
+      "sha256": "e6e6bf8f4d038a7bbc91e4b028f87cd9ac168cce6cfcbac10f3c10712ec7eb46",
+      "specSha256": "442446fdc623ade5a5943d434d84d9c2a2ed92f65a33a0e9063a93c796c45148"
+    },
+    {
+      "id": "stress2_036_diverging-heatmap",
+      "status": "rendered",
+      "sha256": "27933a560453eb2dfc16e530a88dbf84637fc6faf9e0ca2aa867348740a6cca8",
+      "specSha256": "68ffff3c11a0c11ba07b2793f7d52119b007e3c200b3e2a58d700061115d09d7"
+    },
+    {
+      "id": "stress2_037_calendar-margin",
+      "status": "rendered",
+      "sha256": "4e53c38a5fdbca4569d5da71fb5b258b3b9716e390ebd9a2d88ef389bdd14610",
+      "specSha256": "b2733508bbb4b129ca37072c6013d26f3978ebc5d3d6ed87b2adf17f06391dc1"
+    },
+    {
+      "id": "stress2_038_daily-heat-strip",
+      "status": "rendered",
+      "sha256": "23e2a7896e13972bc6497cbc6f73207ef19f560e8ffa4426e83e353cccd6a569",
+      "specSha256": "ea78e47d0f890d0566c1ec7505076937ecceb7c62a7833d06efba1df5bf198e6"
+    },
+    {
+      "id": "stress2_039_country-lasagna",
+      "status": "rendered",
+      "sha256": "06ca0aba7392d4e3a63bee6ade3b553aae400b84d3482b28e3c00798b597a0be",
+      "specSha256": "53aba371fe3691ade4ad66c353df511ab7203a08b46651927c628676ec0dfdd0"
+    },
+    {
+      "id": "stress2_040_treemap-secondary-colour",
+      "status": "rendered",
+      "sha256": "af468368d216e4a1abeb2b6b035a42b49f507ca1204f1a325394da0363712ed2",
+      "specSha256": "c24c8fe1cd7ec193267e0797ee054041c2ffa9fa5d994706405297df130d0672"
+    },
+    {
+      "id": "stress2_041_treemap-drill",
+      "status": "rendered",
+      "sha256": "fb6284104f64fb4536223b2ff83440953c3bb6f06f50f0135e38381f77520036",
+      "specSha256": "a7868f48e0646a912930e59cb81cf9f062fe2f2003d91f1c82e2b4ca807c1edb"
+    },
+    {
+      "id": "stress2_042_sunburst-products",
+      "status": "rendered",
+      "sha256": "7364ed7299dee617bd147f92a39a302df71ebb6bf08af28a7dbaa3051ee63dc8",
+      "specSha256": "bd94e33fd528a44189fb523ac3f9ecf07864a91d45a95a6365049cb20a9dc04d"
+    },
+    {
+      "id": "stress2_043_icicle-partition",
+      "status": "rendered",
+      "sha256": "44897c91dd50f5a83552e8905592626f07032b5628b225b6f9f68f116cf83930",
+      "specSha256": "edee933e1929081138f6a3a50e7ddd9bf7e5f31a34030022592936fb46d7ce2d"
+    },
+    {
+      "id": "stress2_044_circle-packing",
+      "status": "rendered",
+      "sha256": "329357408badf6daf85e669ed248e2a27a6e7a6b452c377d1deafa970bbb0d19",
+      "specSha256": "3d6482d63e47f54e90edba2583a24afdcfc9f13e6e649a6eefc7735e72f620e3"
+    },
+    {
+      "id": "stress2_045_orthogonal-tree",
+      "status": "rendered",
+      "sha256": "b12d87e6b5bdf42c50669c4a43b3c86db36ff0703e7b53115185d328f828634b",
+      "specSha256": "6ba0b3c2ffc441bc3ae3a5be4c1417cca8151af8b20f95aca3fc744c13e3fcd1"
+    },
+    {
+      "id": "stress2_046_radial-tree",
+      "status": "rendered",
+      "sha256": "2d20906fd2b3110f695b9569a06c6d8527fdcc2fb170f95be554dedcf6477811",
+      "specSha256": "a033e9edce801b087d3cc19bf596a9f61df754e4d6b84b662cd9f5e576be3354"
+    },
+    {
+      "id": "stress2_047_taxonomy-org-chart",
+      "status": "rendered",
+      "sha256": "8d9e2ddf772e7d6001a8f8658e248c63e6a6f2d145c3016c3a22ac1a2201d304",
+      "specSha256": "cb803bb5c97ba0fdde6a3f86a74bc6fb3674ec6539b0bbe86be31f6a2fbd453b"
+    },
+    {
+      "id": "stress2_048_dendrogram-values",
+      "status": "rendered",
+      "sha256": "bc8dea85e51dffc8a144fd5ff3361ffca69610cf40fd365cf9c73c19ae2d420f",
+      "specSha256": "14d8dd3579dfa31b2d6e2704204b9d96824611a75d51de75cf6a5a9b903149ab"
+    },
+    {
+      "id": "stress2_049_sankey-two-levels",
+      "status": "rendered",
+      "sha256": "8fdee9f998026c7ea23b5e9fd00bd544385b617020bbbc1753820a93587bef6e",
+      "specSha256": "ef03233245da08b382a9a39622f2bd915203e2a25923b5a211b749e27260e15e"
+    },
+    {
+      "id": "stress2_050_sankey-three-levels",
+      "status": "rendered",
+      "sha256": "07958da13450cf60d1acc8d8f8d327650c79945c98379339d869c6a98ab377c9",
+      "specSha256": "e0c09e7c95b79085b58d93e28053974ecb4dc27d711e98daf1343a67aba6bef7"
+    },
+    {
+      "id": "stress2_051_parallel-sets",
+      "status": "rendered",
+      "sha256": "e37b3d1b4e16b8d394fc202fa8d7c9633d890641c0cdb248335b4d8e9cb9f05a",
+      "specSha256": "2d731abcb8b546e6a2984f2b98a79535fd4b496b5cbdef40c8a5b007f55eb328"
+    },
+    {
+      "id": "stress2_052_chord-ribbons",
+      "status": "rendered",
+      "sha256": "d6e256504cffc86a59687d4d0a554d02a8629974bb8ee21a47b8cb2873b4c9c3",
+      "specSha256": "6a7daff85036080672d1cae4e43ad7a313ecb8290be803591517cdd278d33405"
+    },
+    {
+      "id": "stress2_053_chord-arcs",
+      "status": "rendered",
+      "sha256": "1e7a5f829783211f1785fc934ed01f87697218f17c55bc67fb096fcaefdf52f0",
+      "specSha256": "803a484e5c30d6df7fe03dcfcc9cc7de12997f21ee907bc36ada54811cf5f7f6"
+    },
+    {
+      "id": "stress2_054_arc-diagram",
+      "status": "rendered",
+      "sha256": "f8b46abc28dbc81f5124daad86a62d6d777a2d2217223bca8c25bfa700f902d6",
+      "specSha256": "9ee520f323326d2485fe8207362781d9a7a9818dccd62ff8d6bfd416a48e3bec"
+    },
+    {
+      "id": "stress2_055_relationship-force",
+      "status": "rendered",
+      "sha256": "333f277a13c2ef33af28db65fad4c2efac6a2447561afe73cd4621bedf998116",
+      "specSha256": "adf09f02b193046345ab601d10db79c2d4c56403904c41f5336dd3f770f701e0"
+    },
+    {
+      "id": "stress2_056_network-circular",
+      "status": "rendered",
+      "sha256": "d4588cf046572eb07fec24aad54c19b90c02b126b9f346a174d583bdc75e4d31",
+      "specSha256": "83166df521c8f3b592fe2a8b10de59819a225b4fd8b823d5f591969c809e0376"
+    },
+    {
+      "id": "stress2_057_adjacency-matrix",
+      "status": "rendered",
+      "sha256": "4f607002db770683391dea0209f59a31ae7d1ec319d91c0c22f14217a654fffc",
+      "specSha256": "e9838cc36101550490b7efe1b23c3431e43a8bc984996fd9b2e9fcd7d48b27fc"
+    },
+    {
+      "id": "stress2_058_bipartite",
+      "status": "rendered",
+      "sha256": "972483014145ef205f495e21c5dbac6de10e43daacc21506b0b11661db5bda7b",
+      "specSha256": "3685d24bd444d150a50b3c74475b9511ac53b725ce54cd489cf2e5b40f56c3c0"
+    },
+    {
+      "id": "stress2_059_radar-benchmark",
+      "status": "rendered",
+      "sha256": "1963b047c80cce30f3ffe90f59ec22e556dc1e2b603cd10e912ec9a09f94abd2",
+      "specSha256": "d3863419d6a7602499542a3a8a386ba6466cb8a4e62707ececd7a7465ab5218b"
+    },
+    {
+      "id": "stress2_060_radar-small-multiples",
+      "status": "rendered",
+      "sha256": "fbeeb8b0d9d685d7936a664d3ddf7a5fb49593cfbaf85a363e392178c1c6b338",
+      "specSha256": "5f9e541e2e8b9858f2c023f1eb6bc963850076ad25a76f40d89f7212d648bac5"
+    },
+    {
+      "id": "stress2_061_parallel-six-measures",
+      "status": "rendered",
+      "sha256": "908b2e759de52991dc3663ce5cbcb2a4b954d8b7d7904bb7b3de9c67c502f786",
+      "specSha256": "68ee3f3c22c01aee1e48cd5a9e245f8e2459bb100940219656e0241c2234f812"
+    },
+    {
+      "id": "stress2_062_median-quadrants",
+      "status": "rendered",
+      "sha256": "9e76eef2852878b99da56f75854a0e387d44625a8b403ce7bb3ac9580fe3236b",
+      "specSha256": "ae4fdb66c99ae60ee7739f144a2409471fc6dda103480758d29c743000e4e2ba"
+    },
+    {
+      "id": "stress2_063_connected-scatter",
+      "status": "rendered",
+      "sha256": "2ab6fa79d2c8d613351992dc0abd8a1c44fc86d09539a7aeaf92dae287f0df5f",
+      "specSha256": "ddc241df8985243cdd130320c7495fc1ba7643afc53f428e97a1e1521db74606"
+    },
+    {
+      "id": "stress2_064_scatter-matrix",
+      "status": "rendered",
+      "sha256": "62a6da480b6fa4014791b41fb89541d7c6b39af4f4847809108ee78f7ce11220",
+      "specSha256": "a37922b8a7f357bf4517b297b3297e6eb91ec50fcd5f922b40f6d123b65abb90"
+    },
+    {
+      "id": "stress2_065_categorical-bubbles",
+      "status": "rendered",
+      "sha256": "bc0074107f89e9ed931bdbb16b0a8afec47db3ba73771f1212e60a29d98b2884",
+      "specSha256": "4922133f1f5de741909aa7fb8ebada51279431b43fc9cfc20b81b5931ae686c8"
+    },
+    {
+      "id": "stress2_066_bump-rank",
+      "status": "rendered",
+      "sha256": "5b12132f36af97d5f71a1421039e6c4362b76a3d84b12f44477fbfb90e0de5d4",
+      "specSha256": "7ad7dbfdafc7d978b9f8310ac2dbefba0d0088fc097380aabb27eaa7bb88290f"
+    },
+    {
+      "id": "stress2_067_slope-movers",
+      "status": "rendered",
+      "sha256": "640865626aeaec8c22e52bca2f4589546f461197250b91be2b2623a55910e929",
+      "specSha256": "5ddefa4184aadca6eeab7ea5ac51290477e35129383614e7f4fbd09b33703116"
+    },
+    {
+      "id": "stress2_068_wiggle-streamgraph",
+      "status": "rendered",
+      "sha256": "b7818d5bb62fd4a553a1675ca5f03749db5ded676573c6013387c3c9ff1ab302",
+      "specSha256": "83bc7bfc03d6ac861ab2c003729d33ffbaf19759cede8665e38cd259de85a3bc"
+    },
+    {
+      "id": "stress2_069_normalized-area",
+      "status": "rendered",
+      "sha256": "15e5cda239d1c296be27d3c8512aa6e07ded5d83e64886190463b2bcad1db920",
+      "specSha256": "e9bb9de3e0ecda5e93666d230e504e363c17cc2eeaedd3ac184152f978ecb907"
+    },
+    {
+      "id": "stress2_070_cumulative-flow",
+      "status": "rendered",
+      "sha256": "b6d6074fa43a91be49faefef6bfae1cf516b0cda2d1156edd091feeea2c84181",
+      "specSha256": "6fe7033725be535e5bc2157e803fb3996194648afb4d3628c1ee96804b4ead78"
+    },
+    {
+      "id": "stress2_071_gantt-country",
+      "status": "rendered",
+      "sha256": "a0362b9108228c276935399f9258e761b8259b3ee05b0b3e44fc1679d3a2ea1c",
+      "specSha256": "4bfc2f1717efef435d7ac4cce38b531c91e13ab721cf4162e9d5ae3d687ce276"
+    },
+    {
+      "id": "stress2_072_event-timeline",
+      "status": "rendered",
+      "sha256": "69bac2a844c94595d3d1e1f20b972f3f8c493748f37b76cc2c8a225411411dff",
+      "specSha256": "97e780867413c070cfd16c3474c88c368c396683be855b59e5b8a8dd672dee9f"
+    },
+    {
+      "id": "stress2_073_funnel-conversion",
+      "status": "rendered",
+      "sha256": "832fd400ff03ff1b7ad2bef4806a1f4f5bf3a2331cb2860ad974d39926d5cb20",
+      "specSha256": "1fdca848c5f0d5706c3a03dd488823b8dfc451da8e3e0166269c66cb3639b5e9"
+    },
+    {
+      "id": "stress2_074_mirrored-funnel",
+      "status": "rendered",
+      "sha256": "60c673bfe1d42a259c99db9635c20381ab14c93393a71da70490c5a36fee359b",
+      "specSha256": "914d792e1a2f8e7519a270480fe8ba4e3159382397df684386b1764635b9ca81"
+    },
+    {
+      "id": "stress2_075_labelled-quadrants",
+      "status": "rendered",
+      "sha256": "f565030a0fefc38658a158fd9bb27cfa20b5694e34bd4ac21042fd44db511627",
+      "specSha256": "3979e00501f1a1d3959ac29aa91a260508c913a205df5d291a28feab53a1d978"
+    },
+    {
+      "id": "stress2_076_independent-axis-zoom",
+      "status": "rendered",
+      "sha256": "36aed6eae03ec8b323488e5dac2930019965bc5b16601d8cd82ef74048f491db",
+      "specSha256": "5eb69e0723cfdcd01395e4e545d66ce1b1052ace3e4bacdadf731f4ff6ef6812"
+    },
+    {
+      "id": "stress2_077_weekend-bands",
+      "status": "rendered",
+      "sha256": "10c43c616db05237f3905fdac82c2f4a03171b838fc8939a60100f5c5c7fcc04",
+      "specSha256": "7d7908115024b21d68e0a6155b74e4e4e5e11a5b85f2182401234f8d2f70aa53"
+    },
+    {
+      "id": "stress2_078_columns-error-bars",
+      "status": "rendered",
+      "sha256": "28459ae2393eca7168eb0e1f307ba279d290f8fcb21e41f5c2d4ee477d3ea094",
+      "specSha256": "2f98bae3844a28562eed59a3c82345f2d9b95d0507e9cee8747e71410b8bef43"
+    },
+    {
+      "id": "stress2_079_control-chart",
+      "status": "rendered",
+      "sha256": "7dc75d508b878027b33dfc06d183ee0621275ba50a158b38a507c24438c3a838",
+      "specSha256": "80bcb657ea2f4690fb93a0c5408cf75b0bd751025a60647d1b70c5d8004b41e5"
+    },
+    {
+      "id": "stress2_080_ewma",
+      "status": "rendered",
+      "sha256": "2682019a8a1982868e1f7391373a6376e3c7ef80a32a5e393eb9fb358d4fb5a5",
+      "specSha256": "0464fcd6ab1c862f3919b6205e17845d734a69979521b9febc4d1f6756783c62"
+    },
+    {
+      "id": "stress2_081_forest-range",
+      "status": "rendered",
+      "sha256": "135d25df10058721fde711c2d17d4a07a65c85f9344ce1eac877ef20f42ba1e1",
+      "specSha256": "a83c7e4e8c4f461654ebb32842c5fba216c7a93a80673a3d4190fd09d8b01a16"
+    },
+    {
+      "id": "stress2_082_dot-whisker",
+      "status": "rendered",
+      "sha256": "a11b0e6900ed49a69fc7dc5efdf734ee3dd11b71ff69ebda7bd8a68aadc16316",
+      "specSha256": "1c3e40310be895a42b5597e0707e9a77a078a00efbd60aaf4157fc78f2c482cd"
+    },
+    {
+      "id": "stress2_083_bar-shared-axis",
+      "status": "rendered",
+      "sha256": "839141edc58fea9ce6c906e06eb50dac9504b060a97febe1ce259300052fd92a",
+      "specSha256": "e6721c8f83fadaf5ed0ad06f67505baa1460928ec851f786ed5159f287166ce3"
+    },
+    {
+      "id": "stress2_084_line-free-axis",
+      "status": "rendered",
+      "sha256": "20d20ab77c264ad00432d3071208f1a3b17ace0f7d39cf7606cda411c5ff410a",
+      "specSha256": "0af957b9bc9f0970764e094529b81b4b5cef60056c7a8cac7aaba0c04529fec7"
+    },
+    {
+      "id": "stress2_085_kpi-sparkline",
+      "status": "rendered",
+      "sha256": "c9006418cb6e53174822ecda7ea0a3e466440ed2c75bfff40dbb2b24b93a4d3c",
+      "specSha256": "d7261d48403da27465918df3e9e412431e76ffec28918243aff028feea234738"
+    },
+    {
+      "id": "stress2_086_ranked-inline-bars",
+      "status": "rendered",
+      "sha256": "53fee5206bcf07d2c4470e04bc5cf35c4e1ea6ceac17f9a19ffe5c0c69a42337",
+      "specSha256": "d9a0a60e11aaa0a4428851bf5ddf0b8cfc45ca4df79c37ce62aa6708b3d88141"
+    },
+    {
+      "id": "stress2_089_histogram-auto",
+      "status": "rendered",
+      "sha256": "2533a72b4d1f5e2dc676c1fb14a9538c4a8faae60366d5abb9540b5a308e5143",
+      "specSha256": "5665babd022343c749359e3e3725dacb16c1387ef1439bf8e9302fea5b08fb61"
+    },
+    {
+      "id": "stress2_090_histogram-width",
+      "status": "rendered",
+      "sha256": "34154704d0b494ec93fcc9a5185798ff8ed8463875d259051bb019dbfa93030d",
+      "specSha256": "0226611b6749249743c21ffffce9d551b107dbbad7a1c7db73ab911f672b27ae"
+    },
+    {
+      "id": "stress2_091_box-detail-prices",
+      "status": "rendered",
+      "sha256": "36128db487671a391fcf2928077e6d01c62d1b3fe9f5c26fb85f17edc50e6971",
+      "specSha256": "7ebb638e9bc824310ae607bcd2383fa80633453975efca217a45da838251a21d"
+    },
+    {
+      "id": "stress2_092_violin-density",
+      "status": "rendered",
+      "sha256": "4045ea1e8aecbce0c4c755a239b35bbea0770455e2b0ae80c3679a3faa80ff6f",
+      "specSha256": "f150f1e666aaf71c4515e531a4a60aad0bd93f93b3fb956d8a27c3691e602eb6"
+    },
+    {
+      "id": "stress2_093_beeswarm",
+      "status": "rendered",
+      "sha256": "7370a240e2cc8a511874eb32da16e9ca578c6867e12a43cec927c2a63e8921f4",
+      "specSha256": "eb4497af6de2b86fff04b4de9b300dfb59181026878ee582363c6aba7766f2e0"
+    },
+    {
+      "id": "stress2_094_strip-mean",
+      "status": "rendered",
+      "sha256": "dc77e3171c2224e9e54091a371331f2e8b3b4468188ccd4e8fb155725309adab",
+      "specSha256": "09e398256d56170acc695c617bbc5aedcaa5aa6db231aeb3414d7308cf412990"
+    },
+    {
+      "id": "stress2_095_ecdf",
+      "status": "rendered",
+      "sha256": "0b7ac7d078b72afdc57b1afa377e1190dc882d300ba82033af65a765502b7b78",
+      "specSha256": "f98cd2f747563db813a0d1183ec61f22172bba25f1d6dcff05b92da904c42046"
+    },
+    {
+      "id": "stress2_096_ridgeline",
+      "status": "rendered",
+      "sha256": "2ecd72da8d3ee1d3cf813a9597fee2ac156ad20bab81269434375846421c3f9e",
+      "specSha256": "fa26ea6eae38784125523d0cd8c45afc13bf2b73c612dd379cc731f64c88c260"
+    },
+    {
+      "id": "stress2_097_normal-qq",
+      "status": "rendered",
+      "sha256": "09ef7a3d75534cf742ac56c5497ba21ce2f16f6f034b07815c5b2d2d4d2fb44f",
+      "specSha256": "78b567c708c6a6f45758834858729c93996343c988dce6d6bf9adb83d88d16aa"
+    },
+    {
+      "id": "stress2_098_hexbin-price-cost",
+      "status": "rendered",
+      "sha256": "47586fe0bfdf9df854344d50d4181ed06a5b92533cbf4a2692842764434295bc",
+      "specSha256": "fb7d6a76d5fbd1e13303b1863e9a88a3e323d8008660b0eda163225ae31f88c4"
+    },
+    {
+      "id": "stress2_099_density2d-price-cost",
+      "status": "rendered",
+      "sha256": "2dc2ef972dcdc9fc6b14ceecbd257391b0e5751bc6cab6673655512f8d64429d",
+      "specSha256": "3f8e7e1184b14f2b1c28d413c832b500c65233612e3b502c37ba6c1742733bda"
+    },
+    {
+      "id": "stress2_100_parameter-top-other",
+      "status": "rendered",
+      "sha256": "eb9b8fe20e4a9bbdad8797d5c3febed9b26f26d1c02f4b9f09ef6506df08410d",
+      "specSha256": "8d78ef21cc95963a036afa1df20d3cb15bb290c3f5e267effbc91035c25879f4"
+    },
+    {
+      "id": "stress2_101_group-percent-subtotals",
+      "status": "rendered",
+      "sha256": "9c6063a3bbc074cadea159fc54251a02cfeac125e4cd8c7fe23314566b63642d",
+      "specSha256": "aebf0db9652ec4f1fe7860ed6e208985a5e6ea183723c63fe20a4f4fe58bb842"
+    },
+    {
+      "id": "stress2_102_yoy-variance",
+      "status": "rendered",
+      "sha256": "8d8142dc522e1737d72e9046ec1e9e2b99e6c2addf0244f20e76094b6447a474",
+      "specSha256": "ed4e48aaef071d97ed10cc6ef4233cad937cf3f79aec6cdd6f0b98813f446225"
+    },
+    {
+      "id": "stress2_103_rebase-index",
+      "status": "rendered",
+      "sha256": "fef77d3fd952741055e82c0723bad92f758fe6e40892e326cc4bb3be26ba65ec",
+      "specSha256": "ccc146eaa146acf42687a7ba62b65778f31a4d3fcf6149d64343ffa2546cdf08"
+    },
+    {
+      "id": "stress2_104_ytd-prior-year",
+      "status": "rendered",
+      "sha256": "39f75f51fa6a19d76ffdbc27a89aa48e588cf6d0ecc7b515aa905baae6c87a43",
+      "specSha256": "02ad235d48ed9708195fc56c108a3694112320a9ef008ddabdeb9093ba36eb40"
+    },
+    {
+      "id": "stress2_105_cohort-retention",
+      "status": "rendered",
+      "sha256": "07b86ee238dcb95eedd447b5fae962b363f2d579430a2c98fe75747d33ea7bdf",
+      "specSha256": "e8da07f58c1cb962168b23edc7caf1bb945e779469f247aa24ad72fd418b055c"
+    },
+    {
+      "id": "stress2_106_pivot-heatmap",
+      "status": "rendered",
+      "sha256": "2b15bed71e43c98a1dc37c0660d708f271239656fa5c8a4e52de72a8e121b0b1",
+      "specSha256": "a8f28c0dae072ec095023886ed269053b91b79ef6da8775043e0c8d6f9f16b04"
+    },
+    {
+      "id": "stress2_107_pearson-six",
+      "status": "rendered",
+      "sha256": "4d65f01859bc3b25a30304893c95876a32762b6efb7d184924c603922bf0312d",
+      "specSha256": "95af27517cdb874dcda21962a3faec401de4c6bb9623acaad1da66776a69c39f"
+    },
+    {
+      "id": "stress2_108_pareto-count",
+      "status": "rendered",
+      "sha256": "217783cfdb5e828fbad13e256ca552a41f645becb40e427dad4e76227331a27a",
+      "specSha256": "9d5b1122dd62b80d40cfba2c3c28b03bdc734067f564f46e62db2413428d0847"
+    },
+    {
+      "id": "stress2_109_date-spikes",
+      "status": "rendered",
+      "sha256": "ef1dc79c73a39123dd32d99d0152d9f206fcb49bf8d2005eb2e4ab8d87508864",
+      "specSha256": "478c2a35bb8a5a067835cebc6925ebd4f5d12a14341dfd2f58f60f25e8269062"
+    },
+    {
+      "id": "stress2_110_radial-histogram",
+      "status": "rendered",
+      "sha256": "e7e218698b62e2993909fedd30fb7e85e30162e45308039c16e719681a68d4d8",
+      "specSha256": "c422591526b3d5b4d9c98df0981f911ec5da72f23d744432d86bccf64b14d4eb"
+    },
+    {
+      "id": "stress2_115_country-tile-grid",
+      "status": "rendered",
+      "sha256": "add17bdd316b0abed9536937ba1e2c8637802877b13738b31e567795e0cf2066",
+      "specSha256": "3ce7d4a922b8ea62c9002577e07acefaae495ff2bb41f7165b684ec291c07c8d"
+    },
+    {
+      "id": "stress2_116_word-cloud",
+      "status": "rendered",
+      "sha256": "49e4cc1bc43a7644d81918fea1b30691c3b0449b35e043856fdaf643c2fb8c27",
+      "specSha256": "f55ded35e395cbb53b812145e3e08db1433182253fffa9ad2a144ed92b3bfc54"
+    },
+    {
+      "id": "stress2_118_hierarchy-flame",
+      "status": "rendered",
+      "sha256": "6f21fabf0f500dc0222107826343c88b9aaaf28afdcc1c121c04e631d8af117a",
+      "specSha256": "b39dc9fb4db92abeea8108655f9048d102412b0cc8a99b518e28c49d5b24595f"
+    },
+    {
+      "id": "expressiveness_sunburst",
+      "status": "rendered",
+      "sha256": "e2eed04f5136aa722091cca70b8f3091eeffd2ed4c4edf479dcfc0c308b771b8",
+      "specSha256": "90031f347b06acb6e23dc7ff7619857316c2c46d1a388dcf974673360c8f916d"
+    },
+    {
+      "id": "expressiveness_waterfall",
+      "status": "rendered",
+      "sha256": "8bfd6103090e48a2b27a14786687a2e2b6ce291a610ba76daf3b9e6284230959",
+      "specSha256": "4956ba4b91469bd4be4231a199450fe44fa6cc9bc2f21338e6ba2b93b67217b5"
+    }
+  ]
+}

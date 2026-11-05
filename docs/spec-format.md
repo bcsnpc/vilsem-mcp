@@ -5,7 +5,7 @@ Run `validate_spec` before `preview_visual`, then preview actual data before com
 ## Composition
 
 ```json
-{"version":1,"type":"bar","canvasTheme":"dark","config":{"title":"Sales","dataLabels":true}}
+{"version":1,"type":"bar","config":{"title":"Sales","dataLabels":true}}
 ```
 
 The current headless composition types are bar, column, stacked_bar, grouped_bar, line, area, stacked_area, bump, donut, pie, scatter, bubble, treemap, radar, gauge, slope and lollipop. DOM-adapter visuals are not ECharts compositions and are not supported by the MCP resolver. Validation without data returns an empty-data option; it does not prove field-role suitability or rendering with a particular dataset.
@@ -20,7 +20,6 @@ explicitly instead of silently resolving unsupported fields to blank charts.
 {
   "version":1,
   "type":"custom",
-  "canvasTheme":"dark",
   "params":{"dotSize":14},
   "template":{
     "meta":{"id":"ranking","name":"Ranking"},
@@ -545,3 +544,765 @@ bind these to label width/show, use `overflow:"truncate"` and hide overlaps.
 Match the declared size to a fixed grid width; existing node geometry/labels
 are unchanged unless these new fields are consumed. Tooltips/selection retain
 the complete source identity when a tiny mark's text is hidden.
+
+## Stress2 transform examples by item
+
+These fragments are copied from passing shipped specs. Slot and calc names retain their original context; follow the complete-example link for its slot declarations, preceding transforms and bindings. All items below have native screenshot provenance in the Round2 matrix.
+
+### `allocate` â€” items 23, 24
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-023-waffle-share.vilsem-visual.json). Regression: `stress2-layout-shaping.test.js`.
+
+```json
+{
+  "allocate": {
+    "category": "date",
+    "value": "m0",
+    "total": 100,
+    "layout": "grid",
+    "columns": 10
+  },
+  "as": "seats"
+}
+```
+
+### `boxplot` â€” items 91
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-091-box-detail-prices.vilsem-visual.json). Regression: `stress2-distribution-shaping.test.js`.
+
+```json
+{
+  "boxplot": {
+    "by": "subcategory",
+    "field": "price",
+    "whisker": 1.5
+  },
+  "as": "box"
+}
+```
+
+### `calculate` â€” items 4, 5, 6, 14, 28, 29, 32, 33, 36, 59, 67, 74, 75, 79
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-004-confidence-band.vilsem-visual.json). Regression: `instantiateVisual.test.js`.
+
+```json
+{
+  "calculate": "m1-m0",
+  "as": "span"
+}
+```
+
+### `chunk` â€” items 15
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-015-wrapped-bar.vilsem-visual.json). Regression: `stress2-layout-shaping.test.js`.
+
+```json
+{
+  "chunk": {
+    "category": "date",
+    "value": "m0",
+    "size": 6,
+    "columns": 3
+  },
+  "as": "wrapped"
+}
+```
+
+### `cohort` â€” items 105
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-105-cohort-retention.vilsem-visual.json). Regression: `stress2-statistical-shaping.test.js`.
+
+```json
+{
+  "cohort": {
+    "date": "month",
+    "entity": "customer",
+    "value": "activity",
+    "firstDay": "firstPurchase",
+    "maxPeriods": 36
+  },
+  "as": "retention"
+}
+```
+
+### `conditional` â€” items 102
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-102-yoy-variance.vilsem-visual.json). Regression: `stress2-statistical-shaping.test.js`.
+
+```json
+{
+  "conditional": {
+    "value": "current",
+    "condition": "variance",
+    "label": "variance",
+    "positive": "#2dd4bf",
+    "negative": "#f87171",
+    "zero": "#94a3b8",
+    "labelFormat": "percent"
+  },
+  "as": "coloured"
+}
+```
+
+### `conversion` â€” items 73
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-073-funnel-conversion.vilsem-visual.json). Regression: `stress2-analytic-shaping.test.js`.
+
+```json
+{
+  "conversion": {
+    "category": "category",
+    "value": "revenue"
+  },
+  "as": "stages"
+}
+```
+
+### `correlation` â€” items 107
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-107-pearson-six.vilsem-visual.json). Regression: `stress2-statistical-shaping.test.js`.
+
+```json
+{
+  "correlation": {
+    "fields": [
+      "m0",
+      "m1",
+      "m2",
+      "m3",
+      "m4",
+      "m5"
+    ],
+    "names": [
+      "Total Revenue",
+      "Total Profit",
+      "Total Cost",
+      "Total Orders",
+      "Quantity Sold",
+      "Total Customers"
+    ]
+  },
+  "as": "correlation"
+}
+```
+
+### `date` â€” items 72, 77
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-072-event-timeline.vilsem-visual.json). Regression: `instantiateVisual.test.js`.
+
+```json
+{
+  "date": {
+    "field": "date"
+  },
+  "as": "dates"
+}
+```
+
+### `dateBands` â€” items 77
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-077-weekend-bands.vilsem-visual.json). Regression: `stress2-analytic-shaping.test.js`.
+
+```json
+{
+  "dateBands": {
+    "field": "date",
+    "weekdays": [
+      0,
+      6
+    ]
+  },
+  "as": "weekends"
+}
+```
+
+### `density` â€” items 92, 96
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-092-violin-density.vilsem-visual.json). Regression: `stress2-density-shaping.test.js`.
+
+```json
+{
+  "density": {
+    "by": "subcategory",
+    "field": "price",
+    "layout": "violin",
+    "samples": 64
+  },
+  "as": "density"
+}
+```
+
+### `density2d` â€” items 99
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-099-density2d-price-cost.vilsem-visual.json). Regression: `stress2-statistical-shaping.test.js`.
+
+```json
+{
+  "density2d": {
+    "x": "price",
+    "y": "cost",
+    "bins": 24
+  },
+  "as": "binned"
+}
+```
+
+### `ecdf` â€” items 95
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-095-ecdf.vilsem-visual.json). Regression: `stress2-distribution-shaping.test.js`.
+
+```json
+{
+  "ecdf": {
+    "field": "price"
+  },
+  "as": "cdf"
+}
+```
+
+### `facet` â€” items 6, 7, 59, 60, 66, 69, 70, 83, 84, 103
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-006-horizon.vilsem-visual.json). Regression: `instantiateVisual.test.js`.
+
+```json
+{
+  "facet": {
+    "by": "country",
+    "category": "date",
+    "value": "band0",
+    "columns": 1,
+    "maxPanels": 8
+  },
+  "as": "f0"
+}
+```
+
+### `flows` â€” items 49, 50, 51, 52, 53, 54, 55, 56, 58
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-049-sankey-two-levels.vilsem-visual.json). Regression: `stress2-flow-shaping.test.js`.
+
+```json
+{
+  "flows": {
+    "levels": [
+      "d0",
+      "d1"
+    ],
+    "value": "revenue",
+    "order": "input"
+  },
+  "as": "flow"
+}
+```
+
+### `groupShare` â€” items 101
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-101-group-percent-subtotals.vilsem-visual.json). Regression: `stress2-statistical-shaping.test.js`.
+
+```json
+{
+  "groupShare": {
+    "by": "country",
+    "category": "category",
+    "value": "revenue",
+    "subtotals": true
+  },
+  "as": "shares"
+}
+```
+
+### `heikinAshi` â€” items 35
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-035-heikin-ashi.vilsem-visual.json). Regression: `stress2-sequence-shaping.test.js`.
+
+```json
+{
+  "heikinAshi": {
+    "open": "m0",
+    "close": "m1",
+    "low": "m2",
+    "high": "m3"
+  },
+  "as": "ohlc"
+}
+```
+
+### `hexbin` â€” items 98
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-098-hexbin-price-cost.vilsem-visual.json). Regression: `stress2-statistical-shaping.test.js`.
+
+```json
+{
+  "hexbin": {
+    "x": "price",
+    "y": "cost",
+    "bins": 24
+  },
+  "as": "binned"
+}
+```
+
+### `hierarchy` â€” items 20, 40, 41, 42, 43, 44, 45, 46, 47, 48, 118
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-020-nested-donut.vilsem-visual.json). Regression: `stress2-hierarchy-color.test.js`.
+
+```json
+{
+  "hierarchy": {
+    "levels": [
+      "category",
+      "subcategory"
+    ],
+    "value": "revenue"
+  },
+  "as": "tree"
+}
+```
+
+### `histogram` â€” items 89, 90, 110
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-089-histogram-auto.vilsem-visual.json). Regression: `stress2-distribution-shaping.test.js`.
+
+```json
+{
+  "histogram": {
+    "field": "price",
+    "bins": "auto"
+  },
+  "as": "bins"
+}
+```
+
+### `intervals` â€” items 71
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-071-gantt-country.vilsem-visual.json). Regression: `stress2-temporal-shaping.test.js`.
+
+```json
+{
+  "intervals": {
+    "group": "owner",
+    "category": "order",
+    "start": "start",
+    "end": "end",
+    "limit": 16
+  },
+  "as": "tasks"
+}
+```
+
+### `jitter` â€” items 93
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-093-beeswarm.vilsem-visual.json). Regression: `stress2-jitter-shaping.test.js`.
+
+```json
+{
+  "jitter": {
+    "by": "category",
+    "field": "price",
+    "name": "product",
+    "method": "collision",
+    "width": 700,
+    "height": 420,
+    "radius": 3
+  },
+  "as": "swarm"
+}
+```
+
+### `pareto` â€” items 108
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-108-pareto-count.vilsem-visual.json). Regression: `stress2-statistical-shaping.test.js`.
+
+```json
+{
+  "pareto": {
+    "category": "subcategory",
+    "value": "revenue",
+    "threshold": 0.8
+  },
+  "as": "pareto"
+}
+```
+
+### `pivot` â€” items 106
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-106-pivot-heatmap.vilsem-visual.json). Regression: `stress2-statistical-shaping.test.js`.
+
+```json
+{
+  "pivot": {
+    "row": "country",
+    "column": "category",
+    "value": "revenue"
+  },
+  "as": "pivot"
+}
+```
+
+### `points` â€” items 16, 25, 34, 61, 62, 63, 64, 65, 67, 72, 75, 77, 78, 81, 82, 94
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-016-revenue-strip.vilsem-visual.json). Regression: `stress2-layout-shaping.test.js`.
+
+```json
+{
+  "points": {
+    "fields": [
+      "raw",
+      "group"
+    ],
+    "numeric": [
+      "raw"
+    ],
+    "name": "group"
+  },
+  "as": "dots"
+}
+```
+
+### `qq` â€” items 97
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-097-normal-qq.vilsem-visual.json). Regression: `stress2-statistical-shaping.test.js`.
+
+```json
+{
+  "qq": {
+    "field": "price"
+  },
+  "as": "qq"
+}
+```
+
+### `rebase` â€” items 103
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-103-rebase-index.vilsem-visual.json). Regression: `stress2-statistical-shaping.test.js`.
+
+```json
+{
+  "rebase": {
+    "field": "revenue",
+    "partitionBy": "country",
+    "orderBy": "month",
+    "base": 100
+  },
+  "as": "indexed"
+}
+```
+
+### `stat` â€” items 6, 36, 62, 75, 79, 94
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-006-horizon.vilsem-visual.json). Regression: `instantiateVisual.test.js`.
+
+```json
+{
+  "stat": {
+    "field": "revenue",
+    "op": "max"
+  },
+  "as": "peak"
+}
+```
+
+### `stream` â€” items 68
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-068-wiggle-streamgraph.vilsem-visual.json). Regression: `stress2-temporal-shaping.test.js`.
+
+```json
+{
+  "stream": {
+    "by": "country",
+    "category": "date",
+    "value": "revenue",
+    "offset": "wiggle"
+  },
+  "as": "stream"
+}
+```
+
+### `tiles` â€” items 115
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-115-country-tile-grid.vilsem-visual.json). Regression: `stress2-statistical-shaping.test.js`.
+
+```json
+{
+  "tiles": {
+    "category": "country",
+    "value": "revenue",
+    "positions": [
+      {
+        "name": "Canada",
+        "x": 0,
+        "y": 2
+      },
+      {
+        "name": "United States",
+        "x": 0,
+        "y": 1
+      },
+      {
+        "name": "United Kingdom",
+        "x": 2,
+        "y": 2
+      },
+      {
+        "name": "France",
+        "x": 2,
+        "y": 1
+      },
+      {
+        "name": "Germany",
+        "x": 3,
+        "y": 1
+      },
+      {
+        "name": "Australia",
+        "x": 4,
+        "y": 0
+      }
+    ]
+  },
+  "as": "tiles"
+}
+```
+
+### `top` â€” items 21, 86, 100
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-021-pie-top-other.vilsem-visual.json). Regression: `stress2-layout-shaping.test.js`.
+
+```json
+{
+  "top": {
+    "category": "date",
+    "value": "m0",
+    "count": 5,
+    "other": "Other"
+  },
+  "as": "buckets"
+}
+```
+
+### `waterfall` â€” items 31, 33
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-031-waterfall-subtotals.vilsem-visual.json). Regression: `stress2-sequence-shaping.test.js`.
+
+```json
+{
+  "waterfall": {
+    "category": "country",
+    "detail": "category",
+    "value": "profit",
+    "subtotals": true
+  },
+  "as": "steps"
+}
+```
+
+### `window` â€” items 30, 32, 69, 70, 80
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-030-pareto.vilsem-visual.json). Regression: `instantiateVisual.test.js`.
+
+```json
+{
+  "window": {
+    "op": "percentOfTotal",
+    "field": "m0"
+  },
+  "as": "share"
+}
+```
+
+### `words` â€” items 116
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-116-word-cloud.vilsem-visual.json). Regression: `stress2-word-layout.test.js`.
+
+```json
+{
+  "words": {
+    "text": "word",
+    "weight": "revenue",
+    "limit": 24,
+    "width": 750,
+    "height": 400,
+    "minFont": 12,
+    "maxFont": 36
+  },
+  "as": "words"
+}
+```
+
+### `concat` â€” items 6, 43, 59, 68, 78, 81, 82, 94, 118
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-006-horizon.vilsem-visual.json). Regression: `stress2-repeat-data.test.js`.
+
+```json
+{
+  "concat": [
+    {
+      "repeat": "$calc.f0.panels",
+      "template": {
+        "type": "line",
+        "name": "$item.name",
+        "xAxisIndex": "$item.index",
+        "yAxisIndex": "$item.index",
+        "data": "$item.data",
+        "symbol": "none",
+        "lineStyle": {
+          "width": 0
+        },
+        "areaStyle": {
+          "color": "#a7f3d0",
+          "opacity": 1
+        },
+        "z": 1
+      }
+    },
+    {
+      "repeat": "$calc.f1.panels",
+      "template": {
+        "type": "line",
+        "name": "$item.name",
+        "xAxisIndex": "$item.index",
+        "yAxisIndex": "$item.index",
+        "data": "$item.data",
+        "symbol": "none",
+        "lineStyle": {
+          "width": 0
+        },
+        "areaStyle": {
+          "color": "#34d399",
+          "opacity": 1
+        },
+        "z": 2
+      }
+    },
+    {
+      "repeat": "$calc.f2.panels",
+      "template": {
+        "type": "line",
+        "name": "$item.name",
+        "xAxisIndex": "$item.index",
+        "yAxisIndex": "$item.index",
+        "data": "$item.data",
+        "symbol": "none",
+        "lineStyle": {
+          "width": 0
+        },
+        "areaStyle": {
+          "color": "#059669",
+          "opacity": 1
+        },
+        "z": 3
+      }
+    }
+  ]
+}
+```
+
+### `formatterEmptyText` â€” items 85
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-085-kpi-sparkline.vilsem-visual.json). Regression: `stress2-kpi-accessors.test.js`.
+
+```json
+{
+  "formatterEmptyText": "No revenue"
+}
+```
+
+### `formatterTemplate` â€” items 1, 2, 3, 4, 5, 8, 9, 11, 12, 13, 14, 15, 17, 22, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 38, 39, 40, 43, 44, 45, 46, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 106, 107, 108, 109, 115, 116, 118
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-001-step-line.vilsem-visual.json). Regression: `stress2-native-tooltip.test.js`.
+
+```json
+{
+  "formatterTemplate": "{value:thousands}"
+}
+```
+
+### `lastRowValue/lastRowLabel` â€” items 85
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-085-kpi-sparkline.vilsem-visual.json). Regression: `stress2-kpi-accessors.test.js`.
+
+```json
+"$slot.revenue.lastRowValue"
+```
+
+### `repeat/$item` â€” items 6, 7, 15, 23, 24, 43, 44, 59, 60, 65, 66, 67, 68, 69, 70, 78, 81, 82, 83, 84, 92, 93, 94, 96, 103, 118
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-006-horizon.vilsem-visual.json). Regression: `stress2-repeat-data.test.js`.
+
+```json
+{
+  "repeat": "$calc.f0.panels"
+}
+```
+
+### `visual-scoped measures` â€” items 1, 3, 4, 5, 7, 8, 9, 10, 11, 19, 25, 26, 27, 29, 33, 34, 35, 36, 37, 55, 57, 66, 67, 74, 75, 78, 79, 81, 82, 85, 102, 104, 105
+
+[Complete example](https://github.com/bcsnpc/vilsem-mcp/blob/main/templates/stress2-001-step-line.vilsem-visual.json). Regression: `scoped-measures.test.js`.
+
+```json
+{
+  "measures": {
+    "Step Start": "[Total Revenue]",
+    "Step Middle": "[Total Revenue]",
+    "Step End": "[Total Revenue]"
+  }
+}
+```
+
+<!-- END GENERATED STRESS2 TRANSFORM EXAMPLES -->
+
+## Report inheritance and model formats
+
+Omit canvasTheme for a transparent report-native visual. Explicit canvasTheme
+light/dark overrides report styling unless the native Appearance pane forces
+report-theme inheritance. preview_visual accepts reportDir, theme and locale
+(en-US default); choose the actual viewer locale for regional parity. Model
+culture and viewer regional settings may differ. Shared numeric/date formatting
+preserves raw values while formatting labels, axes and host tooltips.
+
+Visual-scoped formatting is part of the declaration, not DAX model mutation:
+
+```json
+{"measures":{"Margin":{"expression":"DIVIDE([Profit],[Revenue])","format":"0.00%"}}}
+```
+
+This shape is emitted as query-only NativeMeasure.Format for Power BI. The
+format converter supports sections, literal prefixes/suffixes, percent, grouped
+numbers, decimal precision, comma scaling and UTC date patterns; it does not
+implement every Excel conditional/scientific/dynamic-format feature.
+
+The current report-native defaults and model formatting require renderer4.34+.
+Committing into an older registered resource refuses incompatible features;
+import the updated bundled renderer explicitly. The GUID and semantica.primitiveSpec
+property remain unchanged. Preview interaction assessments are capability
+descriptions, not native-host verification results.
+
+
+## Text inside palette-coloured marks
+
+`$theme.paletteText.<index>` selects black or white text for the corresponding
+opaque palette colour, using sRGB relative luminance and the larger WCAG
+contrast ratio. Example: `"label":{"position":"inside","color":"$theme.paletteText.1"}`
+for a bar using the second series colour. Palette indexing includes helper
+series, just as ECharts series colours do. This is a trusted core calculation;
+templates still contain only JSON. It does not automatically inspect conditional
+per-datum colours or translucent paints; those need a known backdrop and an
+explicit label treatment. Unknown paints fall back to the report foreground.
+See [W3C contrast calculation](https://www.w3.org/WAI/WCAG22/Techniques/general/G18).
+
+
+### Units after data shaping
+
+Model formats apply independently to each measure coordinate in a `points`
+transform, including `parallelAxis` dimensions. Repeated facet panels inherit
+formats from `facet.value`; aggregate tooltips show aggregate values with all
+contributor identities. Category names, percentage-share labels and explicit
+prefix/suffix choices retain their original meaning.
+
+For example, `{"as":"running","window":{"field":"revenue","op":"sum"}}`
+with `"data":"$calc.running.values"` retains the revenue format. Sum, lag,
+EWMA, take, exact field aliases and min/max/sum/mean/median/quantile/stddev
+preserve their source unit. Counts, percent-of-total, density and arbitrary
+calculations do **not** inherit it: declare the desired derived formatting
+explicitly, or use a visual-scoped DAX measure with a `format`. Raw data stays
+numeric; formatters never change query values or selection lineage.

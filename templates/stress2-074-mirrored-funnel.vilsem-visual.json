@@ -1,7 +1,6 @@
 {
   "version": 1,
   "type": "custom",
-  "canvasTheme": "dark",
   "config": {
     "cardStyle": "plain"
   },
@@ -27,17 +26,10 @@
     "template": {
       "animation": false,
       "backgroundColor": "$theme.background",
-      "color": [
-        "#2dd4bf",
-        "#60a5fa",
-        "#f59e0b",
-        "#f472b6",
-        "#a78bfa",
-        "#a3e635"
-      ],
+      "color": "$theme.palette",
       "textStyle": {
-        "color": "#e2e8f0",
-        "fontFamily": "Segoe UI"
+        "color": "$theme.textPrimary",
+        "fontFamily": "$theme.font"
       },
       "title": {
         "text": "74 - Mirrored product-category revenue funnel - 2021 / 2022",
@@ -45,13 +37,13 @@
         "top": 12,
         "textStyle": {
           "fontSize": 17,
-          "color": "#f8fafc"
+          "color": "$theme.textPrimary"
         }
       },
       "legend": {
         "top": 42,
         "textStyle": {
-          "color": "#cbd5e1"
+          "color": "$theme.textPrimary"
         }
       },
       "tooltip": {
@@ -74,8 +66,7 @@
           "label": {
             "show": true,
             "position": "inside",
-            "formatterTemplate": "{name}",
-            "color": "#fff"
+            "formatterTemplate": "{name}"
           }
         },
         {
@@ -92,8 +83,7 @@
           "label": {
             "show": true,
             "position": "inside",
-            "formatterTemplate": "{name}",
-            "color": "#fff"
+            "formatterTemplate": "{name}"
           }
         }
       ],
@@ -104,7 +94,7 @@
           "top": 77,
           "style": {
             "text": "2021",
-            "fill": "#e2e8f0",
+            "fill": "$theme.textPrimary",
             "fontSize": 14
           }
         },
@@ -114,7 +104,7 @@
           "top": 77,
           "style": {
             "text": "2022",
-            "fill": "#e2e8f0",
+            "fill": "$theme.textPrimary",
             "fontSize": 14
           }
         }

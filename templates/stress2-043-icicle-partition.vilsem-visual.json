@@ -1,7 +1,6 @@
 {
   "version": 1,
   "type": "custom",
-  "canvasTheme": "dark",
   "config": {
     "cardStyle": "plain"
   },
@@ -27,17 +26,10 @@
     "template": {
       "animation": false,
       "backgroundColor": "$theme.background",
-      "color": [
-        "#2dd4bf",
-        "#60a5fa",
-        "#f59e0b",
-        "#f472b6",
-        "#a78bfa",
-        "#a3e635"
-      ],
+      "color": "$theme.palette",
       "textStyle": {
-        "color": "#e2e8f0",
-        "fontFamily": "Segoe UI"
+        "color": "$theme.textPrimary",
+        "fontFamily": "$theme.font"
       },
       "title": {
         "text": "43 - Revenue hierarchy - rectangular icicle partition",
@@ -45,13 +37,13 @@
         "top": 12,
         "textStyle": {
           "fontSize": 17,
-          "color": "#f8fafc"
+          "color": "$theme.textPrimary"
         }
       },
       "legend": {
         "top": 42,
         "textStyle": {
-          "color": "#cbd5e1"
+          "color": "$theme.textPrimary"
         },
         "show": false
       },
@@ -72,7 +64,7 @@
         "max": 1,
         "axisLabel": {
           "formatterTemplate": "{value:percent}",
-          "color": "#cbd5e1"
+          "color": "$theme.textPrimary"
         }
       },
       "yAxis": {
@@ -83,7 +75,7 @@
           "Subcategory"
         ],
         "axisLabel": {
-          "color": "#cbd5e1"
+          "color": "$theme.textPrimary"
         }
       },
       "series": {
@@ -118,14 +110,13 @@
                 "formatterTemplate": "{seriesName}",
                 "fontSize": 11,
                 "width": 90,
-                "overflow": "truncate",
-                "color": "#ffffff"
+                "overflow": "truncate"
               },
               "labelLayout": {
                 "hideOverlap": true
               },
               "itemStyle": {
-                "borderColor": "#0b0b12",
+                "borderColor": "$theme.background",
                 "borderWidth": 1
               }
             }

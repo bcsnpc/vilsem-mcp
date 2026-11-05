@@ -1,7 +1,6 @@
 {
   "version": 1,
   "type": "custom",
-  "canvasTheme": "dark",
   "config": {
     "cardStyle": "plain"
   },
@@ -30,17 +29,10 @@
     "template": {
       "animation": false,
       "backgroundColor": "$theme.background",
-      "color": [
-        "#2dd4bf",
-        "#60a5fa",
-        "#f59e0b",
-        "#f472b6",
-        "#a78bfa",
-        "#a3e635"
-      ],
+      "color": "$theme.palette",
       "textStyle": {
-        "color": "#e2e8f0",
-        "fontFamily": "Segoe UI"
+        "color": "$theme.textPrimary",
+        "fontFamily": "$theme.font"
       },
       "title": {
         "text": "29 \u00b7 Monthly revenue / profit margin \u00b7 target reference",
@@ -48,13 +40,13 @@
         "top": 12,
         "textStyle": {
           "fontSize": 17,
-          "color": "#f8fafc"
+          "color": "$theme.textPrimary"
         }
       },
       "legend": {
         "top": 42,
         "textStyle": {
-          "color": "#cbd5e1"
+          "color": "$theme.textPrimary"
         }
       },
       "tooltip": {
@@ -72,14 +64,14 @@
         "type": "category",
         "data": "$slot.date.values",
         "axisLabel": {
-          "color": "#cbd5e1",
+          "color": "$theme.textPrimary",
           "rotate": 35,
           "hideOverlap": true,
           "formatterTemplate": "{value:date}"
         },
         "axisLine": {
           "lineStyle": {
-            "color": "#64748b"
+            "color": "$theme.gridStroke"
           }
         }
       },
@@ -87,12 +79,12 @@
         {
           "type": "value",
           "axisLabel": {
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         },
@@ -101,7 +93,7 @@
           "min": "$calc.axisFloor.min",
           "max": "$calc.axisCeiling.max",
           "axisLabel": {
-            "color": "#f59e0b",
+            "color": "$theme.textPrimary",
             "formatterTemplate": "{value:percent}"
           },
           "splitLine": {
@@ -130,7 +122,7 @@
               }
             ],
             "label": {
-              "color": "#f8fafc",
+              "color": "$theme.textPrimary",
               "formatterTemplate": "Target {value:percent}"
             }
           }

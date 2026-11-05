@@ -1,7 +1,6 @@
 {
   "version": 1,
   "type": "custom",
-  "canvasTheme": "dark",
   "config": {
     "cardStyle": "plain"
   },
@@ -27,17 +26,10 @@
     "template": {
       "animation": false,
       "backgroundColor": "$theme.background",
-      "color": [
-        "#2dd4bf",
-        "#60a5fa",
-        "#f59e0b",
-        "#f472b6",
-        "#a78bfa",
-        "#a3e635"
-      ],
+      "color": "$theme.palette",
       "textStyle": {
-        "color": "#e2e8f0",
-        "fontFamily": "Segoe UI"
+        "color": "$theme.textPrimary",
+        "fontFamily": "$theme.font"
       },
       "title": {
         "text": "44 - Revenue hierarchy - nested circle packing",
@@ -45,13 +37,13 @@
         "top": 12,
         "textStyle": {
           "fontSize": 17,
-          "color": "#f8fafc"
+          "color": "$theme.textPrimary"
         }
       },
       "legend": {
         "top": 42,
         "textStyle": {
-          "color": "#cbd5e1"
+          "color": "$theme.textPrimary"
         },
         "show": false
       },
@@ -95,8 +87,8 @@
           "label": {
             "show": true,
             "formatterTemplate": "{name}",
-            "color": "#ffffff",
-            "fontSize": 10
+            "fontSize": 10,
+            "position": "inside"
           },
           "labelLayout": {
             "hideOverlap": true

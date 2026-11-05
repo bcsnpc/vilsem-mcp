@@ -1,7 +1,6 @@
 {
   "version": 1,
   "type": "custom",
-  "canvasTheme": "dark",
   "config": {
     "cardStyle": "plain"
   },
@@ -39,17 +38,10 @@
     "template": {
       "animation": false,
       "backgroundColor": "$theme.background",
-      "color": [
-        "#2dd4bf",
-        "#60a5fa",
-        "#f59e0b",
-        "#f472b6",
-        "#a78bfa",
-        "#a3e635"
-      ],
+      "color": "$theme.palette",
       "textStyle": {
-        "color": "#e2e8f0",
-        "fontFamily": "Segoe UI"
+        "color": "$theme.textPrimary",
+        "fontFamily": "$theme.font"
       },
       "title": {
         "text": "107 - Pearson correlation of six monthly measures - pairwise complete",
@@ -57,13 +49,13 @@
         "top": 12,
         "textStyle": {
           "fontSize": 17,
-          "color": "#f8fafc"
+          "color": "$theme.textPrimary"
         }
       },
       "legend": {
         "top": 42,
         "textStyle": {
-          "color": "#cbd5e1"
+          "color": "$theme.textPrimary"
         },
         "show": false
       },
@@ -82,13 +74,13 @@
         "type": "category",
         "data": "$calc.correlation.categories",
         "axisLabel": {
-          "color": "#cbd5e1",
+          "color": "$theme.textPrimary",
           "rotate": 40,
           "hideOverlap": true
         },
         "axisLine": {
           "lineStyle": {
-            "color": "#64748b"
+            "color": "$theme.gridStroke"
           }
         }
       },
@@ -96,7 +88,7 @@
         "type": "category",
         "data": "$calc.correlation.categories",
         "axisLabel": {
-          "color": "#cbd5e1"
+          "color": "$theme.textPrimary"
         }
       },
       "series": [
@@ -105,8 +97,7 @@
           "data": "$calc.correlation.data",
           "label": {
             "show": true,
-            "formatterTemplate": "{value.2:thousands}",
-            "color": "#fff"
+            "formatterTemplate": "{value.2:thousands}"
           }
         }
       ],
@@ -117,12 +108,12 @@
         "orient": "horizontal",
         "left": "center",
         "textStyle": {
-          "color": "#cbd5e1"
+          "color": "$theme.textPrimary"
         },
         "inRange": {
           "color": [
             "#991b1b",
-            "#334155",
+            "$theme.gridStroke",
             "#0d9488"
           ]
         }

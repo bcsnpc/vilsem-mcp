@@ -3,37 +3,96 @@ import fs from 'node:fs'
 import {SHIPPED_SPECS} from '../src/templates.js'
 import {validateSpec,validateBindings} from '../src/reports.js'
 import {previewRows} from '../src/preview.js'
-const rows=Array.from({length:12},(_,i)=>({_cat:`2026-${String(i+1).padStart(2,'0')}-01`,_cat2:i%2?'West':'East',_cats:[`2026-${String(i+1).padStart(2,'0')}-01`,i%2?'West':'East','Red'],_val:i%2?-2:10,_val2:15,_val3:8}))
-// All six host measure roles are populated. OHLC order is open/close/low/high,
-// so financial examples render real marks rather than an empty title-only SVG.
-const positive=rows.map((r,i)=>({...r,_val:10+i%3,_val2:12,_val3:8,_vals:[10+i%3,12,8,15,50,30]}))
-// This template facets by Country (six panels), then Category (three axes).
-// The generic twelve-month fixture is not a valid country-cardinality fixture.
-const countryRadar=Array.from({length:18},(_,i)=>({_cat:`Country ${Math.floor(i/3)+1}`,_cat2:`Category ${i%3+1}`,_cats:[`Country ${Math.floor(i/3)+1}`,`Category ${i%3+1}`],_val:(i+1)*10}))
-function fixtureRows(spec:any) {
- const id=spec.template.meta.id
- if(id==='stress2_060_radar-small-multiples'||id==='stress2_083_bar-shared-axis')return countryRadar
- if(id==='stress2_084_line-free-axis')return countryRadar.map((r,i)=>({...r,_cat2:`2026-0${i%3+1}-01`,_cats:[r._cat,`2026-0${i%3+1}-01`]}))
- if(id==='stress2_066_bump-rank')return countryRadar.map((r,i)=>({_cat:`2026-0${i%3+1}-01`,_cat2:r._cat,_cats:[`2026-0${i%3+1}-01`,r._cat],_val:(Math.floor(i/3)+i%3)%6+1}))
- if(id==='stress2_067_slope-movers')return Array.from({length:6},(_,i)=>({_cat:`Country ${i+1}`,_cats:[`Country ${i+1}`],_val:100+i*3,_val2:105+i*7,_val3:i+1}))
- if(id==='stress2_081_forest-range')return Array.from({length:6},(_,i)=>({_cat:`Country ${i+1}`,_val:80+i,_val2:120+i,_val3:100+i}))
- if(id==='stress2_085_kpi-sparkline')return positive.map((r,i)=>({...r,_val:100+i*5,_val2:i?0.03:null}))
- if(id==='stress2_086_ranked-inline-bars')return Array.from({length:18},(_,i)=>({_cat:`Model ${i+1}`,_val:200-i*8}))
- if(/^stress2_(089|090|095|097|110)_/.test(id))return Array.from({length:18},(_,i)=>({_cat:`Product ${i+1}`,_cats:[`Product ${i+1}`,50+i%9*75],_val:1}))
- if(/^stress2_(098|099)_/.test(id))return Array.from({length:18},(_,i)=>({_cat:`Product ${i+1}`,_cats:[`Product ${i+1}`,50+i%9*75,25+i%7*40],_val:1}))
- if(/^stress2_(100|108)_/.test(id))return Array.from({length:18},(_,i)=>({_cat:`Subcategory ${i+1}`,_val:100-i*5}))
- if(/^stress2_(101|106)_/.test(id))return countryRadar
- if(id==='stress2_102_yoy-variance')return Array.from({length:6},(_,i)=>({_cat:`Country ${i+1}`,_val:100+i*5,_val2:i%2?150:80,_val3:i%2?-.2:.3}))
- if(id==='stress2_103_rebase-index')return countryRadar.map((r,i)=>({_cat:`2026-0${i%3+1}-01`,_cats:[`2026-0${i%3+1}-01`,r._cat],_val:20+i*5}))
- if(id==='stress2_105_cohort-retention')return [6,3,2].flatMap((count,month)=>Array.from({length:count},(_,i)=>({_cat:`2026-0${month+1}-01`,_cats:[`2026-0${month+1}-01`,`Customer ${i}`],_val:1,_val2:Date.UTC(2026,0,1)/86400000})))
- if(id==='stress2_107_pearson-six')return positive.map((r,i)=>({...r,_vals:[10+i,30-i,5+(i%4)*2,20+2*i,8+i%3,3+i]}))
- if(id==='stress2_115_country-tile-grid')return ['Canada','United States','United Kingdom','France','Germany','Australia'].map((country,i)=>({_cat:country,_val:100*(i+1)}))
- if(id==='stress2_116_word-cloud')return positive.map((r,i)=>({...r,_cat:`${i%2?'Mountain':'Road'} Bike ${i%3?'Red':'Blue'} ${i+10}`}))
- if(id==='stress2_118_hierarchy-flame')return positive.map((r,i)=>({...r,_cats:[`Category ${i%3}`,`Subcategory ${i%6}`,`Product ${i}`]}))
- if(/^stress2_0(91|92|93|94|96)_/.test(id))return Array.from({length:18},(_,i)=>({_cat:`Group ${Math.floor(i/(id.includes('_093_')?6:3))+1}`,_cats:[`Group ${Math.floor(i/(id.includes('_093_')?6:3))+1}`,`Product ${i+1}`,50+i%9*75],_val:1}))
- return id.endsWith('gantt')?positive.map((r,i)=>({...r,_cats:[`Order ${i+1}`,'2026-01-01','2026-01-05']})):positive
-}
+import {rows,positive,countryRadar,fixtureRows} from './fixtures/visualRows.js'
+import {resolveVisualSpec} from '@vilsem/core/spec/resolve'
+
 describe('shipped expressiveness specs',()=>{
+ it.each([900,300])('measures full model currency labels in the %spx preview before laying out bars',width=>{
+  const value=23642495.0952
+  const result=previewRows({type:'bar'},[{_cat:'Bikes',_val:value}],width,300,{measures:[{name:'Revenue',formatString:'$#,0'}]})
+  expect(result.option.grid[0].right).toBeGreaterThan(60)
+  expect(result.svg).toContain('$23,642,495')
+  expect(result.option.xAxis.max).toBe(value)
+  expect(result.png.length).toBeGreaterThan(1000)
+ })
+ it('keeps interpolated hierarchy labels readable and padded inside their nodes',()=>{
+  const spec=SHIPPED_SPECS.find(s=>s.template.meta.id==='stress2_040_treemap-secondary-colour')!
+  for(const theme of ['light','dark']) {
+   const result=previewRows(spec,[{_cats:['Bikes','Road Bikes'],_val:100,_val2:80},{_cats:['Bikes','Mountain Bikes'],_val:50,_val2:20}],900,600,{theme})
+   expect(result.svg).not.toMatch(/>[^<]*vilsemContrast/)
+   expect(result.svg).toMatch(/>Bikes<\/text>/)
+   for(const [name,color] of [['Road Bikes','#000000'],['Mountain Bikes','#ffffff']]) {
+    const label=[...result.svg.matchAll(/<text\b([^>]*)>([^<]*)<\/text>/g)].find(m=>m[2]===name)
+    expect(label,name).toBeDefined();expect(label![1]).toContain(`fill="${color}"`)
+    expect(label![1]).toContain('text-anchor="start"');expect(label![1]).not.toMatch(/\by="-/)
+   }
+  }
+ })
+ it('renders plain treemap labels against the actual mapped node fill',()=>{
+  const spec={template:{meta:{id:'treemap-actual-fill'},slots:{amount:{kind:'measure'}},template:{animation:false,series:[{type:'treemap',roam:false,breadcrumb:{show:false},data:[{name:'Bright',value:1,itemStyle:{color:'#2dd4bf'}},{name:'Dark',value:1,itemStyle:{color:'#12239E'}}],label:{show:true}}]}}}
+  for(const theme of ['light','dark']) {
+   const result=previewRows(spec,[],900,600,{theme})
+   for(const [name,color] of [['Bright','#000000'],['Dark','#ffffff']]) {
+    const label=[...result.svg.matchAll(/<text\b([^>]*)>([^<]*)<\/text>/g)].find(m=>m[2]===name)
+    expect(label,name).toBeDefined();expect(label![1]).toContain(`fill="${color}"`)
+   }
+  }
+ })
+ it('uses report foreground for word labels whose helper symbols are invisible',()=>{
+  const spec=SHIPPED_SPECS.find(s=>s.template.meta.id==='stress2_116_word-cloud')!
+  for(const [theme,foreground] of [['light','#252423'],['dark','#f2f2f2']] as const){
+   const result=previewRows(spec,fixtureRows(spec),900,600,{theme})
+   const word=[...result.svg.matchAll(/<text\b([^>]*)>(bike)<\/text>/g)][0]
+   expect(word,theme).toBeDefined()
+   expect(word[1],theme).toContain(`fill="${foreground}"`)
+   expect(result.option.series[0].data.every(d=>d.itemStyle.opacity===0)).toBe(true)
+  }
+ })
+ it('renders contrasting labels over the actual dark and light heatmap cells',()=>{
+  const spec={template:{meta:{id:'cell-label-contrast'},slots:{category:{kind:'dimension'},group:{kind:'dimension'},amount:{kind:'measure'}},template:{animation:false,xAxis:{type:'category',data:'$slot.category.categories'},yAxis:{type:'category',data:'$slot.group.categories'},visualMap:{show:false,min:1,max:2,inRange:{color:['#12239E','#67e8f9']}},series:[{type:'heatmap',data:'$slot.amount.matrix',label:{show:true,formatterTemplate:'Cell {value}'}}]}}}
+  const result=previewRows(spec,[{_cats:['Low','Group'],_val:1},{_cats:['High','Group'],_val:2}],900,600)
+  const labels=[...result.svg.matchAll(/<text\b([^>]*)>(Cell [12])<\/text>/g)]
+  expect(labels).toHaveLength(2)
+  const luminance=(hex:string)=>{
+   let h=hex.replace('#','');if(h.length===3)h=[...h].map(c=>c+c).join('')
+   const rgb=[0,2,4].map(i=>parseInt(h.slice(i,i+2),16)/255).map(s=>s<=.04045?s/12.92:((s+.055)/1.055)**2.4)
+   return .2126*rgb[0]+.7152*rgb[1]+.0722*rgb[2]
+  }
+  for(const [text,background] of [['Cell 1','#12239E'],['Cell 2','#67e8f9']]){
+   const fill=/\bfill="(#[\da-f]+)"/i.exec(labels.find(m=>m[2]===text)![1])![1]
+   const pair=[luminance(fill),luminance(background)].sort((a,b)=>a-b)
+   expect((pair[1]+.05)/(pair[0]+.05),text).toBeGreaterThanOrEqual(4.5)
+  }
+ })
+ it('provides drawable dense facet, numeric-strip and in-range calendar thumbnail fixtures',()=>{
+  for(const id of ['stress2_006_horizon','stress2_007_sparkline-grid','stress2_069_normalized-area','stress2_070_cumulative-flow']) {
+   const spec=SHIPPED_SPECS.find(s=>s.template.meta.id===id)!
+   const option=resolveVisualSpec(spec,fixtureRows(spec))
+   expect(option.series.length,id).toBeGreaterThan(1)
+   for(const series of option.series)expect(series.data.filter(d=>d.value!=null).length,id).toBeGreaterThan(2)
+  }
+  const strip=SHIPPED_SPECS.find(s=>s.template.meta.id==='stress2_016_revenue-strip')!
+  expect(resolveVisualSpec(strip,fixtureRows(strip)).series[0].data.every(d=>Number.isFinite(d.value[0]))).toBe(true)
+  const calendar=SHIPPED_SPECS.find(s=>s.template.meta.id==='stress2_037_calendar-margin')!
+  const option=resolveVisualSpec(calendar,fixtureRows(calendar))
+  expect(option.series[0].data.every(d=>String(d[0]).startsWith(String(option.calendar.range)))).toBe(true)
+  const kpi=SHIPPED_SPECS.find(s=>s.template.meta.id==='stress2_085_kpi-sparkline')!
+  const current=resolveVisualSpec(kpi,fixtureRows(kpi))
+  expect(current.series.at(-1).data[0].value).toBe(.03)
+  const words=SHIPPED_SPECS.find(s=>s.template.meta.id==='stress2_116_word-cloud')!
+  expect(fixtureRows(words).every(row=>row._cats[0].includes('Bike'))).toBe(true)
+ })
+ it('uses report-aware structural fills for treemap, radar and neutral progress tracks',()=>{
+  for(const id of ['stress2_040_treemap-secondary-colour','stress2_041_treemap-drill','stress2_059_radar-benchmark','stress2_019_semi-donut-kpi']) {
+   const spec=SHIPPED_SPECS.find(s=>s.template.meta.id===id)!
+   const light=resolveVisualSpec(spec,fixtureRows(spec),{theme:'light'})
+   const dark=resolveVisualSpec(spec,fixtureRows(spec),{theme:'dark'})
+   expect(light.backgroundColor).toBe('transparent');expect(dark.backgroundColor).toBe('transparent')
+   if(id.includes('treemap'))expect(light.series[0].itemStyle.borderColor).toBe('transparent')
+   if(id.includes('radar'))expect(light.radar.splitArea.areaStyle.color).not.toEqual(dark.radar.splitArea.areaStyle.color)
+   if(id.includes('semi-donut'))expect(light.series[0].data[1].itemStyle.color).not.toBe(dark.series[0].data[1].itemStyle.color)
+  }
+ })
  it('renders signed waterfall start/end totals after inactive stack segments',()=>{
   const template={meta:{id:'stack-continuity'},slots:{cat:{kind:'dimension'},delta:{kind:'measure'},start:{kind:'measure'}},transforms:[{waterfall:{category:'cat',value:'delta',start:'start',total:true},as:'w'}],template:{animation:false,xAxis:{type:'category',data:'$calc.w.categories'},yAxis:{type:'value'},series:[
    {type:'bar',stack:'w',stackStrategy:'all',silent:true,data:'$calc.w.base',itemStyle:{opacity:0}},
@@ -103,13 +162,19 @@ describe('shipped expressiveness specs',()=>{
  it('retains signed/zero/missing current-row KPI state and a strict twelve-item ranked list',()=>{
   const kpi=SHIPPED_SPECS.find(s=>s.template.meta.id==='stress2_085_kpi-sparkline')!
   expect(kpi).toBeDefined()
-  for(const [delta,text,colour] of [[.1,'10%','#2dd4bf'],[-.1,'-10%','#f87171'],[0,'0%','#94a3b8'],[null,'No prior revenue','#94a3b8']] as const) {
+  // Positive/negative semantic colours remain explicit; neutral and empty text
+  // inherit the current report foreground, rather than a dark-canvas grey.
+  for(const [delta,text,colour] of [[.1,'10%','#2dd4bf'],[-.1,'-10%','#f87171'],[0,'0%','#252423'],[null,'No prior revenue','#252423']] as const) {
    const result=previewRows(kpi,[{_cat:'2026-01-01',_val:100,_val2:.2},{_cat:'2026-02-01',_val:110,_val2:delta}],900,600)
    const label=[...result.svg.matchAll(/<text\b([^>]*)>([^<]*)<\/text>/g)].find(m=>m[2]===text)
    expect(label,text).toBeDefined();expect(label![1]).toContain(`fill="${colour}"`)
    expect(result.option.series.at(-1).data[0].value).toBe(delta)
   }
   const ranked=SHIPPED_SPECS.find(s=>s.template.meta.id==='stress2_086_ranked-inline-bars')!
+  const dark=previewRows(kpi,[{_cat:'2026-01-01',_val:100,_val2:.2},{_cat:'2026-02-01',_val:110,_val2:0}],900,600,{theme:'dark'})
+  const neutral=[...dark.svg.matchAll(/<text\b([^>]*)>([^<]*)<\/text>/g)].find(m=>m[2]==='0%')
+  expect(neutral![1]).toContain('fill="#f2f2f2"')
+  expect(dark.option.backgroundColor).toBe('transparent')
   const option=previewRows(ranked,fixtureRows(ranked),900,600).option
   expect(option.yAxis.data).toHaveLength(12);expect(option.yAxis.data).not.toContain('Other')
  })

@@ -1,7 +1,6 @@
 {
   "version": 1,
   "type": "custom",
-  "canvasTheme": "dark",
   "config": {
     "cardStyle": "plain"
   },
@@ -24,17 +23,10 @@
     "template": {
       "animation": false,
       "backgroundColor": "$theme.background",
-      "color": [
-        "#2dd4bf",
-        "#60a5fa",
-        "#f59e0b",
-        "#f472b6",
-        "#a78bfa",
-        "#a3e635"
-      ],
+      "color": "$theme.palette",
       "textStyle": {
-        "color": "#e2e8f0",
-        "fontFamily": "Segoe UI"
+        "color": "$theme.textPrimary",
+        "fontFamily": "$theme.font"
       },
       "title": {
         "text": "19 \u00b7 Global profit margin \u00b7 semi-circle KPI",
@@ -42,13 +34,13 @@
         "top": 12,
         "textStyle": {
           "fontSize": 17,
-          "color": "#f8fafc"
+          "color": "$theme.textPrimary"
         }
       },
       "legend": {
         "top": 42,
         "textStyle": {
-          "color": "#cbd5e1"
+          "color": "$theme.textPrimary"
         },
         "show": false
       },
@@ -83,7 +75,7 @@
               "name": "Cost share",
               "value": "$slot.rest.first",
               "itemStyle": {
-                "color": "#334155"
+                "color": "$theme.gridStroke"
               }
             }
           ]
@@ -96,9 +88,9 @@
           "top": "55%",
           "style": {
             "text": "$slot.margin.lastLabel",
-            "fill": "#f8fafc",
+            "fill": "$theme.textPrimary",
             "fontSize": 42,
-            "fontFamily": "Segoe UI"
+            "fontFamily": "$theme.font"
           }
         },
         {
@@ -107,9 +99,9 @@
           "top": "68%",
           "style": {
             "text": "Profit margin (%)",
-            "fill": "#cbd5e1",
+            "fill": "$theme.textPrimary",
             "fontSize": 16,
-            "fontFamily": "Segoe UI"
+            "fontFamily": "$theme.font"
           }
         }
       ]

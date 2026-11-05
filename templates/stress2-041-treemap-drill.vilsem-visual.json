@@ -1,7 +1,6 @@
 {
   "version": 1,
   "type": "custom",
-  "canvasTheme": "dark",
   "config": {
     "cardStyle": "plain"
   },
@@ -27,17 +26,10 @@
     "template": {
       "animation": false,
       "backgroundColor": "$theme.background",
-      "color": [
-        "#2dd4bf",
-        "#60a5fa",
-        "#f59e0b",
-        "#f472b6",
-        "#a78bfa",
-        "#a3e635"
-      ],
+      "color": "$theme.palette",
       "textStyle": {
-        "color": "#e2e8f0",
-        "fontFamily": "Segoe UI"
+        "color": "$theme.textPrimary",
+        "fontFamily": "$theme.font"
       },
       "title": {
         "text": "41 - Revenue treemap - click a category, use breadcrumb to return",
@@ -45,13 +37,13 @@
         "top": 12,
         "textStyle": {
           "fontSize": 17,
-          "color": "#f8fafc"
+          "color": "$theme.textPrimary"
         }
       },
       "legend": {
         "top": 42,
         "textStyle": {
-          "color": "#cbd5e1"
+          "color": "$theme.textPrimary"
         },
         "show": false
       },
@@ -64,7 +56,7 @@
           "type": "treemap",
           "name": "Products",
           "itemStyle": {
-            "borderColor": "#1e293b",
+            "borderColor": "$theme.background",
             "borderWidth": 3,
             "gapWidth": 2
           },
@@ -77,21 +69,20 @@
           "nodeClick": "zoomToNode",
           "roam": false,
           "label": {
-            "show": true,
-            "color": "#f8fafc"
+            "show": true
           },
           "upperLabel": {
             "show": true,
             "height": 24,
-            "color": "#f8fafc"
+            "color": "$theme.textPrimary"
           },
           "breadcrumb": {
             "show": true,
             "bottom": 15,
             "itemStyle": {
-              "color": "#334155",
+              "color": "$theme.gridStroke",
               "textStyle": {
-                "color": "#f8fafc"
+                "color": "$theme.textPrimary"
               }
             }
           }

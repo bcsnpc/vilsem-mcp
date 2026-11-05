@@ -6,7 +6,7 @@ vilsem-mcp is the custom-visual layer for agentic Power BI authoring — use it 
 
 Requires Node.js 22.12+, 24, or 26+. Install from GitHub or clone this repository and run `npm install`, then `npm test`. Its `prepare` step builds the server. All model connections run through `@vilsem/core/connect`; no Vilsem app checkout, Electron installation or application path configuration is needed.
 
-The dependency is the immutable public `core-v0.4.0` release tarball. For local core development only, install a locally packed core tarball; restore the public release URL before distributing.
+The dependency is the immutable public `core-v0.5.0` release tarball. For local core development only, install a locally packed core tarball; restore the public release URL before distributing.
 
 ### Model authentication
 
@@ -20,12 +20,21 @@ For Fabric, configure these environment variables on the MCP server process:
 
 No credentials are read from another repository's `.env` or Electron workspace store. Set credentials in your MCP client's server environment. Core also preserves `setInteractiveTokens` for Electron PKCE login.
 
+### Connect from an existing report binding
+
+Call `connect_model` with `source:{kind:"report",reportDir:"/path/to/Example.Report"}` to follow that report's `definition.pbir` without changing it:
+
+- `datasetReference.byPath`: core matches the local semantic-model path to an open Desktop session, even when another model is open. With Desktop closed it reads the local TMDL or BIM definitions and returns `schemaOnly:true`. Schema-only connections cannot run DAX or preview live values; open the model and reconnect first.
+- `datasetReference.byConnection`: a Power BI XMLA URL identifies the workspace and semantic model. Core resolves them through the configured Fabric credentials and uses the existing Fabric query/introspection adapter. It does not try to discover a local Desktop port. The connecting identity needs access to list the workspace and model, execute queries and inspect its definition. Windows-integrated SSAS server bindings use the local ADOMD bridge and Windows identity; cloud credentials are never forwarded to arbitrary servers.
+
+Quoted connection-string values are supported. Passwords and impersonation settings embedded in the report are ignored; configure authentication on the MCP server. Missing or ambiguous targets fail explicitly. `commit_visual` still writes only the Vilsem visual in the selected local report; it does not change the binding, semantic model, native visuals or report policies.
+
 There is no npm-registry publication. Install the tagged GitHub release:
 
 ```sh
-npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.4.0
+npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.5.0
 vilsem-mcp
-# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.4.0 vilsem-mcp
+# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.5.0 vilsem-mcp
 ```
 
 The process serves stdio JSON-RPC; diagnostics go to stderr.
@@ -105,7 +114,7 @@ exhaustive formatting, resize, cloud-target or interaction certification.
 See the [120-case results](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/stress2/results.md)
 and [format additions](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/stress2/format-additions.md).
 
-Use core0.4.0 and the bundled renderer4.31. Existing reports keep the same GUID
+Use core0.5.0 and the bundled renderer4.34. Existing reports keep the same GUID
 and primitiveSpec property. New features enforce renderer version floors rather
 than silently replacing an existing report resource. `list_templates` retains
 the template contract and includes `exampleSpec`: use that complete envelope to
@@ -120,3 +129,70 @@ are documented in `vilsem://docs/spec-format`.
 ## Original expressiveness examples (0.3.0)
 
 Nine new standalone `.vilsem-visual.json` specs ship in `templates/` and are listed by `list_templates`. They cover Sankey, Gantt, running-total waterfall, sunburst, bullet, radial progress, dual-axis reference measures, facets and a relationship network. Bind their declared slots to your own schema; no model data is embedded. Use core 0.3.0 / renderer 4.14.2.0+. The [expressiveness report](docs/expressiveness-gaps.md) records the live workflow, bounds and the deliberately unsupported Marimekko custom callback.
+
+### Theme, formatting and preview locale
+
+Visual backgrounds default to transparent and use the report/host foreground and
+palette. `canvasTheme` is an explicit override. `preview_visual` accepts
+`theme:"report"|"light"|"dark"|<theme JSON>`; a supplied reportDir selects the
+referenced registered theme by default. Desktop's Appearance pane can override
+the background/transparency or force report-theme inheritance.
+
+Directly bound model and query-scoped measure formats apply to labels, value axes and
+native tooltips, including heatmap cell labels and bound-field tooltips. Percent, grouping, currency, decimal precision, comma scaling
+and date patterns use the same bounded converter in core. This is a supported
+subset of Excel/Power BI formatting, not a claim to implement every conditional,
+scientific or dynamic model-format expression.
+
+Derived counts, densities, coordinates and ratios can have different units from
+their input measure. They require an authored formatter when units change;
+the renderer does not blindly apply the source currency/percent format to them.
+SSR can read the report JSON's font family. Automatic inheritance of an arbitrary
+report font in Desktop is not yet verified; the current native default is Segoe UI.
+
+Desktop uses the host viewer locale. SSR defaults to `locale:"en-US"`; pass the
+viewer locale (for example `"en-IN"` or `"de-DE"`) to preview_visual when matching
+regional grouping, decimal separators or month names. The result reports
+formattingLocale. A report's model culture alone does not determine each
+viewer's regional display settings. Values and calculations are unchanged.
+
+`preview_visual.interactions` describes supported host routes and known limits;
+it is not evidence that SSR exercised native selection, report-page tooltips or
+bookmarks. Native acceptance is recorded separately in the QA interaction log.
+
+### Deterministic template thumbnails
+
+`npm run thumbnails` rebuilds all shipped light-theme example PNGs using the same
+synthetic fixtures as the rendering regressions. `node scripts/render-thumbnails.mjs
+--dark` checks the alternative host background. Each theme directory under
+`templates/thumbnails/` includes a manifest with source/PNG hashes and failures.
+These thumbnails contain synthetic demonstration values, not model/client data.
+
+
+### PNG typography
+
+The isolated PNG worker expands the pixel-font shorthand emitted by ECharts to
+CSS longhand before rasterizing. This preserves requested font sizes, weight and
+style in previews (including large KPI callouts). Unknown shorthand is left
+unchanged; literal chart text is never rewritten. Installed fonts still determine
+font fallback. The SVG option and native chart typography are unchanged. The adapter workaround
+addresses [resvg-js font shorthand support](https://github.com/thx/resvg-js/issues/404).
+
+
+Default plain treemap labels use padded top-left placement and black/white text
+chosen from the actual mapped opaque node fill, including rgba colours with
+alpha1. Explicit label colours, authored positions/alignment and existing rich
+markup retain their authored treatment. Unknown/translucent paints require an
+explicit readable text style; no automatic contrast guarantee is claimed for them.
+
+### Core0.5 native verification limits
+
+Light/dark native rendering, percentage host tooltips, full currency labels and
+plain treemap headers were checked against the owned AdventureWorks QA report.
+The complete source suites pass. Physical mouse Ctrl-click and the final
+stale-selection-to-slicer transition still need manual verification: Windows
+Computer Use lost its native pipe and could not recover after retry/reset.
+Keyboard additive selection and the other documented native interactions passed;
+Ctrl/clear/highlight/stale-identity paths also have host regression coverage.
+These are explicit verification limits, not claims that every native interaction,
+report font, Service/Fabric target or historical screenshot was retested.

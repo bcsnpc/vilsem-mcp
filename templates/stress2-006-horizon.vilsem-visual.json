@@ -1,7 +1,6 @@
 {
   "version": 1,
   "type": "custom",
-  "canvasTheme": "dark",
   "config": {
     "cardStyle": "plain"
   },
@@ -27,17 +26,10 @@
     "template": {
       "animation": false,
       "backgroundColor": "$theme.background",
-      "color": [
-        "#2dd4bf",
-        "#60a5fa",
-        "#f59e0b",
-        "#f472b6",
-        "#a78bfa",
-        "#a3e635"
-      ],
+      "color": "$theme.palette",
       "textStyle": {
-        "color": "#e2e8f0",
-        "fontFamily": "Segoe UI"
+        "color": "$theme.textPrimary",
+        "fontFamily": "$theme.font"
       },
       "title": {
         "text": "06 \u00b7 Country revenue horizon \u00b7 three bands to observed peak",
@@ -45,7 +37,7 @@
         "top": 12,
         "textStyle": {
           "fontSize": 17,
-          "color": "#f8fafc"
+          "color": "$theme.textPrimary"
         }
       },
       "legend": {
@@ -161,9 +153,9 @@
           "top": "$item.top",
           "style": {
             "text": "$item.name",
-            "fill": "#cbd5e1",
+            "fill": "$theme.textPrimary",
             "fontSize": 11,
-            "fontFamily": "Segoe UI"
+            "fontFamily": "$theme.font"
           }
         }
       }

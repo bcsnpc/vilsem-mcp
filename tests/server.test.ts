@@ -84,10 +84,64 @@ describe('spec and SSR',()=>{
 })
 
 describe('MCP end-to-end contracts',()=>{
+  it('advertises the installed package version in the MCP handshake',async()=>{
+    const client=await clientFor(adapter())
+    const pkg=JSON.parse(await fs.readFile(new URL('../package.json',import.meta.url),'utf8'))
+    expect(client.getServerVersion()).toEqual({name:'vilsem-mcp',version:pkg.version})
+  })
+  it('returns the chosen viewer locale and preserves raw values in a regional preview',async()=>{
+    const model=adapter()
+    model.query=vi.fn(async()=>[{'Product[Category]':'A','[Sales]':24914586.8193}])
+    model.schema=vi.fn(async()=>({tables:[{name:'Product',columns:[{name:'Category',dataType:'string'}]}],measures:[{table:'Measures',name:'Sales',formatString:'$#,0.00'}]}))
+    const client=await clientFor(model)
+    const {connectionId}=unpack(await client.callTool({name:'connect_model',arguments:{source:{kind:'desktop'}}}))
+    const response=await client.callTool({name:'preview_visual',arguments:{connectionId,spec:{type:'column'},bindings,locale:'en-IN'}})
+    expect(response.isError).not.toBe(true)
+    const value=unpack(response)
+    expect(value.formattingLocale).toBe('en-IN')
+    expect(value.option.series[0].data[0].value).toBe(24914586.8193)
+    expect(value.interactions.assessment).toContain('does not verify')
+  })
+  it('refuses model-format preview/native divergence against an old registered runtime even with explicit dark theme',async()=>{
+    const root=await fixture(),model=adapter()
+    model.schema=vi.fn(async()=>({tables:[],measures:[{table:'Measures',name:'Sales',formatString:'0.00%'}]}))
+    await injectVisual({reportDir:root,pageName:'page1',visualName:'registration',spec:{type:'bar'},bindings})
+    const file=path.join(root,'CustomVisuals',RENDERER_GUID,'package.json')
+    await fs.writeFile(file,JSON.stringify({visual:{guid:RENDERER_GUID},version:'4.31.0.0'}))
+    const client=await clientFor(model)
+    const {connectionId}=unpack(await client.callTool({name:'connect_model',arguments:{source:{kind:'desktop'}}}))
+    const result=await client.callTool({name:'commit_visual',arguments:{connectionId,reportDir:root,pageName:'page1',visualName:'formatted_old',spec:{type:'bar',canvasTheme:'dark'},bindings,layout:{x:0,y:0,width:700,height:400}}})
+    expect(result.isError).toBe(true)
+    expect(result.content[0].text).toContain('4.34.0.0')
+    await expect(fs.stat(path.join(root,'definition/pages/page1/visuals/formatted_old'))).rejects.toThrow()
+  })
+  it('uses model display formats in SSR labels, axes and tooltips without rounding query values',()=>{
+    const result=previewRows({type:'column'},[{_cat:'A',_val:.2345}],700,450,{measures:[{name:'Margin',formatString:'0.00%'}]})
+    expect(result.svg).toContain('23.45%')
+    expect(result.option.yAxis.axisLabel.formatter(.2345)).toBe('23.45%')
+    expect(result.option.series[0].tooltip.valueFormatter(.2345)).toBe('23.45%')
+    expect(result.option.series[0].data[0].value).toBe(.2345)
+  })
+  it('previews a report-referenced theme, permits an explicit preview theme and keeps the report bytes unchanged',async()=>{
+    const root=await fixture(),model=adapter(),client=await clientFor(model)
+    const connection=unpack(await client.callTool({name:'connect_model',arguments:{source:{kind:'desktop',port:12345}}}))
+    await fs.mkdir(path.join(root,'StaticResources','RegisteredResources'),{recursive:true})
+    const report=path.join(root,'definition','report.json')
+    await fs.writeFile(report,JSON.stringify({themeCollection:{customTheme:{name:'report-theme.json'}},resourcePackages:[{name:'RegisteredResources',type:'RegisteredResources',items:[{name:'report-theme.json',path:'report-theme.json'}]}]}))
+    await fs.writeFile(path.join(root,'StaticResources','RegisteredResources','report-theme.json'),JSON.stringify({foreground:'#eeeeee',background:'#111111',dataColors:['#abcdef']}))
+    const before=await fs.readFile(report)
+    const args={...connection,spec:{type:'bar'},bindings,reportDir:root,width:600,height:400}
+    const dark=unpack(await client.callTool({name:'preview_visual',arguments:args}))
+    expect(dark.option.backgroundColor).toBe('transparent');expect(dark.option.textStyle.color).toBe('#eeeeee')
+    expect(dark.themeSource).toBe('report-theme.json')
+    const light=unpack(await client.callTool({name:'preview_visual',arguments:{...args,theme:'light'}}))
+    expect(light.option.textStyle.color).toBe('#252423')
+    expect(await fs.readFile(report)).toEqual(before)
+  })
   it('reports old Vilsem runtime incompatibility without reporting or changing native visuals',async()=>{
     const root=await fixture()
     const template=EXAMPLE_TEMPLATES.find(t=>t.meta.id==='lollipop')!
-    const spec={type:'custom',template:{...template,transforms:[{waterfall:{category:'category',value:'value'},as:'steps'}]}}
+    const spec={type:'custom',canvasTheme:'dark',template:{...template,transforms:[{waterfall:{category:'category',value:'value'},as:'steps'}]}}
     await injectVisual({reportDir:root,pageName:'page1',visualName:'advanced',spec,bindings})
     const metadata=path.join(root,'CustomVisuals',RENDERER_GUID,'package.json')
     await fs.writeFile(metadata,JSON.stringify({visual:{guid:RENDERER_GUID},version:'4.14.2.0'}))

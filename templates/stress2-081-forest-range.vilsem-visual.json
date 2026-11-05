@@ -1,7 +1,6 @@
 {
   "version": 1,
   "type": "custom",
-  "canvasTheme": "dark",
   "config": {
     "cardStyle": "plain"
   },
@@ -30,17 +29,10 @@
     "template": {
       "animation": false,
       "backgroundColor": "$theme.background",
-      "color": [
-        "#2dd4bf",
-        "#60a5fa",
-        "#f59e0b",
-        "#f472b6",
-        "#a78bfa",
-        "#a3e635"
-      ],
+      "color": "$theme.palette",
       "textStyle": {
-        "color": "#e2e8f0",
-        "fontFamily": "Segoe UI"
+        "color": "$theme.textPrimary",
+        "fontFamily": "$theme.font"
       },
       "title": {
         "text": "81 - Monthly revenue mean with 95% Student-t confidence interval",
@@ -48,13 +40,13 @@
         "top": 12,
         "textStyle": {
           "fontSize": 17,
-          "color": "#f8fafc"
+          "color": "$theme.textPrimary"
         }
       },
       "legend": {
         "top": 42,
         "textStyle": {
-          "color": "#cbd5e1"
+          "color": "$theme.textPrimary"
         },
         "show": false
       },
@@ -73,7 +65,7 @@
       "xAxis": {
         "type": "value",
         "axisLabel": {
-          "color": "#cbd5e1",
+          "color": "$theme.textPrimary",
           "formatterTemplate": "{value:thousands}"
         }
       },
@@ -81,7 +73,7 @@
         "type": "category",
         "data": "$slot.country.values",
         "axisLabel": {
-          "color": "#cbd5e1"
+          "color": "$theme.textPrimary"
         }
       },
       "series": {
@@ -140,7 +132,7 @@
         "bottom": 16,
         "style": {
           "text": "95% Student-t CI; monthly observations treated as independent.",
-          "fill": "#94a3b8",
+          "fill": "$theme.textPrimary",
           "fontSize": 11
         }
       }

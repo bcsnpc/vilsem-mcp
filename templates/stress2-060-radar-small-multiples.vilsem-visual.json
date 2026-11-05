@@ -1,7 +1,6 @@
 {
   "version": 1,
   "type": "custom",
-  "canvasTheme": "dark",
   "config": {
     "cardStyle": "plain"
   },
@@ -27,17 +26,10 @@
     "template": {
       "animation": false,
       "backgroundColor": "$theme.background",
-      "color": [
-        "#2dd4bf",
-        "#60a5fa",
-        "#f59e0b",
-        "#f472b6",
-        "#a78bfa",
-        "#a3e635"
-      ],
+      "color": "$theme.palette",
       "textStyle": {
-        "color": "#e2e8f0",
-        "fontFamily": "Segoe UI"
+        "color": "$theme.textPrimary",
+        "fontFamily": "$theme.font"
       },
       "title": {
         "text": "60 - Category revenue radar - one panel per country",
@@ -45,13 +37,13 @@
         "top": 12,
         "textStyle": {
           "fontSize": 17,
-          "color": "#f8fafc"
+          "color": "$theme.textPrimary"
         }
       },
       "legend": {
         "top": 42,
         "textStyle": {
-          "color": "#cbd5e1"
+          "color": "$theme.textPrimary"
         },
         "show": false
       },
@@ -68,7 +60,7 @@
           "radius": 95,
           "indicator": "$calc.facets.indicators",
           "axisName": {
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 9
           },
           "splitArea": {
@@ -83,7 +75,7 @@
           "radius": 95,
           "indicator": "$calc.facets.indicators",
           "axisName": {
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 9
           },
           "splitArea": {
@@ -98,7 +90,7 @@
           "radius": 95,
           "indicator": "$calc.facets.indicators",
           "axisName": {
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 9
           },
           "splitArea": {
@@ -113,7 +105,7 @@
           "radius": 95,
           "indicator": "$calc.facets.indicators",
           "axisName": {
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 9
           },
           "splitArea": {
@@ -128,7 +120,7 @@
           "radius": 95,
           "indicator": "$calc.facets.indicators",
           "axisName": {
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 9
           },
           "splitArea": {
@@ -143,7 +135,7 @@
           "radius": 95,
           "indicator": "$calc.facets.indicators",
           "axisName": {
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 9
           },
           "splitArea": {
@@ -177,7 +169,7 @@
           "top": "$item.top",
           "style": {
             "text": "$item.name",
-            "fill": "#e2e8f0",
+            "fill": "$theme.textPrimary",
             "fontSize": 13
           }
         }

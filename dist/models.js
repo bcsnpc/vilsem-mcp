@@ -8,7 +8,7 @@ export class Models {
     constructor(adapter = new VilsemAdapter()) {
         this.adapter = adapter;
     }
-    async connect(source) { const connection = await this.adapter.connect(source); const connectionId = crypto.randomUUID(); this.connections.set(connectionId, connection); return { connectionId, kind: source.kind, ...(connection.discovery ? { discovery: connection.discovery, port: connection.source.port } : {}) }; }
+    async connect(source) { const connection = await this.adapter.connect(source); const connectionId = crypto.randomUUID(); this.connections.set(connectionId, connection); return { connectionId, kind: source.kind, schemaOnly: !!connection.schemaOnly, ...(connection.discovery ? { discovery: connection.discovery, ...(connection.source.port ? { port: connection.source.port } : {}) } : {}) }; }
     get(id) { const connection = this.connections.get(id); if (!connection)
         throw Error('Unknown connectionId; connect_model first'); return connection; }
     async query(id, dax, maxRows = 200) {
@@ -25,6 +25,14 @@ export class Models {
         // The MCP schema contract exposes fields/relationships only, never data sources.
         const schema = { tables: discovered.tables || [], measures: discovered.measures || [], relationships: discovered.relationships || [] };
         this.metadata.set(id, schema);
+        if (connection.schemaOnly) {
+            for (const table of schema.tables)
+                for (const column of table.columns || []) {
+                    column.sampleValues = [];
+                    column.sampleSkipped = 'Schema-only connection; open the model in Desktop and reconnect for live values';
+                }
+            return schema;
+        }
         const columnTasks = [];
         for (const table of schema.tables || [])
             for (const column of table.columns || []) {

@@ -3,15 +3,15 @@ const echarts = createRequire(import.meta.url)('echarts');
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { resolveVisualSpec } from '@vilsem/core/spec/resolve';
-import { getThemeTokens } from '@vilsem/core/theme';
-export function previewRows(spec, rows, width = 800, height = 500) {
-    const option = resolveVisualSpec(spec, rows);
+import { resolveReportTheme } from '@vilsem/core/theme/report';
+export function previewRows(spec, rows, width = 800, height = 500, context = {}) {
+    const option = resolveVisualSpec(spec, rows, { ...context, width, measureText: (text, font) => echarts.format.getTextRect(text, font).width });
     const chart = echarts.init(null, undefined, { renderer: 'svg', ssr: true, width, height });
     try {
         chart.setOption({ ...option, animation: false });
         const svg = chart.renderToSVGString();
         const raster = spawnSync(process.execPath, [fileURLToPath(new URL('./rasterize.cjs', import.meta.url))], {
-            input: JSON.stringify({ svg, background: getThemeTokens(spec.canvasTheme === 'light' ? 'light' : 'dark').canvasBg }),
+            input: JSON.stringify({ svg, background: resolveReportTheme(spec, context).background }),
             windowsHide: true, timeout: 30000, maxBuffer: 16 * 1024 * 1024,
         });
         if (raster.error || raster.status !== 0)

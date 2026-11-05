@@ -1,7 +1,6 @@
 {
   "version": 1,
   "type": "custom",
-  "canvasTheme": "dark",
   "config": {
     "cardStyle": "plain"
   },
@@ -33,17 +32,10 @@
     "template": {
       "animation": false,
       "backgroundColor": "$theme.background",
-      "color": [
-        "#2dd4bf",
-        "#60a5fa",
-        "#f59e0b",
-        "#f472b6",
-        "#a78bfa",
-        "#a3e635"
-      ],
+      "color": "$theme.palette",
       "textStyle": {
-        "color": "#e2e8f0",
-        "fontFamily": "Segoe UI"
+        "color": "$theme.textPrimary",
+        "fontFamily": "$theme.font"
       },
       "title": {
         "text": "71 - Stock-to-order spans grouped by destination country - historical Gantt",
@@ -51,13 +43,13 @@
         "top": 12,
         "textStyle": {
           "fontSize": 17,
-          "color": "#f8fafc"
+          "color": "$theme.textPrimary"
         }
       },
       "legend": {
         "top": 42,
         "textStyle": {
-          "color": "#cbd5e1"
+          "color": "$theme.textPrimary"
         },
         "show": false
       },
@@ -78,7 +70,7 @@
         "min": "$calc.tasks.min",
         "max": "$calc.tasks.max",
         "axisLabel": {
-          "color": "#cbd5e1",
+          "color": "$theme.textPrimary",
           "formatterTemplate": "{value:date}"
         }
       },
@@ -87,7 +79,7 @@
         "inverse": true,
         "data": "$calc.tasks.categories",
         "axisLabel": {
-          "color": "#cbd5e1",
+          "color": "$theme.textPrimary",
           "fontSize": 9,
           "width": 180,
           "overflow": "truncate"
@@ -143,7 +135,7 @@
           "bottom": 8,
           "style": {
             "text": "$calc.tasks.summary",
-            "fill": "#cbd5e1",
+            "fill": "$theme.textPrimary",
             "fontSize": 11
           }
         },

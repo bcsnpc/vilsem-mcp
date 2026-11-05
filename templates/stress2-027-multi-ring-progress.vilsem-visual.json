@@ -1,7 +1,6 @@
 {
   "version": 1,
   "type": "custom",
-  "canvasTheme": "dark",
   "config": {
     "cardStyle": "plain"
   },
@@ -27,17 +26,10 @@
     "template": {
       "animation": false,
       "backgroundColor": "$theme.background",
-      "color": [
-        "#2dd4bf",
-        "#60a5fa",
-        "#f59e0b",
-        "#f472b6",
-        "#a78bfa",
-        "#a3e635"
-      ],
+      "color": "$theme.palette",
       "textStyle": {
-        "color": "#e2e8f0",
-        "fontFamily": "Segoe UI"
+        "color": "$theme.textPrimary",
+        "fontFamily": "$theme.font"
       },
       "title": {
         "text": "27 \u00b7 Revenue attainment, margin and return rate \u00b7 multi-ring",
@@ -45,13 +37,13 @@
         "top": 12,
         "textStyle": {
           "fontSize": 17,
-          "color": "#f8fafc"
+          "color": "$theme.textPrimary"
         }
       },
       "legend": {
         "top": 42,
         "textStyle": {
-          "color": "#cbd5e1"
+          "color": "$theme.textPrimary"
         },
         "show": false
       },
@@ -84,7 +76,7 @@
               "color": [
                 [
                   1,
-                  "#334155"
+                  "$theme.gridStroke"
                 ]
               ]
             }
@@ -106,7 +98,7 @@
               0,
               "-30%"
             ],
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 13,
             "show": false
           },
@@ -116,7 +108,7 @@
               "-16%"
             ],
             "fontSize": 18,
-            "color": "#f8fafc",
+            "color": "$theme.textPrimary",
             "formatterTemplate": "{value}%",
             "show": false
           },
@@ -151,7 +143,7 @@
               "color": [
                 [
                   1,
-                  "#334155"
+                  "$theme.gridStroke"
                 ]
               ]
             }
@@ -173,7 +165,7 @@
               0,
               "-2%"
             ],
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 13,
             "show": false
           },
@@ -183,7 +175,7 @@
               "12%"
             ],
             "fontSize": 18,
-            "color": "#f8fafc",
+            "color": "$theme.textPrimary",
             "formatterTemplate": "{value}%",
             "show": false
           },
@@ -218,7 +210,7 @@
               "color": [
                 [
                   1,
-                  "#334155"
+                  "$theme.gridStroke"
                 ]
               ]
             }
@@ -240,7 +232,7 @@
               0,
               "26%"
             ],
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 13,
             "show": false
           },
@@ -250,7 +242,7 @@
               "40%"
             ],
             "fontSize": 18,
-            "color": "#f8fafc",
+            "color": "$theme.textPrimary",
             "formatterTemplate": "{value}%",
             "show": false
           },
@@ -275,9 +267,9 @@
               "y": 0,
               "style": {
                 "text": "Revenue attainment (%)",
-                "fill": "#cbd5e1",
+                "fill": "$theme.textPrimary",
                 "fontSize": 13,
-                "fontFamily": "Segoe UI",
+                "fontFamily": "$theme.font",
                 "align": "center"
               }
             },
@@ -287,9 +279,9 @@
               "y": 20,
               "style": {
                 "text": "$slot.m0.lastLabel",
-                "fill": "#f8fafc",
+                "fill": "$theme.textPrimary",
                 "fontSize": 18,
-                "fontFamily": "Segoe UI",
+                "fontFamily": "$theme.font",
                 "align": "center"
               }
             }
@@ -307,9 +299,9 @@
               "y": 0,
               "style": {
                 "text": "Profit margin (%)",
-                "fill": "#cbd5e1",
+                "fill": "$theme.textPrimary",
                 "fontSize": 13,
-                "fontFamily": "Segoe UI",
+                "fontFamily": "$theme.font",
                 "align": "center"
               }
             },
@@ -319,9 +311,9 @@
               "y": 20,
               "style": {
                 "text": "$slot.m1.lastLabel",
-                "fill": "#f8fafc",
+                "fill": "$theme.textPrimary",
                 "fontSize": 18,
-                "fontFamily": "Segoe UI",
+                "fontFamily": "$theme.font",
                 "align": "center"
               }
             }
@@ -339,9 +331,9 @@
               "y": 0,
               "style": {
                 "text": "Return rate (%)",
-                "fill": "#cbd5e1",
+                "fill": "$theme.textPrimary",
                 "fontSize": 13,
-                "fontFamily": "Segoe UI",
+                "fontFamily": "$theme.font",
                 "align": "center"
               }
             },
@@ -351,9 +343,9 @@
               "y": 20,
               "style": {
                 "text": "$slot.m2.lastLabel",
-                "fill": "#f8fafc",
+                "fill": "$theme.textPrimary",
                 "fontSize": 18,
-                "fontFamily": "Segoe UI",
+                "fontFamily": "$theme.font",
                 "align": "center"
               }
             }

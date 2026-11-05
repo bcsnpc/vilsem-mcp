@@ -1,7 +1,7 @@
 import crypto from 'node:crypto'
 import { createConnector } from '@vilsem/core/connect'
 
-type Source = {kind:'desktop',port?:number} | {kind:'fabric',workspaceId:string,datasetId:string}
+type Source = {kind:'desktop',port?:number} | {kind:'fabric',workspaceId:string,datasetId:string} | {kind:'report',reportDir:string}
 export interface ModelAdapter {
   connect(source: Source): Promise<any>
   query(connection:any,dax:string,maxRows:number): Promise<any[]>
@@ -13,7 +13,7 @@ export class Models {
   private connections=new Map<string,any>()
   private metadata=new Map<string,any>()
   constructor(private adapter:ModelAdapter=new VilsemAdapter()){}
-  async connect(source:Source){const connection=await this.adapter.connect(source);const connectionId=crypto.randomUUID();this.connections.set(connectionId,connection);return {connectionId,kind:source.kind,...(connection.discovery?{discovery:connection.discovery,port:connection.source.port}:{})}}
+  async connect(source:Source){const connection=await this.adapter.connect(source);const connectionId=crypto.randomUUID();this.connections.set(connectionId,connection);return {connectionId,kind:source.kind,schemaOnly:!!connection.schemaOnly,...(connection.discovery?{discovery:connection.discovery,...(connection.source.port?{port:connection.source.port}:{})}:{})}}
   private get(id:string){const connection=this.connections.get(id);if(!connection)throw Error('Unknown connectionId; connect_model first');return connection}
   async query(id:string,dax:string,maxRows=200){
     // This endpoint is for DAX table queries, not XMLA/model commands.
@@ -28,6 +28,7 @@ export class Models {
     // The MCP schema contract exposes fields/relationships only, never data sources.
     const schema={tables:discovered.tables || [],measures:discovered.measures || [],relationships:discovered.relationships || []}
     this.metadata.set(id,schema)
+    if(connection.schemaOnly){for(const table of schema.tables)for(const column of table.columns||[]){column.sampleValues=[];column.sampleSkipped='Schema-only connection; open the model in Desktop and reconnect for live values'}return schema}
     const columnTasks:any[]=[]
     for(const table of schema.tables || [])for(const column of table.columns || []){
       if(/^RowNumber-/.test(column.name)){column.sampleValues=[];column.sampleSkipped='Internal Analysis Services row identity is not queryable';continue}

@@ -1,7 +1,6 @@
 {
   "version": 1,
   "type": "custom",
-  "canvasTheme": "dark",
   "config": {
     "cardStyle": "plain"
   },
@@ -25,16 +24,10 @@
     "params": [],
     "template": {
       "animation": false,
-      "color": [
-        "#14b8a6",
-        "#60a5fa",
-        "#f59e0b",
-        "#f472b6",
-        "#a78bfa"
-      ],
+      "color": "$theme.palette",
       "textStyle": {
         "color": "$theme.textPrimary",
-        "fontFamily": "Segoe UI, Arial, sans-serif"
+        "fontFamily": "$theme.font"
       },
       "title": {
         "text": "Units by category \u2022 per country",

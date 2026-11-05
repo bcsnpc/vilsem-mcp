@@ -1,7 +1,6 @@
 {
   "version": 1,
   "type": "custom",
-  "canvasTheme": "dark",
   "config": {
     "cardStyle": "plain"
   },
@@ -33,17 +32,10 @@
     "template": {
       "animation": false,
       "backgroundColor": "$theme.background",
-      "color": [
-        "#2dd4bf",
-        "#60a5fa",
-        "#f59e0b",
-        "#f472b6",
-        "#a78bfa",
-        "#a3e635"
-      ],
+      "color": "$theme.palette",
       "textStyle": {
-        "color": "#e2e8f0",
-        "fontFamily": "Segoe UI"
+        "color": "$theme.textPrimary",
+        "fontFamily": "$theme.font"
       },
       "title": {
         "text": "64 - Revenue / profit / quantity / orders - four-measure pair plot",
@@ -51,13 +43,13 @@
         "top": 12,
         "textStyle": {
           "fontSize": 17,
-          "color": "#f8fafc"
+          "color": "$theme.textPrimary"
         }
       },
       "legend": {
         "top": 42,
         "textStyle": {
-          "color": "#cbd5e1"
+          "color": "$theme.textPrimary"
         },
         "show": false
       },
@@ -175,13 +167,13 @@
           "axisLabel": {
             "show": false,
             "hideOverlap": true,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         },
@@ -195,13 +187,13 @@
           "axisLabel": {
             "show": false,
             "hideOverlap": true,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         },
@@ -215,13 +207,13 @@
           "axisLabel": {
             "show": false,
             "hideOverlap": true,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         },
@@ -235,13 +227,13 @@
           "axisLabel": {
             "show": false,
             "hideOverlap": true,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         },
@@ -255,13 +247,13 @@
           "axisLabel": {
             "show": false,
             "hideOverlap": true,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         },
@@ -275,13 +267,13 @@
           "axisLabel": {
             "show": false,
             "hideOverlap": true,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         },
@@ -295,13 +287,13 @@
           "axisLabel": {
             "show": false,
             "hideOverlap": true,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         },
@@ -315,13 +307,13 @@
           "axisLabel": {
             "show": false,
             "hideOverlap": true,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         },
@@ -335,13 +327,13 @@
           "axisLabel": {
             "show": false,
             "hideOverlap": true,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         },
@@ -355,13 +347,13 @@
           "axisLabel": {
             "show": false,
             "hideOverlap": true,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         },
@@ -375,13 +367,13 @@
           "axisLabel": {
             "show": false,
             "hideOverlap": true,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         },
@@ -395,13 +387,13 @@
           "axisLabel": {
             "show": false,
             "hideOverlap": true,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         },
@@ -415,13 +407,13 @@
           "axisLabel": {
             "show": true,
             "hideOverlap": true,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         },
@@ -435,13 +427,13 @@
           "axisLabel": {
             "show": true,
             "hideOverlap": true,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         },
@@ -455,13 +447,13 @@
           "axisLabel": {
             "show": true,
             "hideOverlap": true,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         },
@@ -475,13 +467,13 @@
           "axisLabel": {
             "show": true,
             "hideOverlap": true,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         }
@@ -493,13 +485,13 @@
           "name": "Revenue",
           "axisLabel": {
             "show": true,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         },
@@ -509,13 +501,13 @@
           "name": "",
           "axisLabel": {
             "show": false,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         },
@@ -525,13 +517,13 @@
           "name": "",
           "axisLabel": {
             "show": false,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         },
@@ -541,13 +533,13 @@
           "name": "",
           "axisLabel": {
             "show": false,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         },
@@ -557,13 +549,13 @@
           "name": "Profit",
           "axisLabel": {
             "show": true,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         },
@@ -573,13 +565,13 @@
           "name": "",
           "axisLabel": {
             "show": false,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         },
@@ -589,13 +581,13 @@
           "name": "",
           "axisLabel": {
             "show": false,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         },
@@ -605,13 +597,13 @@
           "name": "",
           "axisLabel": {
             "show": false,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         },
@@ -621,13 +613,13 @@
           "name": "Quantity",
           "axisLabel": {
             "show": true,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         },
@@ -637,13 +629,13 @@
           "name": "",
           "axisLabel": {
             "show": false,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         },
@@ -653,13 +645,13 @@
           "name": "",
           "axisLabel": {
             "show": false,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         },
@@ -669,13 +661,13 @@
           "name": "",
           "axisLabel": {
             "show": false,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         },
@@ -685,13 +677,13 @@
           "name": "Orders",
           "axisLabel": {
             "show": true,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         },
@@ -701,13 +693,13 @@
           "name": "",
           "axisLabel": {
             "show": false,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         },
@@ -717,13 +709,13 @@
           "name": "",
           "axisLabel": {
             "show": false,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         },
@@ -733,13 +725,13 @@
           "name": "",
           "axisLabel": {
             "show": false,
-            "color": "#cbd5e1",
+            "color": "$theme.textPrimary",
             "fontSize": 8,
             "formatterTemplate": "{value:thousands}"
           },
           "splitLine": {
             "lineStyle": {
-              "color": "#263244"
+              "color": "$theme.gridStroke"
             }
           }
         }
