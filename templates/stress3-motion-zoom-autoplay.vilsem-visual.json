@@ -44,7 +44,7 @@
       "baseOption": {
         "title": {
           "text": "Daily revenue — autoplay through date windows",
-          "subtext": "Real model values · discrete preview states; live interpolation needs verification",
+          "subtext": "Real model values · native host acceptance pending",
           "left": 25,
           "top": 10,
           "textStyle": {
