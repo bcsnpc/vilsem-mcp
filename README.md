@@ -6,6 +6,21 @@ vilsem-mcp doesn't make charts - Claude Code and Codex make charts; vilsem-mcp g
 
 This is the custom-visual layer for agentic Power BI authoring. Use it alongside Microsoft's Power BI Report skill for native visuals and the Power BI Modeling MCP for model changes. The shared, installed renderer executes trusted application code; the authored spec is declarative JSON, not executable source.
 
+## Claude, Codex and other clients
+
+Vilsem is **not Codex-only**. The same installed MCP server and the same example prompts can be used with Claude Code, Claude Desktop or Codex. The calling agent designs the visual; Vilsem supplies model access, validation, previews and scoped report edits.
+
+| Client | Connection | Setup |
+| --- | --- | --- |
+| Claude Code | Local stdio server | [Claude Code configuration](#claude-code) |
+| Claude Desktop | Local stdio server through its developer configuration | [Claude Desktop configuration](#claude-desktop) |
+| Codex | Local stdio server through `config.toml` | [Codex configuration](#codex) |
+| Other MCP clients | Must support local stdio tools, resources and image results | Use the same Node command/server path; individual clients are not certified here |
+
+The current distribution is a local stdio server, not a hosted HTTP connector or a Claude `.mcpb` desktop extension. Pasting a local path into a browser-only chat does not connect it. For Desktop mode the server must run on the Windows machine containing the open Power BI model; a cloud/remote agent needs a local execution connection. Your agent account, tool permissions and organization policy still apply. Client setup follows official documentation; package/SDK tests do not mean every Claude/Codex UI version has been tested end to end.
+
+Start with [installation](#fresh-windows-machine-recommended-installation), review [current limitations](#current-report-and-visual-limitations), then use the [generic prompt cookbook](docs/author-from-scratch.md).
+
 ## Why not just ask Claude Code / Codex directly?
 
 For a custom visual outside Power BI's native catalog:
@@ -127,11 +142,16 @@ Add to `claude_desktop_config.json`. These examples use the recommended local re
 {"mcpServers":{"vilsem":{"command":"node","args":["C:/Users/YOUR_NAME/vilsem-mcp/node_modules/vilsem-mcp/dist/index.js"]}}}
 ```
 
+Use Claude Desktop's developer **Edit Config** control to open the actual configuration file for your installation. Merge this entry into `mcpServers`, keeping other servers. Fully quit and reopen Claude, then check that Vilsem tools appear. If `node` cannot be found, use the full executable path printed during installation. This is manual local-server configuration, not adding a remote connector or installing an extension. See the [official local-server walkthrough](https://modelcontextprotocol.io/docs/develop/connect-local-servers) and [Claude's local MCP overview](https://support.claude.com/en/articles/10949351-getting-started-with-local-mcp-servers-on-claude-desktop).
+
 ### Claude Code
 
 ```sh
 claude mcp add --transport stdio vilsem -- node "C:/Users/YOUR_NAME/vilsem-mcp/node_modules/vilsem-mcp/dist/index.js"
+claude mcp list
 ```
+
+This uses Claude Code's default local configuration scope. Add `--scope user` before `vilsem` if you want it available across projects on this machine. In a Claude Code session, `/mcp` shows connection status. Run the local server in Windows for Desktop model discovery; a WSL/container-only server is not the tested Windows ADOMD setup. See [Claude Code's official MCP instructions](https://code.claude.com/docs/en/mcp).
 
 ### Codex
 
@@ -161,7 +181,7 @@ In Desktop, open File → Options and settings → Options → Preview features.
 
 ## Tools and resources
 
-Tools: connect_model, get_schema, run_dax, list_templates, validate_spec, explain_visual, preview_visual, preview_variants, list_pages, list_visuals, read_visual, diff_visual, update_visual, commit_visual, validate_visuals. Prompt: design_visual. Resources: vilsem://templates/<template-id>, vilsem://docs/spec-format, vilsem://docs/design-guide and vilsem://docs/workflow.
+Tools: connect_model, get_schema, run_dax, list_templates, save_template, delete_template, validate_spec, explain_visual, preview_visual, preview_variants, list_pages, list_visuals, read_visual, diff_visual, update_visual, commit_visual, validate_visuals, extract_design_tokens, compare_preview. Prompt: design_visual. Resources: vilsem://templates/<template-id>, vilsem://docs/spec-format, vilsem://docs/design-guide and vilsem://docs/workflow.
 
 get_schema defaults to summary (no expressions or relationship graph); use full for business calculation and join semantics. Exact cardinality/BLANK share/ranges are cached60seconds with at most10samples. Permission/provider failures are explicit; internal engine row identities are skipped. page/reportDir adds read-only page query bindings without editing or validating native visuals.
 
@@ -186,6 +206,44 @@ Rendered Vilsem ECharts visuals cross-filter through Power BI selection IDs, acc
 Desktop connections require Windows and Power BI Desktop. Column sampling can be expensive on large models and permission failures are returned per column.
 
 Headless previews support the core ECharts composition types and declarative templates. DOM-adapter visual types are rejected by this resolver rather than emitted as empty or substituted charts. Previews render the chart marks and option; renderer-owned card chrome/title headers and existing report-level filters are not replayed. Fonts can differ between server PNGs and Desktop if the machines have different installed fonts. Preview queries and arbitrary DAX default to200 rows and accept `maxRows` up to10000. Choose a complete bounded window for population statistics; Desktop's categorical host reduction is2000 rows.
+
+## Current report and visual limitations
+
+This table describes **MCP 0.7.3 with core 0.7.2 / renderer 4.42**. Earlier version-specific audit sections below are historical. A tool PASS or saved `visual.json` is not evidence that every report, visual state or Power BI target works.
+
+| Area | Current boundary / what to check |
+| --- | --- |
+| Report files | Requires an existing enhanced PBIR `.Report` folder with `definition/pages/`. It does not read/write PBIX binaries, create reports/pages, or directly edit a report in Power BI Service. Save/convert/create the test page in Desktop or use the companion report tools. |
+| Scope | Authors/edits Vilsem Renderer visuals only. It does not create/edit native charts, slicers, report filters, bookmarks, report themes or model objects. `list_pages` is read-only; `validate_visuals` leaves native objects unreported. |
+| Model access | Desktop mode requires Windows, an accessible open model and local ADOMD. Offline local bindings can return `schemaOnly:true`, which cannot supply live previews. Remote models need configured authentication and permissions; credentials are not bundled or transferred to a new machine. |
+| Preview data coverage | Query/preview defaults are 200 rows, configurable to 10,000; existing-visual edit previews use 1,000. Reaching a cap is not proof of complete data. Desktop's categorical reduction is 2,000 rows; preview/host populations can differ. Never infer population totals/statistics from an incomplete window. |
+| Filter context | A standalone preview does not replay the report's current slicers, page/report filters or selections. Compare numbers only at matching grain and filter context. The model/identity still determines query permissions. |
+| Calculations | Ratios, distinct counts, time intelligence and totals must be evaluated at the intended grain. Summing displayed ratios/distinct counts is generally incorrect. Use existing model measures or validated query-only `spec.measures`; no persistent measures/model changes are made. |
+| Formatting and fonts | Supported model-format conversion is bounded, not every dynamic/conditional/scientific format. Manual format-pane values override authored defaults and survive edits unless explicitly reset. Fonts depend on installed fonts; arbitrary report-font inheritance in Desktop remains unverified. DOM-adapter visuals are outside the headless resolver. |
+| Expressiveness | Closed JSON templates/expression AST only; no arbitrary JavaScript or callback source. Unshipped map/geo assets, 3D and arbitrary exact area-proportional Euler fitting remain unsupported. Venn circles are schematic. Some earlier Marimekko/Voronoi refusals were addressed by the later bounded expression layer; do not treat historical refusal logs as the current capability list. |
+| Interactions | Native selection/highlight/tooltips/context-menu/bookmark routes exist and have harness coverage, but depend on report configuration and source identities. Aggregated/transformed marks need correct provenance. End-to-end native gestures, bookmarks and all transform combinations are not signed off. A PNG cannot test them. |
+| Cross-target fidelity | Current commits/previews do not certify Desktop, Service, embedded/Fabric, PDF or subscriptions. Final native resize/clipping, Sankey/currency and export checks remain unverified. There is no guarantee every state is pixel-identical across hosts. |
+| Performance | The 5,000-point animated frame-rate target **FAILS**: isolated browser chart measurements were roughly 9-13 fps, not 57+ fps. This is not a Power BI host benchmark. No point dropping or hidden animation disabling is used to claim a pass. Test realistic sizes on your machine. |
+| Existing renderer/schema | A spec can require a newer renderer; older registered resources are refused rather than silently replaced. Some newer official 2.x container declarations pass the complete known 2.7 field contract with an explicit compatibility warning; full validation against the declared schema is not claimed. Unknown/malformed fields still fail. Do not change GUID/schema tags to bypass guards. |
+| Reload and recovery | Save Desktop changes before external edits. Accept the external-change prompt; first-time renderer registration can require reopening. Stale Desktop saves can overwrite external work. Existing edits use ETags/locks, but Desktop does not honor MCP's lock. Test on a copy with a recoverable baseline. |
+| Distribution and acceptance | Evaluation prereleases, not production/certification sign-off. Our supported native automation helper is unavailable, so physical-host acceptance remains blocked in the QA environment; that does not prevent manual tests on your machine. No new signed/branded app installer is included in these MCP/core releases. |
+
+For exact evidence, open the [current QA follow-up](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/stress3/round3-follow-up.md) and [native interaction checklist](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/stress3/native-interaction-checklist.md). When a test cannot run, record **Not tested / Blocked**, not PASS.
+
+## Generic prompts for your own data
+
+The [prompt cookbook](docs/author-from-scratch.md) works with Claude or Codex and contains:
+
+- A shared setup message that discovers the actual model, report and page.
+- A completely new visual from scratch, with real bindings and a checked preview.
+- A trend with prior-period comparisons and explicit calendar semantics.
+- A dual-axis bar/line visual with independent units and a real target/reference.
+- A page of complementary visuals without overlaps or native-object changes.
+- Detailed formatting edits that preserve bindings and manual overrides.
+- Hierarchy, Sankey and bounded custom-geometry examples with prerequisite checks.
+- Reuse of your own design against a different model, plus manual interaction/resize QA.
+
+Replace only the marked placeholders and use fields discovered from `get_schema`. No prompt relies on QA table names, a fixed Desktop port or embedded business values. These are example requests, not promises that every model contains suitable dates, hierarchies or targets.
 
 ## Development and verification
 
