@@ -1485,3 +1485,24 @@ radius shrink safely in tiny viewports. It uses a silent, tooltip-free,
 coordinateSystem:none custom series below marks; no fake business axes or
 changes to real data are needed. The renderer compatibility check refuses
 insertion into versions older than4.41. Other0.7 specs retain their4.40 floor.
+
+The current example additionally sets `role:"annotation",silent:true` on the
+panel leaf. This requires core0.7.2 / renderer4.42: authored decoration opacity
+stays stable when a host selection/highlight dims data marks. Other roles and
+interactive annotations keep their previous dimming. Explicit authored opacity
+still applies. Set these flags on each decorative leaf; a group's role does
+not implicitly change its children. Parameterized/conditional silent flags also
+raise the reader floor. Viewport dimensions by themselves retain their4.41 floor.
+
+```json
+{"type":"rect","role":"annotation","silent":true,"shape":{"x":0,"y":0,"width":100,"height":50},"style":{"fill":"#ffffff","opacity":0.9}}
+```
+
+Feedback excludes proven static viewport backdrops from measured-series counts,
+categorical-palette counts and all-zero/all-null measure warnings. This is a
+conservative check: one invocation row, silent custom series with no coordinate
+system, an explicitly silent annotation shape leaf, and no data/coordinate/
+visual/style API reads. Data-dependent annotation series still count. Text
+clipping/contrast inspection remains enabled. An explicit opaque option
+background takes precedence over the report background for global text contrast;
+contrast against arbitrary filled marks still needs visual review.

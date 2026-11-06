@@ -64,13 +64,25 @@
         "nameLocation": "middle",
         "nameGap": 35,
         "axisLabel": {
-          "formatterTemplate": "{value:thousands}"
+          "formatterTemplate": "{value:thousands}",
+          "color": "#53627a"
+        },
+        "nameTextStyle": {
+          "color": "#53627a"
         }
       },
       "yAxis": {
         "type": "category",
         "inverse": true,
-        "data": "$slot.group.categories"
+        "data": "$slot.group.categories",
+        "axisLabel": {
+          "color": "#17243b"
+        },
+        "axisLine": {
+          "lineStyle": {
+            "color": "#e7eaf0"
+          }
+        }
       },
       "tooltip": {
         "trigger": "item",
@@ -361,7 +373,8 @@
                 "fill": "#ffffff",
                 "stroke": "#e7eaf0",
                 "lineWidth": 1
-              }
+              },
+              "role": "annotation"
             }
           }
         },

@@ -39,7 +39,7 @@ For edits: list_visuals -> read_visual -> update_visual(dryRun:true) -> inspect 
 
 Requires Node.js 22.12+, 24, or 26+. Install from GitHub or clone this repository and run `npm install`, then `npm test`. Its `prepare` step builds the server. All model connections run through `@vilsem/core/connect`; no Vilsem app checkout, Electron installation or application path configuration is needed.
 
-The0.7 prerelease depends on the immutable public `core-v0.7.1` release tarball. For local core development only, install a locally packed core tarball; restore the public release URL before distributing. Native physical interaction/export acceptance is incomplete and the5000-point60fps target is not met; this release is for evaluation, not a production-readiness claim. The previous stable release remains0.6.
+The0.7 prerelease depends on the immutable public `core-v0.7.2` release tarball. For local core development only, install a locally packed core tarball; restore the public release URL before distributing. Native physical interaction/export acceptance is incomplete and the5000-point60fps target is not met; this release is for evaluation, not a production-readiness claim. The previous stable release remains0.6.
 
 ### Model authentication
 
@@ -65,9 +65,9 @@ Quoted connection-string values are supported. Passwords and impersonation setti
 There is no npm-registry publication. Install the tagged GitHub release:
 
 ```sh
-npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.7.1
+npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.7.2
 vilsem-mcp
-# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.7.1 vilsem-mcp
+# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.7.2 vilsem-mcp
 ```
 
 The process serves stdio JSON-RPC; diagnostics go to stderr.
@@ -313,3 +313,7 @@ the57RAFfps/20ms-p95 tolerance was not met. This is not a Power BI host benchmar
 Two bounded expression operations, viewportWidth and viewportHeight, let an agent draw resize-aware panels using the same interpreter in preview and renderer4.41. The shipped Figma reference example includes its inset rounded white card. A real browser test checks resize/tiny bounds and confirms that the decoration cannot intercept bar clicks. This does not resolve the native-automation or5000-point animation limits above.
 
 Verification for0.7.1:300/300 MCP tests pass against the downloaded public core0.7.1 package; private/public app-core each1355tests pass. The complete app/native/UI/Fabric/Electron/NSIS build passes. Fresh standalone archive install has audit0 and passes the SDK handshake,19tools/1prompt, viewport-spec validation and documentation-resource checks without an app path or development link. The repeated real-clock benchmark still fails: canvas11.22RAFfps, dirty-rectangle12.52fps, SVG8.62fps versus idle60.42; all5000points and animation remain enabled. These are browser measurements, not native-host acceptance.
+
+MCP0.7.2 corrects axis-label/name contrast when the explicitly light reference card is previewed in a dark report. It uses core0.7.2 / renderer4.42, which also preserves authored opacity for explicitly silent annotation leaves during selection/highlight. Ordinary marks still dim; no native interaction claim changes.
+
+Final0.7.2 validation:303/303 MCP tests pass against the published core0.7.2 archive with unchanged30second test deadlines. Both app/core checkouts pass1357tests. Static viewport decorations no longer produce phantom zero-measure/extra-series feedback; genuine zero data and data-driven annotations remain checked. Explicit opaque chart backgrounds are used for global contrast. Native physical acceptance remains blocked and the5000-point60fps target still fails; this remains an evaluation prerelease.

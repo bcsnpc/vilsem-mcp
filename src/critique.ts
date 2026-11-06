@@ -1,4 +1,5 @@
 import {assessInteractions} from './interactions.js'
+import {isStaticDecoration} from './decorativeSeries.js'
 
 export type TextBox={text:string,x:number,y:number,width:number,height:number,fill?:string,fontSize?:number,path:string}
 export type Finding={code:string,severity:'warning'|'info',path:string,message:string,suggestedFix:string,evidence?:unknown}
@@ -54,6 +55,7 @@ export function critiqueVisual(spec:any,option:any,rows:any[],width:number,heigh
  if(duration>3000||steps>1&&(timeline?.playInterval??1000)*steps>3000)add('animation-duration','/template/animation','Motion sequence exceeds the3-second preview duration.','Shorten durations or inspect selected states and the live animation.',{durationMs:Math.max(duration,steps>1?(timeline?.playInterval??1000)*steps:0)})
  const values=(s:any)=>list(s.data).map(d=>d&&typeof d==='object'&&!Array.isArray(d)&&Object.hasOwn(d,'value')?d.value:d).flatMap(v=>Array.isArray(v)?v.slice(-1):[v])
  for(const [i,s] of series.entries()){
+  if(isStaticDecoration(s))continue
   const p=`${base}/series/${i}`,v=values(s)
   if(v.length&&v.every(v=>v==null||v==='-'||typeof v==='number'&&!Number.isFinite(v)))add('all-null',p+'/data','Series has no finite values.','Check bindings, filters and BLANK handling.')
   if(v.length&&v.every(v=>v===0))add('all-zero',p+'/data','Every series value is zero.','Confirm zero is meaningful; avoid implying variation.')
@@ -61,7 +63,8 @@ export function critiqueVisual(spec:any,option:any,rows:any[],width:number,heigh
   const colors=new Set(list(s.data).map(d=>d?.itemStyle?.color).filter(c=>typeof c==='string'))
   if(colors.size>12)add('categorical-colors',p+'/data','More than twelve distinct mark colours.','Reduce categorical colour roles; use position and direct labels.',{colors:colors.size})
  }
- const colorCount=Math.min(new Set(list(option.color)).size,Math.max(series.length,...series.filter(s=>s.colorBy==='data'||['pie','sankey','graph','treemap','sunburst','funnel'].includes(s.type)).map(s=>list(s.data).length)))
+ const measuredSeries=series.filter(s=>!isStaticDecoration(s))
+ const colorCount=Math.min(new Set(list(option.color)).size,Math.max(measuredSeries.length,...measuredSeries.filter(s=>s.colorBy==='data'||['pie','sankey','graph','treemap','sunburst','funnel'].includes(s.type)).map(s=>list(s.data).length)))
  if(colorCount>12)add('categorical-colors',base+'/color','More than twelve palette colours may be used for categorical marks.','Reduce the categorical palette; sequential scales are a separate encoding.',{colors:colorCount})
  for(const key of ['xAxis','yAxis'])for(const [i,a] of list(option[key]).entries())if(Math.abs(Number(a.axisLabel?.rotate)||0)>45)add('axis-rotation',`${base}/${key}/${i}/axisLabel/rotate`,'Axis labels rotate beyond 45 degrees.','Use horizontal bars, wrapping, fewer ticks or a wider plot.')
  if(list(option.yAxis).length>1){
@@ -75,7 +78,7 @@ export function critiqueVisual(spec:any,option:any,rows:any[],width:number,heigh
   const a=geometry[i]
   if(a.x<-.5||a.y<-.5||a.x+a.width>width+.5||a.y+a.height>height+.5)add('clipped-label',a.path,'Rendered text extends beyond the visual viewport.','Increase plot margins/container size, wrap text or reduce label size.',{text:a.text,bounds:{x:a.x,y:a.y,width:a.width,height:a.height}})
   if(/…|\.\.\.$/.test(a.text))add('truncated-category',a.path,'Rendered text uses an ellipsis.','Provide the full name in a tooltip; widen, wrap or switch orientation.',{text:a.text},'info')
-  const fg=rgb(a.fill),bg=rgb(context.background)
+  const fg=rgb(a.fill),bg=rgb(option.backgroundColor)||rgb(context.background)
   if(fg&&bg){const l=[luminance(fg),luminance(bg)].sort((a,b)=>a-b),ratio=(l[1]+.05)/(l[0]+.05),threshold=(a.fontSize??a.height)>=24?3:4.5;if(ratio<threshold)add('text-contrast',a.path,'Text has low contrast against the preview background.','Use a higher-contrast foreground; labels on filled marks need a separate mark-background check.',{text:a.text,ratio:Number(ratio.toFixed(2)),threshold})}
   for(let j=i+1;j<geometry.length&&collisions<30;j++)if(overlap(a,geometry[j])){collisions++;add('overlapping-labels',a.path,'Two rendered text bounds overlap.','Increase spacing, hide overlapping ticks or reposition labels.',{texts:[a.text,geometry[j].text]})}
  }

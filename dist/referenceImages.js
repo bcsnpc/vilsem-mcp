@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import { decodeDesignImage } from '@vilsem/core/images/decode';
 import { extractDesignTokens } from '@vilsem/core/images';
+import { isStaticDecoration } from './decorativeSeries.js';
 const MAX_BYTES = 8388608;
 export async function referenceImage(image) {
     let bytes;
@@ -24,7 +25,7 @@ export async function referenceImage(image) {
     return { bytes, mimeType: bytes[0] === 137 ? 'image/png' : 'image/jpeg', tokens };
 }
 export function structuralDiff(reference, option, renderTokens, declared = {}) {
-    const series = Array.isArray(option.series) ? option.series : option.series ? [option.series] : [], legend = Array.isArray(option.legend) ? option.legend[0] : option.legend;
+    const series = (Array.isArray(option.series) ? option.series : option.series ? [option.series] : []).filter(s => !isStaticDecoration(s)), legend = Array.isArray(option.legend) ? option.legend[0] : option.legend;
     const graphic = option.graphic?.elements ?? option.graphic, pending = Array.isArray(graphic) ? [...graphic] : graphic ? [graphic] : [];
     let graphicText = false, visited = 0;
     while (pending.length && visited++ < 10000) {

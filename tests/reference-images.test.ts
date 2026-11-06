@@ -18,6 +18,12 @@ it('never invents reference chart semantics from pixel statistics',()=>{
  expect(diff.reference).toEqual({seriesCount:null,legendPosition:null,labelPresence:null});expect(diff.rendered.seriesCount).toBe(1);expect(diff.paletteDistance).toBe(0)
  expect(structuralDiff(tokens,{series:[]},tokens,{seriesCount:3}).reference.seriesCount).toBe(3)
 })
+it('counts measured series without treating a static viewport decoration as extra data',()=>{
+ const tokens={theme:{palette:['#112233']}},panel={type:'custom',coordinateSystem:'none',silent:true,data:[0],renderItem:{language:'vilsem-expression',version:1,root:{type:'rect',role:'annotation',silent:true,shape:{x:0,y:0,width:100,height:50},style:{fill:'#ffffff'}}}}
+ expect(structuralDiff(tokens,{series:[panel,{type:'bar',data:[1,2]}]},tokens).rendered.seriesCount).toBe(1)
+ const measured=structuredClone(panel);measured.renderItem.root.shape.width={op:'value',args:[0]} as any
+ expect(structuralDiff(tokens,{series:[measured,{type:'bar',data:[1,2]}]},tokens).rendered.seriesCount).toBe(2)
+})
 it('recognizes visible graphic scorecard text without reporting hidden groups as labels',()=>{
  const tokens={theme:{palette:['#112233']}},graphic={type:'group',children:[{type:'text',style:{text:'Revenue (USD)'}}]}
  expect(structuralDiff(tokens,{graphic:[graphic]},tokens).rendered.labelPresence).toBe(true)

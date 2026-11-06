@@ -23,6 +23,7 @@ it.each(SHIPPED_SPECS.filter(s=>s.template.meta.id.startsWith('stress3-')).map(s
   if(s.silent===true&&s.coordinateSystem==='none'){
    expect(s.tooltip?.show).toBe(false)
    expect(s.renderItem.vilsemExpression.ast.root.silent).toBe(true)
+   expect(s.renderItem.vilsemExpression.ast.root.role).toBe('annotation')
   }else expect(s.data.some(d=>d.rowIndexes?.length)).toBe(true)
  }
 })

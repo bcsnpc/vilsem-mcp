@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises'
 import {decodeDesignImage} from '@vilsem/core/images/decode'
 import {extractDesignTokens} from '@vilsem/core/images'
+import {isStaticDecoration} from './decorativeSeries.js'
 const MAX_BYTES=8388608
 export async function referenceImage(image:string){
  let bytes:Buffer
@@ -15,7 +16,7 @@ export async function referenceImage(image:string){
  return {bytes,mimeType:bytes[0]===137?'image/png':'image/jpeg',tokens}
 }
 export function structuralDiff(reference:any,option:any,renderTokens:any,declared:any={}){
- const series=Array.isArray(option.series)?option.series:option.series?[option.series]:[],legend=Array.isArray(option.legend)?option.legend[0]:option.legend
+ const series=(Array.isArray(option.series)?option.series:option.series?[option.series]:[]).filter(s=>!isStaticDecoration(s)),legend=Array.isArray(option.legend)?option.legend[0]:option.legend
  const graphic=option.graphic?.elements??option.graphic,pending=Array.isArray(graphic)?[...graphic]:graphic?[graphic]:[];let graphicText=false,visited=0
  while(pending.length&&visited++<10000){const element=pending.pop();if(element?.ignore||element?.invisible||element?.style?.opacity===0)continue;if(element?.type==='text'&&element.style?.text!=null&&element.style.text!==''){graphicText=true;break}if(Array.isArray(element?.children))pending.push(...element.children)}
  const rendered={seriesCount:series.length,legendPosition:legend?.show===false||!legend?'none':legend.left??legend.right??legend.top??'default',labelPresence:graphicText||series.some(s=>s.label?.show||s.renderItem?.vilsemExpression?.ast?.root?.type==='text'||JSON.stringify(s.renderItem?.vilsemExpression?.ast||{}).includes('"type":"text"'))}

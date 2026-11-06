@@ -6,6 +6,17 @@ const spec={template:{slots:{category:{kind:'dimension'}}}}
 const inspect=(option:any,geometry:any[]=[],context:any={})=>critiqueVisual(spec,option,[{}],300,200,geometry,context).findings
 const label=(text:string,x=10,y=10,fill='#111111')=>({text,x,y,width:70,height:20,fill,path:'/template/template/xAxis/0/axisLabel'})
 describe('actionable preview critique',()=>{
+ it('ignores a static annotation invocation row while retaining real zero/data-dependent warnings',()=>{
+  const panel={type:'custom',coordinateSystem:'none',silent:true,data:[0],renderItem:{language:'vilsem-expression',version:1,root:{type:'rect',role:'annotation',silent:true,shape:{x:0,y:0,width:100,height:50},style:{fill:'#ffffff'}}}}
+  expect(inspect({series:[panel,{type:'bar',data:[2,3]}]}).some(f=>f.code==='all-zero')).toBe(false)
+  expect(inspect({series:[panel,{type:'bar',data:[0,0]}]}).some(f=>f.code==='all-zero')).toBe(true)
+  const palette=Array.from({length:13},(_,i)=>`#${i.toString().padStart(6,'0')}`)
+  expect(inspect({color:palette,series:[panel,...Array.from({length:12},()=>({type:'bar',data:[1]}))]}).some(f=>f.code==='categorical-colors')).toBe(false)
+  expect(inspect({backgroundColor:'#ffffff'},[label('Dark',10,10,'#17243b')],{background:'#111111'}).some(f=>f.code==='text-contrast')).toBe(false)
+  expect(inspect({backgroundColor:'transparent'},[label('Light',10,10,'#eeeeee')],{background:'#111111'}).some(f=>f.code==='text-contrast')).toBe(false)
+  const measured=structuredClone(panel);measured.renderItem.root.shape.width={op:'value',args:[0]} as any
+  expect(inspect({series:[measured]}).some(f=>f.code==='all-zero')).toBe(true)
+ })
  const fixtures:[string,any,any[],any][]=[
   ['all-null',{series:[{data:[null,null]}]},[],{}],
   ['all-zero',{series:[{data:[0,0]}]},[],{}],
