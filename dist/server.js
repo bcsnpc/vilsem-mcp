@@ -106,7 +106,7 @@ export function createServer(models = new Models()) {
             throw Error('Reference aspect ratio must be0.1..10 for a readable bounded comparison');
         const width = Math.round(aspect >= 1 ? 1000 : 1000 * aspect), height = Math.round(aspect >= 1 ? 1000 / aspect : 1000);
         const { rows, reportTheme, measureMetadata } = await previewData({ ...args, theme: args.reportDir ? 'report' : 'light' });
-        const rendered = previewRows(args.spec, rows, width, height, { theme: reportTheme.theme ?? 'light', measures: measureMetadata });
+        const rendered = previewRows(args.spec, rows, width, height, { theme: reportTheme.theme ?? 'light', measures: measureMetadata, sampleMotion: false });
         const tokens = extractDesignTokens({ image: decodeDesignImage(rendered.png) }), png = variantSheet([{ png: reference.bytes, label: 'Reference — design only' }, { png: rendered.png, label: 'Vilsem — live model data' }], width, height);
         return { content: [{ type: 'image', data: png.toString('base64'), mimeType: 'image/png' }, ...text({ critique: rendered.critique, structuralDiff: structuralDiff(reference.tokens, rendered.option, tokens, args.reference_structure), rowCount: rows.length, referenceTokens: reference.tokens, warnings: reportTheme.warnings }).content] };
     });
@@ -165,7 +165,7 @@ export function createServer(models = new Models()) {
         }
         await checkMeasures(first, connectionId, bindings);
         const { rows, reportTheme, measureMetadata } = await previewData({ connectionId, spec: first, bindings, reportDir, theme, maxRows });
-        const results = specs.map(spec => previewRows(spec, rows, width, height, { theme: reportTheme.theme ?? 'light', locale, measures: measureMetadata }));
+        const results = specs.map(spec => previewRows(spec, rows, width, height, { theme: reportTheme.theme ?? 'light', locale, measures: measureMetadata, sampleMotion: false }));
         const png = variantSheet(results.map((result, i) => ({ png: result.png, label: labels[i] })), width, height);
         return { content: [{ type: 'image', data: png.toString('base64'), mimeType: 'image/png' }, ...text({ rowCount: rows.length, maxRows, sharedData: true, variants: results.map((r, i) => ({ label: labels[i], critique: r.critique })), themeSource: reportTheme.source, warnings: [...reportTheme.warnings, ...(rows.length >= maxRows ? ['Bounded query reached maxRows; coverage is not exhaustive.'] : [])] }).content] };
     });
@@ -176,7 +176,7 @@ export function createServer(models = new Models()) {
         validateBindings(spec, fieldBindings);
         await checkMeasures(spec, id, fieldBindings);
         const { rows, reportTheme, measureMetadata } = await previewData({ connectionId: id, spec, bindings: fieldBindings, reportDir, maxRows: 1000 });
-        const result = previewRows(spec, rows, item.layout.width, item.layout.height, { theme: reportTheme.theme, locale: 'en-US', measures: measureMetadata, formatPaneOverrides: item.formatPaneOverrides });
+        const result = previewRows(spec, rows, item.layout.width, item.layout.height, { theme: reportTheme.theme, locale: 'en-US', measures: measureMetadata, formatPaneOverrides: item.formatPaneOverrides, sampleMotion: false });
         return { result, connectionId: id, bindings: fieldBindings, rowCount: rows.length, warnings: [...item.warnings, ...reportTheme.warnings, ...(rows.length >= 1000 ? ['Preview reached its1000-row limit; not exhaustive.'] : [])] };
     }
     const editTarget = { reportDir: z.string().min(1), pageName: z.string().min(1), visualName: z.string().min(1), connectionId: z.string().uuid().optional() };

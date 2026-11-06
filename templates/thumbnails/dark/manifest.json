@@ -7,720 +7,1008 @@
     {
       "id": "expressiveness_bullet",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "904944c33b9a9d1e400c40422186b8192ae841b2fc4219ab250b6ff8ac64519c",
       "specSha256": "6162c3abca7c84f9771c6453ca9dc75fcf7af3c3642f240867503b512626dcd0"
     },
     {
       "id": "expressiveness_dual_axis",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "b6e3dc32d1a7c19e7e7054741bfbdefb0bac9934c37cf26f572fb72a458312c2",
       "specSha256": "7184fe977ae78632e35dca08bb0786672cc7b6fe91aaf38e6567b72557747b6a"
     },
     {
       "id": "expressiveness_gantt",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "06d572818c01955a66c2979e8f79d5a8c5c22fa5404646042fd414a5bb3c85a5",
       "specSha256": "6a728271f37fcd02ae59ff8d8050a371b7a2e8252dc91af5b14c5aed28433f97"
     },
     {
       "id": "expressiveness_network",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "0eaee4181d7fd9d9f3bc4561bb5817c3c05c45212b04c517dce3134402dcd7ef",
       "specSha256": "8d44fce1a401619e873c784d4b5422acc81ae55379967e2e1652902e7cbcee82"
     },
     {
       "id": "expressiveness_radial_progress",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "f9ba5d421f75edc0d448a15f328aabed0a6805f5d91c7fa9bbf90bb2e1a069db",
       "specSha256": "84036f8a078271301cb1be168026663db61446b26ad1b7d05d5e273093f457a4"
     },
     {
       "id": "expressiveness_sankey",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "642ddbfbc1cdd517395ffea07cceb9d8ebdf54ad4af8131d6cc2819618d6a629",
       "specSha256": "275537711f1dcc1e5cc9d8fa2a84829919ec90174e98641aec84f7f742fc3748"
     },
     {
       "id": "expressiveness_small_multiples",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "d849f851285b80bd97d51c944562eb925a8158ca8137e91fb767c920357bfd95",
       "specSha256": "67d172a1eafcdab03ab55a0a6607b4716b17b549c1dae844ddd1ae9095ae67e6"
     },
     {
       "id": "stress2_001_step-line",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "2dd7de38226d2a65709e3689b54d420a64d7befacba37670bb4073e69f922634",
       "specSha256": "9733172ca78ab080a47ff097fb893aa3527269bae7402486b8fb2f244a040370"
     },
     {
       "id": "stress2_002_spline-gradient",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "fc0a97b02f1cff2cc1d6620b759eadea60abf1601d66e6964467c9304d8d360f",
       "specSha256": "6829995fce76d2c95a5ed3399c1ad44b7a47a805361efc918b4c30d189333613"
     },
     {
       "id": "stress2_003_rolling-line",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "0912567c871da52823cfca34bbc09d6bf5441290a29f89b270da08a4377d157e",
       "specSha256": "e6f7b9129cfc714f7371e3e88cf1df37adbf47671d3cf4deeb919c3b60e3c216"
     },
     {
       "id": "stress2_004_confidence-band",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "65d3b846e633bc6e45bae417cbe7635cd619f57c6c94045a6c17f8b4698b10ea",
       "specSha256": "1adba015c4f154281f732ea3a4b536b2b10063a9b8ca861d1ad9e0b6f37ae8e1"
     },
     {
       "id": "stress2_005_fan-chart",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "515fd79f9ba4311551c91393489154a93ec7cc2b7c63ef034f38d4422e5493ac",
       "specSha256": "74c442577dfdb935daed5051ce9442aa5ffa7b682b95d003872a097ec9b2881d"
     },
     {
       "id": "stress2_006_horizon",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "1bc6cd5858b0a280821b4b380eb6c94134f40640b5cc4b5a228dfcf39bcf88ac",
       "specSha256": "38218d078be91aafa10c73ce94dab5876f7ee1db82638e86e0f9026525638f80"
     },
     {
       "id": "stress2_007_sparkline-grid",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "60f166ff0f76f1ddf1f6879ea0b8624c0ce740c1169f99f63a91914e51d1176a",
       "specSha256": "a22ab6b0311f3f7b4be1c1be4f79e01044c3186f9c6e41802ad2d56af9df0e86"
     },
     {
       "id": "stress2_008_100-percent-column",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "8500a66fd0c4f24dbb2a720c8d313631adee2191429e86fad906bb94f2669e44",
       "specSha256": "0c3da94eeaafc0ad51efdba3747ad4f104ce6172dbb0497fbfbb77ed709f5201"
     },
     {
       "id": "stress2_009_diverging-stack",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "ca144a74e6c1617cef0d4d2eac823d0212c097339ccdd02367fdc5d205e3c9c2",
       "specSha256": "32e61261718346cd87b15acfe8a1b98380ac50fc579cf08908c825e2342d0dda"
     },
     {
       "id": "stress2_010_population-pyramid",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "35a5cc69e57bf57d1d8250f25bc07904383d466b97fa5ae24fee8df5a2840ca3",
       "specSha256": "5f81dc4a336907c8a3d914417b08b688614c0df8b09f5a5402c6fdbafb630ae9"
     },
     {
       "id": "stress2_011_grouped-stacked",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "3fd7f0d5a6b7b4d74e6760858126eb49298c9f3a357205b3847eb0ded2d5dfda",
       "specSha256": "19629b35c1236023b4cb390ea6c10989e557c28ef6b2695edd7801f356914718"
     },
     {
       "id": "stress2_012_lollipop-target",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "9594f70f638db2a22f938cb84d16f4267e4a82871ad4e8a74db23e4c0304c2ad",
       "specSha256": "3b3caa92c3b27c12f9d400277abd8aadb00a5663caa2b626cb70c8c090a4586a"
     },
     {
       "id": "stress2_013_cleveland-dots",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "3626f9334b47991836519a07b35dc56e39b333cd666fc4809639544751f40e0a",
       "specSha256": "a5022cb3328d457315a074a96f6dd495032be438291c958cc3cd5df3f7f16dc4"
     },
     {
       "id": "stress2_014_range-delta",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "073d55c93d9d445cafe8ae9589bccf5943dd3022a6fce9e501196055413e38ed",
       "specSha256": "4aeb0d63db8875764cc826d6f40dd7491c9c2a015f5788cfd61e990f88ae0c66"
     },
     {
       "id": "stress2_015_wrapped-bar",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "fefca2ba309ebb06c0b207692e65a0070d1f368fd7238c7f9b73a238b3535fc5",
       "specSha256": "9e62984a75a51bf066840d6ac9b1b603178bb595278ce2fd2558b0d4c1655905"
     },
     {
       "id": "stress2_016_revenue-strip",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "7da50bf719ac9bb837fa504228951934cfe1b02a8e23b35aaca5819f3e6d0ca1",
       "specSha256": "c073dba175686c29e079fa35d1d9b0524046407a43097c86dbfb4491be775f44"
     },
     {
       "id": "stress2_017_polar-column",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "bcf4a549ad6de8494db6288da7685f50df0d38bfc29ae35812fa438d79ec255e",
       "specSha256": "197dd66a11c8aa3657ea25285830ecc80bb23eac20ed929fc5a217be13e7bd74"
     },
     {
       "id": "stress2_018_nightingale-rose",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "e45d1b52e5b769ff3cfe933335de26a8e5898eba4a5dcd0691b4155e4e91c26a",
       "specSha256": "42b67b1311c42dfe3202bc336ffd16fe8dfa4b87ada5b9c8d6ec87bd76efc91c"
     },
     {
       "id": "stress2_019_semi-donut-kpi",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "f8f2f9617cc643faed61f0b2672bf1e60b2341cac42e91c7d19c1fed6ae66878",
       "specSha256": "aa0a4921a31956163d308f2385f5d473905acc240b789e1815362947361bc454"
     },
     {
       "id": "stress2_020_nested-donut",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "a4df594c083e9232642375c8bceb101af31acd05d4012d501ad5cf181e7dae45",
       "specSha256": "d40ef3d52834ba16f54e6e7a72726d813a1a0c1d8eba9ea4da541bcbc772688f"
     },
     {
       "id": "stress2_021_pie-top-other",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "1f18e77eb9513dd73eb3727ff1bc9914bc6472166dcb412729ae69384d6c0a8b",
       "specSha256": "4a6908830b12196a1c37ad2c3ca1b165a7324e014b64c012463d877164a66255"
     },
     {
       "id": "stress2_022_pictogram-icons",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "348b8868c215cea6ef1865bdfb4bbe6a31c31ba60d6ed957161a98eaaac511b3",
       "specSha256": "b0ed36d139037c3888c14343071b3b63cc4d5207802f0a739e3250c530cd4ceb"
     },
     {
       "id": "stress2_023_waffle-share",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "0ad1ea86c74c72e9db794185dbc7ce79b03a9f2a34fa8aec8fb6ce29087c75e2",
       "specSha256": "bb05a58a15d5f791f661f9cbc3f1a2378b99629513257b94790d28a4f9b62077"
     },
     {
       "id": "stress2_024_hemicycle",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "be03363c92860a0f0c26084ab35196f2134350197cf539110f69157127498cd3",
       "specSha256": "82482c5437b982ccfd88aeeb32da50faf873cfef8ac61e63bb1dd4301d9fd2f3"
     },
     {
       "id": "stress2_025_bullet-bands-delta",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "d3bce5e829f7d32ec542c9c6f4660cd3efb9ff8c4099b3218db9c2a57e1d5dc0",
       "specSha256": "b3ef00289b4fb2d1f7f713623747aea1f55fb57e88665fa0b646c3a8e6a4b784"
     },
     {
       "id": "stress2_026_linear-gauge",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "97a614218839c5e7cdaa3e1b143a6f779baea9f1e991cd69cc03d6734626f67d",
       "specSha256": "26e70736fade05acbc2b16bf4e8e329cbc3933235ce6520b2f3a844a98c77cd1"
     },
     {
       "id": "stress2_027_multi-ring-progress",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "749be9002305f345b662dd15c97100508bd97c07454cc08384492cc56481ff21",
       "specSha256": "a87eac64e683d3074d73bb34812b0c795a77c90caca25d3e9af26c8b16b66fa4"
     },
     {
       "id": "stress2_028_gauge-target-bands",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "3b18b967cd61a4732ab991754f1f44785733b1e35d488fecb6617b9e9c4e999e",
       "specSha256": "cd40f3bcee968447163e6a7df23cb10ae8d178909854f0ae3e7cba356e56b05d"
     },
     {
       "id": "stress2_029_dual-axis-reference",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "27f7c83f249901265d392ea7d4bd316420aab98cf2145a67b17c9caef0951f91",
       "specSha256": "22b68aeaafce1c0556c8bda63c7a3fdf82aaef93c5f97a54d1d83ecd97b385ce"
     },
     {
       "id": "stress2_030_pareto",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "5cfc3d6b2ec22f394fba49347a1a17a9d590071848bf730a250ba537e2ce69ff",
       "specSha256": "f18776ae76609e6e012af84617ba78f2cd585ae1f505eb29a269b4e56fef3757"
     },
     {
       "id": "stress2_031_waterfall-subtotals",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "1969465c592796b04c1367f5868ef768506141d3d6734f7257d567b8adb8766f",
       "specSha256": "a100741e66af37e1ef976fa6f9cae13268dd7cb352c8c322451cef523e22bc70"
     },
     {
       "id": "stress2_032_double-waterfall",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "22ded8d0daed89bcbfaa6b4b75863ea2f2c82b4c525836af066ab84d913da668",
       "specSha256": "ad70232fa18a013089b9bdef7ac6768f3607b3b67e3f3c1daaaf386b767d5110"
     },
     {
       "id": "stress2_033_profit-bridge",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "63119c462e66a83605814da8836c3b88d1cae446824261d4db35043cfee3eb54",
       "specSha256": "2a7603f3abeb1775d8224548c5ea3dcd26c2f34e3c97d26d445e72a8e3b44319"
     },
     {
       "id": "stress2_034_revenue-ohlc",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "2683d3c1e6e984619613f1c2a203cac6899f9f80b78cbc1208dbad72d44e7592",
       "specSha256": "7e6b072ac738bbe55e811697338e9c5e0fcf061b9bb4000e2a98f90b2e84e1f7"
     },
     {
       "id": "stress2_035_heikin-ashi",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "96b08424e560a2a5e337a1e62dfe46d57ba86d45296679b19ffc9fca9c3e04bf",
       "specSha256": "442446fdc623ade5a5943d434d84d9c2a2ed92f65a33a0e9063a93c796c45148"
     },
     {
       "id": "stress2_036_diverging-heatmap",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "388dff2f3d62f9b747ac9b914ff8f75c610a9472f2850490fffcfb4dd81c6623",
       "specSha256": "68ffff3c11a0c11ba07b2793f7d52119b007e3c200b3e2a58d700061115d09d7"
     },
     {
       "id": "stress2_037_calendar-margin",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "42196c747d069e7b26338e84af304c188187ab84876b6fdad7d9276725851809",
       "specSha256": "b2733508bbb4b129ca37072c6013d26f3978ebc5d3d6ed87b2adf17f06391dc1"
     },
     {
       "id": "stress2_038_daily-heat-strip",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "ade1b5900902cddb3aacd0eba540e26dab89026448d250b7155a581671b19ffa",
       "specSha256": "ea78e47d0f890d0566c1ec7505076937ecceb7c62a7833d06efba1df5bf198e6"
     },
     {
       "id": "stress2_039_country-lasagna",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "4e46538fcd11ae7a30b11dc796618d367d51772e27f8b294b4ecdd019d8289cd",
       "specSha256": "53aba371fe3691ade4ad66c353df511ab7203a08b46651927c628676ec0dfdd0"
     },
     {
       "id": "stress2_040_treemap-secondary-colour",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "bddd48950f871d86e9f17caa15bc2542596bbcd16c75226e4506ad77da773e35",
       "specSha256": "c24c8fe1cd7ec193267e0797ee054041c2ffa9fa5d994706405297df130d0672"
     },
     {
       "id": "stress2_041_treemap-drill",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "056014a518c9717b07cd552d196f526b3ea12c9210e9d7ba8986a4e5816e652b",
       "specSha256": "a7868f48e0646a912930e59cb81cf9f062fe2f2003d91f1c82e2b4ca807c1edb"
     },
     {
       "id": "stress2_042_sunburst-products",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "1d59e0c68fe5f9ff6aa93693d3d8a582958dc55b50458310beeec0e48d955ebc",
       "specSha256": "bd94e33fd528a44189fb523ac3f9ecf07864a91d45a95a6365049cb20a9dc04d"
     },
     {
       "id": "stress2_043_icicle-partition",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "8aeab6bd002e7ac37b5ee0813b31f9a4d6e50150199cb73575c5740568651e16",
       "specSha256": "edee933e1929081138f6a3a50e7ddd9bf7e5f31a34030022592936fb46d7ce2d"
     },
     {
       "id": "stress2_044_circle-packing",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "beb1f2c8e81aef1e2212b452b707919a7775eabeda205267460a58a029edcfdc",
       "specSha256": "3d6482d63e47f54e90edba2583a24afdcfc9f13e6e649a6eefc7735e72f620e3"
     },
     {
       "id": "stress2_045_orthogonal-tree",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "957522e8084ea6fc7960889490e197287975901bff06aa54d6e0e3935fb67d83",
       "specSha256": "6ba0b3c2ffc441bc3ae3a5be4c1417cca8151af8b20f95aca3fc744c13e3fcd1"
     },
     {
       "id": "stress2_046_radial-tree",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "0d23e3e97833cf8ac168a717cc6ac295e526160c7c71f446b6445370d4c754e0",
       "specSha256": "a033e9edce801b087d3cc19bf596a9f61df754e4d6b84b662cd9f5e576be3354"
     },
     {
       "id": "stress2_047_taxonomy-org-chart",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "3e37a3d667a885e501c541e3e4bddb0e52cf7a40d4a066a9ac14bfde96cb20b3",
       "specSha256": "cb803bb5c97ba0fdde6a3f86a74bc6fb3674ec6539b0bbe86be31f6a2fbd453b"
     },
     {
       "id": "stress2_048_dendrogram-values",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "4b103b31c1cefc85a9e96900e5ecfb6b73b6c0f56ed99b53d02a2e9b6f9d4f76",
       "specSha256": "14d8dd3579dfa31b2d6e2704204b9d96824611a75d51de75cf6a5a9b903149ab"
     },
     {
       "id": "stress2_049_sankey-two-levels",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "f609dea9fbe1ce5f19fd6559964b4cf024bf4561ae203a2182484f9e1993e90c",
       "specSha256": "ef03233245da08b382a9a39622f2bd915203e2a25923b5a211b749e27260e15e"
     },
     {
       "id": "stress2_050_sankey-three-levels",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "6714c029330301aaec7ac5ab79eccab680ce3f1ab8ea6890eb5296b1755ff586",
       "specSha256": "e0c09e7c95b79085b58d93e28053974ecb4dc27d711e98daf1343a67aba6bef7"
     },
     {
       "id": "stress2_051_parallel-sets",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "fb25b46611bf6ed3a8f9fa978844e06e6701b7242fa4a05dc1e486630bd7f819",
       "specSha256": "2d731abcb8b546e6a2984f2b98a79535fd4b496b5cbdef40c8a5b007f55eb328"
     },
     {
       "id": "stress2_052_chord-ribbons",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "9d7d14153b45686cb32501118292d2aff2cc2739f44feddddab21d3216dad508",
       "specSha256": "6a7daff85036080672d1cae4e43ad7a313ecb8290be803591517cdd278d33405"
     },
     {
       "id": "stress2_053_chord-arcs",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "88d13fab5d80ae3e3bee040651a0f029a5ab49f3f4a8e9ecda7935fa1fb1c71e",
       "specSha256": "803a484e5c30d6df7fe03dcfcc9cc7de12997f21ee907bc36ada54811cf5f7f6"
     },
     {
       "id": "stress2_054_arc-diagram",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "2eadab7b2dfd7ea73f13ecebff917c7cd7ebea1fb7c9c3e522c4a87f45c9c565",
       "specSha256": "9ee520f323326d2485fe8207362781d9a7a9818dccd62ff8d6bfd416a48e3bec"
     },
     {
       "id": "stress2_055_relationship-force",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "043577791d7cd7783e1b049e2a97649cca825859021e79cd58ac990f0da4d640",
       "specSha256": "adf09f02b193046345ab601d10db79c2d4c56403904c41f5336dd3f770f701e0"
     },
     {
       "id": "stress2_056_network-circular",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "d2861ddc97198d3b6b64f0ee9725cac9adcd19e1f514019739b8c3badd0821e6",
       "specSha256": "83166df521c8f3b592fe2a8b10de59819a225b4fd8b823d5f591969c809e0376"
     },
     {
       "id": "stress2_057_adjacency-matrix",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "3f06a611cbecc5e09a6d2c2e6a409dbdda8718d6e45bc3eb998455ce460bb9af",
       "specSha256": "e9838cc36101550490b7efe1b23c3431e43a8bc984996fd9b2e9fcd7d48b27fc"
     },
     {
       "id": "stress2_058_bipartite",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "a8d418e66a8854a02ad8f6b6b9916ba95bc2912cdfed2672cfc42d46dfa0523d",
       "specSha256": "3685d24bd444d150a50b3c74475b9511ac53b725ce54cd489cf2e5b40f56c3c0"
     },
     {
       "id": "stress2_059_radar-benchmark",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "ed2eb18ee6a83fa66f88a59c53308b4b931c0b5add3f7457fbac29e9f210b305",
       "specSha256": "d3863419d6a7602499542a3a8a386ba6466cb8a4e62707ececd7a7465ab5218b"
     },
     {
       "id": "stress2_060_radar-small-multiples",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "e0d78a03634966545e0a99994d83a98b3ddc89f9221772aaf43019cd6d5a28b8",
       "specSha256": "5f9e541e2e8b9858f2c023f1eb6bc963850076ad25a76f40d89f7212d648bac5"
     },
     {
       "id": "stress2_061_parallel-six-measures",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "7be0152cd326b390bcd750d970bb0cf506bc520bc850761207dea3826f42f8e1",
       "specSha256": "68ee3f3c22c01aee1e48cd5a9e245f8e2459bb100940219656e0241c2234f812"
     },
     {
       "id": "stress2_062_median-quadrants",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "118b2764d2e8127d3646b896b171ae404dd19ced1c5f2872f9986e138e15ecc8",
       "specSha256": "ae4fdb66c99ae60ee7739f144a2409471fc6dda103480758d29c743000e4e2ba"
     },
     {
       "id": "stress2_063_connected-scatter",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "08a90ade518a3206491b2b580d6ae538e47477f442cda6463d0cf1a33bf6a2f0",
       "specSha256": "ddc241df8985243cdd130320c7495fc1ba7643afc53f428e97a1e1521db74606"
     },
     {
       "id": "stress2_064_scatter-matrix",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "361fa0746b0ffe8769d1f715ad4efa35c50c9bb8caac8a4f9def4381fd02bf87",
       "specSha256": "a37922b8a7f357bf4517b297b3297e6eb91ec50fcd5f922b40f6d123b65abb90"
     },
     {
       "id": "stress2_065_categorical-bubbles",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "106bf192d6dfbfddae284bfc107d6d5b656eadebc887042470b69d6a3da9ac85",
       "specSha256": "4922133f1f5de741909aa7fb8ebada51279431b43fc9cfc20b81b5931ae686c8"
     },
     {
       "id": "stress2_066_bump-rank",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "75dd857fbfbe303b75d37f01dc675aef6dbe5186f78d0df1b4889ec5eadcba49",
       "specSha256": "7ad7dbfdafc7d978b9f8310ac2dbefba0d0088fc097380aabb27eaa7bb88290f"
     },
     {
       "id": "stress2_067_slope-movers",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "c745e85cd98ff94c64388bfe460ebf1a94446386d4c8ae4be6eb551f54d4e4dd",
       "specSha256": "5ddefa4184aadca6eeab7ea5ac51290477e35129383614e7f4fbd09b33703116"
     },
     {
       "id": "stress2_068_wiggle-streamgraph",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "341b8d953fec45802a86933db9542b07f3ed9dc1ecb168a0ab8203c6a1c73a86",
       "specSha256": "83bc7bfc03d6ac861ab2c003729d33ffbaf19759cede8665e38cd259de85a3bc"
     },
     {
       "id": "stress2_069_normalized-area",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "daacdac25b9857b2a7294a347d602d2529a9209fd76f7fe2d8cc6d7c560fce29",
       "specSha256": "e9bb9de3e0ecda5e93666d230e504e363c17cc2eeaedd3ac184152f978ecb907"
     },
     {
       "id": "stress2_070_cumulative-flow",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "a4fdac7b88a29ebe46154db681223c80a35a8d19a3e1d3abba2108d1c1b96803",
       "specSha256": "6fe7033725be535e5bc2157e803fb3996194648afb4d3628c1ee96804b4ead78"
     },
     {
       "id": "stress2_071_gantt-country",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "03b5935579c557a71705d4fc4a7a029168b5e357527abdf2a5418963562a4ae4",
       "specSha256": "4bfc2f1717efef435d7ac4cce38b531c91e13ab721cf4162e9d5ae3d687ce276"
     },
     {
       "id": "stress2_072_event-timeline",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "52f976a5261697b5a1842857020cb49b293321f2b00f41b627c1d2efaa3ec45f",
       "specSha256": "97e780867413c070cfd16c3474c88c368c396683be855b59e5b8a8dd672dee9f"
     },
     {
       "id": "stress2_073_funnel-conversion",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "c477232a5d584f8eed466fc4f0111955487f25c80f4a9bc20436b6405dda2154",
       "specSha256": "1fdca848c5f0d5706c3a03dd488823b8dfc451da8e3e0166269c66cb3639b5e9"
     },
     {
       "id": "stress2_074_mirrored-funnel",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "03e948c14879ba164cf3837a03c12d647b683e1afa3b2cdd2877466c4c615ef4",
       "specSha256": "914d792e1a2f8e7519a270480fe8ba4e3159382397df684386b1764635b9ca81"
     },
     {
       "id": "stress2_075_labelled-quadrants",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "f07bc0f46d943f1bae55199b4984e6455f7417cd86754b94338f6ef5ace17be7",
       "specSha256": "3979e00501f1a1d3959ac29aa91a260508c913a205df5d291a28feab53a1d978"
     },
     {
       "id": "stress2_076_independent-axis-zoom",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "5e0373c6c1c561da619ca588247530d7f050137655c24d1225b0a62d6febbacc",
       "specSha256": "5eb69e0723cfdcd01395e4e545d66ce1b1052ace3e4bacdadf731f4ff6ef6812"
     },
     {
       "id": "stress2_077_weekend-bands",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "b92eb80f7b963c938991beb12c3844b92aee32bfea340042197414791747e08b",
       "specSha256": "7d7908115024b21d68e0a6155b74e4e4e5e11a5b85f2182401234f8d2f70aa53"
     },
     {
       "id": "stress2_078_columns-error-bars",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "da8adb0b23f200f99dfac109de9854d565efe7e968e0d1829265daea93648248",
       "specSha256": "2f98bae3844a28562eed59a3c82345f2d9b95d0507e9cee8747e71410b8bef43"
     },
     {
       "id": "stress2_079_control-chart",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "f9c2e329d40ea39ae15fa82674af1e710882d5bb7edc8b22e2750bf78afa4480",
       "specSha256": "80bcb657ea2f4690fb93a0c5408cf75b0bd751025a60647d1b70c5d8004b41e5"
     },
     {
       "id": "stress2_080_ewma",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "c96c77d8bcb521f42260b393c6c7e37de8a6e729bc746a8c9d12c2fa5988cff9",
       "specSha256": "0464fcd6ab1c862f3919b6205e17845d734a69979521b9febc4d1f6756783c62"
     },
     {
       "id": "stress2_081_forest-range",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "df27cff2a6ed5771f024b2ae1b6a48fbef27a250f7c7b64247e0009d4be83b84",
       "specSha256": "a83c7e4e8c4f461654ebb32842c5fba216c7a93a80673a3d4190fd09d8b01a16"
     },
     {
       "id": "stress2_082_dot-whisker",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "0f99e35b300252c54037df9c2a787cf003f07c7ff59bc4fdbe9f104ae2346bc9",
       "specSha256": "1c3e40310be895a42b5597e0707e9a77a078a00efbd60aaf4157fc78f2c482cd"
     },
     {
       "id": "stress2_083_bar-shared-axis",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "439f8832f731c4723c7e47ff5fd6d9a559ad27c12cf9ee133d0473c7475bd1b0",
       "specSha256": "e6721c8f83fadaf5ed0ad06f67505baa1460928ec851f786ed5159f287166ce3"
     },
     {
       "id": "stress2_084_line-free-axis",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "1c2e5ddc0625e5c444d3e4356fadfc005d729966380df83a2600478453db7caf",
       "specSha256": "0af957b9bc9f0970764e094529b81b4b5cef60056c7a8cac7aaba0c04529fec7"
     },
     {
       "id": "stress2_085_kpi-sparkline",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "1b801c99f3d5874646616a8516c35928403de0a18a9f966e137e8583e7cb9434",
       "specSha256": "d7261d48403da27465918df3e9e412431e76ffec28918243aff028feea234738"
     },
     {
       "id": "stress2_086_ranked-inline-bars",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "35832dbbf88f1f7de3caa4ebf71624e5b8f5138fd7c322daca0e90c130acf89b",
       "specSha256": "d9a0a60e11aaa0a4428851bf5ddf0b8cfc45ca4df79c37ce62aa6708b3d88141"
     },
     {
       "id": "stress2_089_histogram-auto",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "d964727e1ed10a679001ca6bd0ecbe29e90743d3db396857cd8761551c8ed7ed",
       "specSha256": "5665babd022343c749359e3e3725dacb16c1387ef1439bf8e9302fea5b08fb61"
     },
     {
       "id": "stress2_090_histogram-width",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "968c014a6b17116fc888de05c4ae73583cae4ed4d57e2bc6f2dcf5958b66be6a",
       "specSha256": "0226611b6749249743c21ffffce9d551b107dbbad7a1c7db73ab911f672b27ae"
     },
     {
       "id": "stress2_091_box-detail-prices",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "ec0541e5b7902f7e2f4175704d72c25538847e66f937c5d8e4ba94e69d55618d",
       "specSha256": "7ebb638e9bc824310ae607bcd2383fa80633453975efca217a45da838251a21d"
     },
     {
       "id": "stress2_092_violin-density",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "22a167a6bec2f3c0560dcf0e42378b360072c3735bd4f1962cd1476b086e6adf",
       "specSha256": "f150f1e666aaf71c4515e531a4a60aad0bd93f93b3fb956d8a27c3691e602eb6"
     },
     {
       "id": "stress2_093_beeswarm",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "405b191f796c44e2dacdba58adf7c03565a5eb8b5e465e211f1ca243d3c851aa",
       "specSha256": "eb4497af6de2b86fff04b4de9b300dfb59181026878ee582363c6aba7766f2e0"
     },
     {
       "id": "stress2_094_strip-mean",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "4df3504f2833b5c2731d0084f2fc156fa1319a05c1b9b70ee69077d5b46a97e4",
       "specSha256": "09e398256d56170acc695c617bbc5aedcaa5aa6db231aeb3414d7308cf412990"
     },
     {
       "id": "stress2_095_ecdf",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "a93a8c54e0b1cf7bff16ef1fe0f12e4964970fc8ba3c4d9566dfd6df2e1648d7",
       "specSha256": "f98cd2f747563db813a0d1183ec61f22172bba25f1d6dcff05b92da904c42046"
     },
     {
       "id": "stress2_096_ridgeline",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "843375d66ec63e8b344e01aaa5b7fbae83f78f2143feec5fa9252eb33c32b85f",
       "specSha256": "fa26ea6eae38784125523d0cd8c45afc13bf2b73c612dd379cc731f64c88c260"
     },
     {
       "id": "stress2_097_normal-qq",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "c78ecb01a052ea124bb1fd92723c2d49c33ef3f23ccda20f641a65232778635e",
       "specSha256": "78b567c708c6a6f45758834858729c93996343c988dce6d6bf9adb83d88d16aa"
     },
     {
       "id": "stress2_098_hexbin-price-cost",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "8b6f1f1eafc2f45218d8f4c0b9cacb5a0c4155a3900a66a4ed6e911e318d3dda",
       "specSha256": "fb7d6a76d5fbd1e13303b1863e9a88a3e323d8008660b0eda163225ae31f88c4"
     },
     {
       "id": "stress2_099_density2d-price-cost",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "1b31bf9bbb226ce77c7b3c717ea7ce84f7edb4b269e8b8a239ef5fba9c88dff1",
       "specSha256": "3f8e7e1184b14f2b1c28d413c832b500c65233612e3b502c37ba6c1742733bda"
     },
     {
       "id": "stress2_100_parameter-top-other",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "ee613a19bbd0cb3110af065ce69fc68349940e03cf33d22b54c087994da5f0ca",
       "specSha256": "8d78ef21cc95963a036afa1df20d3cb15bb290c3f5e267effbc91035c25879f4"
     },
     {
       "id": "stress2_101_group-percent-subtotals",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "f82785ec47bcffb09f2bd90c721d55c7af621d4b1df1ca6c4246f537fb07e502",
       "specSha256": "aebf0db9652ec4f1fe7860ed6e208985a5e6ea183723c63fe20a4f4fe58bb842"
     },
     {
       "id": "stress2_102_yoy-variance",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "5dd7c9b6f4c5b8dab86d370aba63ee9c3896b419bbf7de558cd8cb27de3d4444",
       "specSha256": "ed4e48aaef071d97ed10cc6ef4233cad937cf3f79aec6cdd6f0b98813f446225"
     },
     {
       "id": "stress2_103_rebase-index",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "17cb9b0864384b05ea536db484e04db8f1687c24fee41a36366c4f8b7868c90f",
       "specSha256": "ccc146eaa146acf42687a7ba62b65778f31a4d3fcf6149d64343ffa2546cdf08"
     },
     {
       "id": "stress2_104_ytd-prior-year",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "838207274984044442829e1f732a1e775ff9afd75a1f9dacade0ae7181f4f5d5",
       "specSha256": "02ad235d48ed9708195fc56c108a3694112320a9ef008ddabdeb9093ba36eb40"
     },
     {
       "id": "stress2_105_cohort-retention",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "d8538a16fae6c94c21ddf60bd0f2b97e07acf950350766d7cf79044b4c6fa681",
       "specSha256": "e8da07f58c1cb962168b23edc7caf1bb945e779469f247aa24ad72fd418b055c"
     },
     {
       "id": "stress2_106_pivot-heatmap",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "59a787bf51b451fb9b661065dafc446cf888574ad231f9c251ca5f6ed85997fc",
       "specSha256": "a8f28c0dae072ec095023886ed269053b91b79ef6da8775043e0c8d6f9f16b04"
     },
     {
       "id": "stress2_107_pearson-six",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "32866fb185c5d5491dd51f8c822257adca985891f5e2d743e06a2aa5955590ad",
       "specSha256": "95af27517cdb874dcda21962a3faec401de4c6bb9623acaad1da66776a69c39f"
     },
     {
       "id": "stress2_108_pareto-count",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "e39bc0c2963733ab0d33122a33f91ea11a241b02a3bd46d6ab0e3ccc2b8fbfc2",
       "specSha256": "9d5b1122dd62b80d40cfba2c3c28b03bdc734067f564f46e62db2413428d0847"
     },
     {
       "id": "stress2_109_date-spikes",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "0921b9241bd679240ca0ece6df6e79e556f11e8a2a1e93b1a01607f366a283a2",
       "specSha256": "478c2a35bb8a5a067835cebc6925ebd4f5d12a14341dfd2f58f60f25e8269062"
     },
     {
       "id": "stress2_110_radial-histogram",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "43fa289357c6c6f1575332e75e80c6a47fbfe0ee09a77ecb3028e692e835f387",
       "specSha256": "c422591526b3d5b4d9c98df0981f911ec5da72f23d744432d86bccf64b14d4eb"
     },
     {
       "id": "stress2_115_country-tile-grid",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "8f224a6d9f9cffde7a48aefdf7e32673ce7f348821e1240b4d7f4c82c38262b8",
       "specSha256": "3ce7d4a922b8ea62c9002577e07acefaae495ff2bb41f7165b684ec291c07c8d"
     },
     {
       "id": "stress2_116_word-cloud",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "588d760414ad300c57c3e904e8b8926420fb3703dc54ef79253cf8c38c8a60f2",
       "specSha256": "f55ded35e395cbb53b812145e3e08db1433182253fffa9ad2a144ed92b3bfc54"
     },
     {
       "id": "stress2_118_hierarchy-flame",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "eb1dc3c54576169990ba80e379a72d96be1a47a26b69bbe548fef54d8a0a58cf",
       "specSha256": "b39dc9fb4db92abeea8108655f9048d102412b0cc8a99b518e28c49d5b24595f"
     },
     {
+      "id": "stress3-beeswarm-expression",
+      "status": "rendered",
+      "backgroundColor": "transparent",
+      "sha256": "8f9d28c61f9a3011756bf493f3f93704fda45eda50ef0f73f407fe9041b606ff",
+      "specSha256": "b4250b4b9b353a8ac30a6da10a8a600ec9458247ba5a7417d3d7668014a52f49"
+    },
+    {
+      "id": "stress3-contour-expression",
+      "status": "rendered",
+      "backgroundColor": "transparent",
+      "sha256": "db63c3b95598591f7a5ef6edd92aef2b26d6efd2db8e805484f26b6bed8f6c60",
+      "specSha256": "3546f4712ca3c1265c31ff2954745c4c36b09963be259d41f075dabdb2a3364c"
+    },
+    {
+      "id": "stress3-flame-expression",
+      "status": "rendered",
+      "backgroundColor": "transparent",
+      "sha256": "97f765d7334890f4d165505239eceb31636b12e8252ef01331a63420587f3205",
+      "specSha256": "1ab5a3586e9949b05601fda42487b305be7f2250e5f8b9aa8bed70a943aa3b18"
+    },
+    {
+      "id": "stress3-hexbin-expression",
+      "status": "rendered",
+      "backgroundColor": "transparent",
+      "sha256": "3d77067a13f428262e5a5d221f0573127f6337e5f93bfe15ba51d4815d09d8fc",
+      "specSha256": "d4f4ba00a19ef4ef5458f6aa9e2af64a10c8156463803c3192a101ad4276dfbd"
+    },
+    {
+      "id": "stress3-marimekko-expression",
+      "status": "rendered",
+      "backgroundColor": "transparent",
+      "sha256": "db462ec008e69e1da40532b28c95ae1dbaa1512aab5d38592e8ea6f26bda4d05",
+      "specSha256": "29a9023b766f6b96ab1a5b5940523fa6831c6307dc48300919635941014281aa"
+    },
+    {
+      "id": "stress3-mosaic-expression",
+      "status": "rendered",
+      "backgroundColor": "transparent",
+      "sha256": "fbd7e3fcafb850706b29e5b69674787c85c5b1dfab190747c0e062f008252926",
+      "specSha256": "a200fc6ad22a138f2a63ba879b0a60e68db564f72d2c23bcece89b9f8b85abca"
+    },
+    {
+      "id": "stress3-motion-bar",
+      "status": "rendered",
+      "backgroundColor": "transparent",
+      "sha256": "45241f9e52e98506f151a706b122803b5a8d44d29560530b2e5884bce2216825",
+      "specSha256": "e78a407c9ea48e7c75b079dd9521c126f66213e5434561be7b624ec8d4845c66"
+    },
+    {
+      "id": "stress3-motion-bubble",
+      "status": "rendered",
+      "backgroundColor": "transparent",
+      "sha256": "9bbfe4e32be9f1290331b62b33caedc753932d822803bc9db479afdfa45c71d9",
+      "specSha256": "85d0031f829f23feb72707fcaf52032ed29711bac6a5226fce0bc7ac45caf751"
+    },
+    {
+      "id": "stress3-motion-kpi-sparkline",
+      "status": "rendered",
+      "backgroundColor": "transparent",
+      "sha256": "b4b32455c2708f6048bb1516b1a789f0f0914c6d47a91e8539d489f565618fb7",
+      "specSha256": "ad26f82f3c3c23c4357e422400b6c3debb5b7fe9120365706e2027c2a0b8f84d"
+    },
+    {
+      "id": "stress3-motion-line",
+      "status": "rendered",
+      "backgroundColor": "transparent",
+      "sha256": "66cae91144b1a726145991035d0f023c989827da1612cce6c1ff7aea4958677c",
+      "specSha256": "013c2b77b640fa1da35cc7585ed6a5b06894f8a559b59f6b45db9787365909a2"
+    },
+    {
+      "id": "stress3-motion-morph",
+      "status": "rendered",
+      "backgroundColor": "transparent",
+      "sha256": "fac021886f4df943ab9f49c3d9d8bcf70adb2a77952e0f3599ebffe91881769b",
+      "specSha256": "6e224ed8d536332850ab00d1a78e59cad71209b6357948a9d68cbc0ec2f7d1a7"
+    },
+    {
+      "id": "stress3-motion-sankey",
+      "status": "rendered",
+      "backgroundColor": "transparent",
+      "sha256": "52d6935744d0ec802dd54209435837e8597baa0a1b5b80f4112baf5218a77d75",
+      "specSha256": "63402c794d4526dba6fd966873bc63280e9bbece27f7679d8f051b3f824c98b5"
+    },
+    {
+      "id": "stress3-motion-stagger-50",
+      "status": "rendered",
+      "backgroundColor": "transparent",
+      "sha256": "403a41166a18eaef10071dac7238916c869099e17a0500fbf3f43dcaa2bec970",
+      "specSha256": "e82aec151be9aff0f700605561c25654d78638e6ced2920955f20e8b1c06be73"
+    },
+    {
+      "id": "stress3-motion-tile-heat",
+      "status": "rendered",
+      "backgroundColor": "transparent",
+      "sha256": "b440e367fad82037f2b93358b22279243f266e2e4ab155335b1cff9f63a52b71",
+      "specSha256": "7b3ffb322c77039fe1b40a0209161bda7f867f3815f9600e575914b162c23369"
+    },
+    {
+      "id": "stress3-motion-treemap",
+      "status": "rendered",
+      "backgroundColor": "transparent",
+      "sha256": "2548c4d2a69f1a245d83a3dc9d5bc4c27b46ce765aca852ed529a2150ce6cd3c",
+      "specSha256": "5e852361ec4bf64b4d3dadb1e8b117d79b8468d523a303c67e5fa32a3b57f3b8"
+    },
+    {
+      "id": "stress3-motion-zoom-autoplay",
+      "status": "rendered",
+      "backgroundColor": "transparent",
+      "sha256": "353d49e299b36528c6c09c5a9617600d567750a45d29f60196e159d0a02181e6",
+      "specSha256": "ff8a85ad18cc7b8fa75a55255d7af2b41af608289d403528bbd5bd3a428ba2f4"
+    },
+    {
+      "id": "stress3-reference-figma",
+      "status": "rendered",
+      "backgroundColor": "#f5f7fb",
+      "sha256": "a00d520c000cb64b0cf924954de6b72db68acf71dbf753ba9ec2f491c52e3450",
+      "specSha256": "0584fa2c8462e28670f02704ec2e7b7e0c4ab53cdcc435ff6b5106bb5aae0cb6"
+    },
+    {
+      "id": "stress3-reference-tableau",
+      "status": "rendered",
+      "backgroundColor": "#ffffff",
+      "sha256": "38a89c6ca1158b1804597f2be501695a79ac67ff2d927b55d5d2c09e07e3de57",
+      "specSha256": "8234219186b5d3e3cd5a55f322689412e08a8113203a697c11a37eae87499ac6"
+    },
+    {
+      "id": "stress3-reference-whiteboard",
+      "status": "rendered",
+      "backgroundColor": "#ffffff",
+      "sha256": "bc53fb13ad159bf483ae72d6af3048ccad71c71940395279dfdfe1d1c818b00b",
+      "specSha256": "9b0163a4c5def1dad3a1e74b4d71baadd7d07510fad22e842d96089878d790c7"
+    },
+    {
+      "id": "stress3-ridgeline-expression",
+      "status": "rendered",
+      "backgroundColor": "transparent",
+      "sha256": "a0ef6d0cc1d75da32a9c0cbc21f13863453c350e4e5d8bf28d2dc61d17e0f29b",
+      "specSha256": "048e6797dee109983d98f474e27187524c656316f3492b5d48ed32b2ce851e6e"
+    },
+    {
+      "id": "stress3-venn-expression",
+      "status": "rendered",
+      "backgroundColor": "transparent",
+      "sha256": "24a8f04608d782a114ab7adbf01d3cf534d550d19ec56d157d4fbe1ca50a906c",
+      "specSha256": "78b55ec6c67b718f11b128ef7de8a65252d68562a87e506cfef6de9b72f27dfc"
+    },
+    {
+      "id": "stress3-violin-expression",
+      "status": "rendered",
+      "backgroundColor": "transparent",
+      "sha256": "b1bee436850092b4bcab51208f130c67c589cb672ff912ac7f3744c889b28f3f",
+      "specSha256": "65726418e0eade6d1bc3cbbbadf29df9e4c74285e48a6dc19cc6618e226fb7ce"
+    },
+    {
+      "id": "stress3-voronoi-expression",
+      "status": "rendered",
+      "backgroundColor": "transparent",
+      "sha256": "e9bb39dfc0de4c7e3905f21c7ca769ead11407a18fac5456813083b482e51bb3",
+      "specSha256": "d603a208edea540de991c3b6fb737a2d23243af4ac1ea9d3743a08b551e03370"
+    },
+    {
+      "id": "stress3-word-cloud-expression",
+      "status": "rendered",
+      "backgroundColor": "transparent",
+      "sha256": "16849302a887c9a39d44862c94843355dc4b29dc59990feb84b2a8e0e69e22de",
+      "specSha256": "1ce7e3b4ea641dec95026ed52c947268df648aba6245b54a2a1fd866660cdbe2"
+    },
+    {
       "id": "expressiveness_sunburst",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "003e17bf23bf5012c445297db4381cf058cfee1a06b636818985c388df592f87",
       "specSha256": "90031f347b06acb6e23dc7ff7619857316c2c46d1a388dcf974673360c8f916d"
     },
     {
       "id": "expressiveness_waterfall",
       "status": "rendered",
+      "backgroundColor": "transparent",
       "sha256": "70af1666c45baff24ca76e902eebeeb16ad8126804291ecff167320285592930",
       "specSha256": "4956ba4b91469bd4be4231a199450fe44fa6cc9bc2f21338e6ba2b93b67217b5"
     }

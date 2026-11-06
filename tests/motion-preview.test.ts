@@ -20,6 +20,8 @@ it('renders final timeline state plus distinct bounded APNG states and a contact
  const result=previewRows(spec,[{_cat:'A',_val:1}],320,240,{frames:2,critique:false});expect(result.png.length).toBeGreaterThan(100);expect(result.apng?.length).toBeLessThanOrEqual(2097152);expect(result.apng?.includes(Buffer.from('acTL'))).toBe(true);expect(result.contactSheet?.length).toBeGreaterThan(100);expect(result.motion.sampledIndices).toEqual([0,1]);expect(result.svg).not.toContain('NaN')
  expect(result.svg).not.toContain('@keyframes')
  expect(result.png).toEqual(rasterizeSvg(result.svg))
+ const thumbnail=previewRows(spec,[{_cat:'A',_val:1}],320,240,{frames:2,critique:false,sampleMotion:false})
+ expect(thumbnail.png).toEqual(result.png);expect(thumbnail.apng).toBeUndefined();expect(thumbnail.contactSheet).toBeUndefined();expect(thumbnail.motion.sampledIndices).toEqual([]);expect(thumbnail.motion.kind).toBe('static')
 })
 it('flags motion duration and excessive timeline steps with editable paths',()=>{
  const result=critiqueVisual({template:{animation:{enter:{duration:5000}}}},{baseOption:{timeline:{playInterval:500}},options:Array(61).fill({})},[],800,500)

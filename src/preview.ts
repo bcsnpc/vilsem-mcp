@@ -50,7 +50,7 @@ export function previewRows(spec: any, rows: any[], width = 800, height = 500, c
     if(steps>1){
       const count=Math.min(steps,context.frames??6)
       // Discrete model-backed timeline states. These are not browser tween frames.
-      if(width*height*count<=12000000){
+      if(context.sampleMotion!==false&&width*height*count<=12000000){
         const states:{index:number,svg:string}[]=[]
         for(let i=0;i<count;i++){const index=Math.round(i*(steps-1)/(count-1));chart.dispatchAction({type:'timelineChange',currentIndex:index});states.push({index,svg:settledSvg()})}
         const images=rasterizeSvgBatch(states.map(state=>state.svg),background)
@@ -58,7 +58,7 @@ export function previewRows(spec: any, rows: any[], width = 800, height = 500, c
         try{apng=encodePreviewApng(sampled.map(f=>f.png),{duration:Math.min(3000,Math.max(100,(option.baseOption?.timeline?.playInterval??option.timeline?.playInterval??500)*count))})}catch(error){motionWarnings.push((error as Error).message)}
         if(context.frames){const cols=Math.min(3,count),cellWidth=Math.min(width,600),cellHeight=Math.round(height*cellWidth/width),header=28;
           const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${cols*cellWidth}" height="${Math.ceil(count/cols)*(cellHeight+header)}"><rect width="100%" height="100%" fill="white"/>${sampled.map((frame,i)=>{const x=i%cols*cellWidth,y=Math.floor(i/cols)*(cellHeight+header);return `<text x="${x+8}" y="${y+20}" font-family="Segoe UI" font-size="14">Timeline state ${frame.index+1}/${steps}</text><image x="${x}" y="${y+header}" width="${cellWidth}" height="${cellHeight}" href="data:image/png;base64,${frame.png.toString('base64')}"/>`}).join('')}</svg>`;contactSheet=rasterizeSvg(svg)}
-      }else motionWarnings.push('Animation sample exceeds12 million pixels; reduce width, height or frames.')
+      }else if(context.sampleMotion!==false)motionWarnings.push('Animation sample exceeds12 million pixels; reduce width, height or frames.')
       chart.dispatchAction({type:'timelineChange',currentIndex:steps-1})
     }else if(option.animation!==false&&(spec.template?.animation||option.animationDuration))motionWarnings.push('Enter/update tween capture is not implemented by the SVG state sampler; inspect motion in the live renderer.')
     const svg = settledSvg()
@@ -67,7 +67,7 @@ export function previewRows(spec: any, rows: any[], width = 800, height = 500, c
     const png=rasterizeSvg(svg,background)
     const inspected=steps?{...option,...chart.getOption()}:option
     const critique=context.critique===false?undefined:critiqueVisual(spec,inspected,rows,width,height,renderedText(chart,inspected),{...context,background,plotBounds:renderedPlots(chart)})
-    return { option, svg, png, critique, apng, contactSheet, motion:{kind:steps>1?'discrete-timeline-states':'static',steps,sampledIndices:sampled.map(f=>f.index),durationLimitMs:3000,byteLimit:2097152,warnings:motionWarnings} }
+    return { option, svg, png, critique, apng, contactSheet, motion:{kind:steps>1&&context.sampleMotion!==false?'discrete-timeline-states':'static',steps,sampledIndices:sampled.map(f=>f.index),durationLimitMs:3000,byteLimit:2097152,warnings:motionWarnings} }
   } finally {
     chart.dispose()
   }

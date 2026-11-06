@@ -8,6 +8,22 @@ import {InMemoryTransport} from '@modelcontextprotocol/sdk/inMemory.js'
 import {createServer} from '../src/server.js'
 import {Models} from '../src/models.js'
 import {browserCandidates,browserEnvironment,motionCapturePlan} from '../src/motionBrowser.js'
+it.runIf(browserCandidates().some(file=>existsSync(file)))('settles the actual Sankey entry clip before a hidden first-frame canvas capture',async()=>{
+ const {chromium}=await import('playwright-core'),require=createRequire(import.meta.url),browser=await chromium.launch({executablePath:browserCandidates().find(file=>existsSync(file)),headless:true,chromiumSandbox:true,env:browserEnvironment()})
+ try{
+  const page=await browser.newPage();await page.route('**/*',route=>route.abort());await page.setContent('<div id="animated" style="width:600px;height:350px"></div><div id="static" style="width:600px;height:350px"></div>')
+  await page.addScriptTag({content:await readFile(require.resolve('echarts/dist/echarts.min.js'),'utf8')})
+  const source=await readFile(path.join(path.dirname(require.resolve('@vilsem/core/templates')),'motionVisibility.js'),'utf8');await page.addScriptTag({content:source.replaceAll('export function','function')+'\nwindow.qaFinish=finishChartFrame;'})
+  const result=await page.evaluate(()=>{
+   const option={animation:true,animationDuration:1000,series:[{type:'sankey',left:40,right:100,top:30,bottom:30,data:[{name:'Source'},{name:'Target right'}],links:[{source:'Source',target:'Target right',value:10}],label:{show:true}}]}
+   const animated=window.echarts.init(document.getElementById('animated'));animated.setOption(option);animated.getZr().animation.pause();animated.getZr().flush()
+   const canvas=()=>document.querySelector('#animated canvas').toDataURL(),before=canvas(),completed=window.qaFinish(animated),after=canvas()
+   const settled=window.echarts.init(document.getElementById('static'));settled.setOption({...option,animation:false});settled.getZr().flush();const expected=document.querySelector('#static canvas').toDataURL()
+   const clips=[];for(const root of animated.getZr().storage.getRoots())root.traverse?.(el=>{if(el.getClipPath?.())clips.push(el.getClipPath().shape)})
+   const result={completed,entryChanged:before!==after,exactStaticFrame:after===expected,clips};animated.dispose();settled.dispose();return result
+  });expect(result).toEqual({completed:true,entryChanged:true,exactStaticFrame:true,clips:[]})
+ }finally{await browser.close()}
+},15000)
 it('keeps browser configuration independent of the app and strips model/LLM credentials',()=>{
  expect(browserCandidates({VILSEM_PREVIEW_BROWSER_PATH:'C:/owned/chrome.exe'} as any,'win32')).toHaveLength(1);expect(browserCandidates({},'linux')).toContain('/usr/bin/chromium')
  const env=browserEnvironment({SystemRoot:'C:/Windows',PATH:'bin',TEMP:'temp',AZURE_CLIENT_SECRET:'secret',POWERBI_TOKEN:'token',OPENAI_API_KEY:'key',VILSEM_APP_PATH:'repo'});expect(env).toEqual({SystemRoot:'C:/Windows',PATH:'bin',TEMP:'temp'})

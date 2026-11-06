@@ -52,7 +52,7 @@ export function previewRows(spec, rows, width = 800, height = 500, context = {})
         if (steps > 1) {
             const count = Math.min(steps, context.frames ?? 6);
             // Discrete model-backed timeline states. These are not browser tween frames.
-            if (width * height * count <= 12000000) {
+            if (context.sampleMotion !== false && width * height * count <= 12000000) {
                 const states = [];
                 for (let i = 0; i < count; i++) {
                     const index = Math.round(i * (steps - 1) / (count - 1));
@@ -73,7 +73,7 @@ export function previewRows(spec, rows, width = 800, height = 500, context = {})
                     contactSheet = rasterizeSvg(svg);
                 }
             }
-            else
+            else if (context.sampleMotion !== false)
                 motionWarnings.push('Animation sample exceeds12 million pixels; reduce width, height or frames.');
             chart.dispatchAction({ type: 'timelineChange', currentIndex: steps - 1 });
         }
@@ -85,7 +85,7 @@ export function previewRows(spec, rows, width = 800, height = 500, context = {})
         const png = rasterizeSvg(svg, background);
         const inspected = steps ? { ...option, ...chart.getOption() } : option;
         const critique = context.critique === false ? undefined : critiqueVisual(spec, inspected, rows, width, height, renderedText(chart, inspected), { ...context, background, plotBounds: renderedPlots(chart) });
-        return { option, svg, png, critique, apng, contactSheet, motion: { kind: steps > 1 ? 'discrete-timeline-states' : 'static', steps, sampledIndices: sampled.map(f => f.index), durationLimitMs: 3000, byteLimit: 2097152, warnings: motionWarnings } };
+        return { option, svg, png, critique, apng, contactSheet, motion: { kind: steps > 1 && context.sampleMotion !== false ? 'discrete-timeline-states' : 'static', steps, sampledIndices: sampled.map(f => f.index), durationLimitMs: 3000, byteLimit: 2097152, warnings: motionWarnings } };
     }
     finally {
         chart.dispose();

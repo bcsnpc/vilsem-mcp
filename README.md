@@ -27,7 +27,7 @@ The comparison does not imply native Power BI visuals require custom coding. Mic
 
 1. **Composition:** a supported chart type and configuration; the smallest spec and maintenance cost.
 2. **Template:** ECharts structure, declared slots, parameters and bounded transforms; more control, with explicit layout and unit responsibilities.
-3. **Expression series:** the Round3 GroupC bounded-geometry language is planned, **not available in0.6 yet**. Arbitrary renderItem/JavaScript remains refused; see the expressiveness gaps.
+3. **Expression series (0.7 prerelease):** a closed JSON AST describes bounded custom geometry. One trusted interpreter runs it in previews and the renderer; arbitrary renderItem/JavaScript remains refused. See `vilsem://docs/expression-language` for operations, limits and security boundaries.
 
 ## Agent workflow
 
@@ -39,7 +39,7 @@ For edits: list_visuals -> read_visual -> update_visual(dryRun:true) -> inspect 
 
 Requires Node.js 22.12+, 24, or 26+. Install from GitHub or clone this repository and run `npm install`, then `npm test`. Its `prepare` step builds the server. All model connections run through `@vilsem/core/connect`; no Vilsem app checkout, Electron installation or application path configuration is needed.
 
-The dependency is the immutable public `core-v0.6.0` release tarball. For local core development only, install a locally packed core tarball; restore the public release URL before distributing.
+The0.7 prerelease depends on the immutable public `core-v0.7.0` release tarball. For local core development only, install a locally packed core tarball; restore the public release URL before distributing. Native physical interaction/export acceptance is incomplete and the5000-point60fps target is not met; this release is for evaluation, not a production-readiness claim. The previous stable release remains0.6.
 
 ### Model authentication
 
@@ -65,9 +65,9 @@ Quoted connection-string values are supported. Passwords and impersonation setti
 There is no npm-registry publication. Install the tagged GitHub release:
 
 ```sh
-npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.6.0
+npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.7.0
 vilsem-mcp
-# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.6.0 vilsem-mcp
+# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.7.0 vilsem-mcp
 ```
 
 The process serves stdio JSON-RPC; diagnostics go to stderr.
@@ -239,30 +239,28 @@ report font, Service/Fabric target or historical screenshot was retested.
 
 ## Editable specifications and governance
 
-New commits carry specVersion0.6; readers migrate specs from0.1 onward, including round2 string measure definitions into {expression,format} objects. version:1 remains the separate wire envelope. Migrations are pure, forward-only and tested; unknown future versions are explicitly rejected. Maintaining readable historical specs is a release requirement, not a guarantee that unknown future formats run in an older renderer.
+New commits carry specVersion0.7; readers migrate specs from0.1 onward, including round2 string measure definitions into {expression,format} objects. version:1 remains the separate wire envelope. Migrations are pure, forward-only and tested; unknown future versions are explicitly rejected. Maintaining readable historical specs is a release requirement, not a guarantee that unknown future formats run in an older renderer.
 
-The shared formatting contract has69properties: theme/background, title, chart text, series palette, labels, legend, category/primary/secondary axes, lines and border. Author spec.formatting or patch individual properties; separate Desktop pane objects override only the corresponding properties. Changing secondary-axis percentage formatting preserves a primary currency axis. Common controls apply to ECharts compositions/templates; legacy DOM adapters currently expose only Appearance, Title and Border. Native pane controls do not yet cover every specialized ECharts property. Series palette input currently accepts comma-separated hex colours.
+The0.7 shared formatting contract has71properties: theme/background, animation/reduce motion, title, chart text, series palette, labels, legend, category/primary/secondary axes, lines and border. Author spec.formatting or patch individual properties; separate Desktop pane objects override only the corresponding properties. Changing secondary-axis percentage formatting preserves a primary currency axis. Common controls apply to ECharts compositions/templates; legacy DOM adapters currently expose only Appearance, Title and Border. Native pane controls do not yet cover every specialized ECharts property. Series palette input currently accepts comma-separated hex colours.
 
 Visual-scoped measures: **yes**. Persistent model measures/changes: **via Microsoft's Power BI Modeling MCP**. Queries and committed bindings use their respective connecting/viewing identities; Power BI owns RLS, workspace access, sensitivity labels, report filters and refresh. A preview query does not replay report-level filters or certify policies.
 
-The write flow stores bindings/specifications, not returned model rows. Author literals/annotations are possible in JSON, so review specs before sharing. The plain spec lives in PBIR and can be versioned with the report in git; ownership belongs to the report, rather than a lost chat or developer's compiled project. An approved shared VILSEM_TEMPLATES_DIR library is a GroupC feature, not shipped in0.6. The MCP does not add a second manifest or list_recent tool.
+The write flow stores bindings/specifications, not returned model rows. Author literals/annotations are possible in JSON, so review specs before sharing. The plain spec lives in PBIR and can be versioned with the report in git; ownership belongs to the report, rather than a lost chat or developer's compiled project. The0.7 template library uses OS user data, or an approved shared VILSEM_TEMPLATES_DIR folder. The MCP does not add a second manifest or list_recent tool.
 
 Core0.6 and MCP0.6 verification is recorded in the [Round3 GroupB log](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/stress3/group-b-status.md). Source/host and real-data SSR editing pass; final native Sankey/manual-pane acceptance is UNVERIFIED because ComputerUse cannot connect and Desktop snapshots are blank/time out. Automatic common-axis bounds can be reset with autoMin/autoMax. Native aggregate-column bindings outside the supported Measure/NativeMeasure shapes are reported as unsupported rather than guessed.
 
 
 Contrast feedback uses4.5for normal text and3for text estimated at24px or larger, informed by [W3C contrast guidance](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html). It deliberately does not relax the threshold for smaller bold text, and it compares against the preview page rather than proving the paint behind every label. This is review assistance, not a WCAG compliance result.
 
-## GroupC0.7 development status
+## GroupC0.7 prerelease status and limits
 
-This branch implements the bounded expression series language, declarative
+This prerelease implements the bounded expression series language, declarative
 race/timeline motion, reusable user/shared template memory, and image-statistics
-reference workflows. Published0.6 releases retain their documented0.6 behavior;
-0.7 has not been released from this development checkpoint.
+reference workflows. Published0.6 releases retain their documented0.6 behavior.
 
-The dependency URL still pins published core0.6 while the coordinated0.7
-release is pending. Development package acceptance uses paired local0.7
-tarballs with an explicit core override; it is not verification of a published
-0.7 install. Do not install this feature branch as a production0.7 release.
+Install the tagged prerelease with its matching core dependency. Source, host,
+real-data previews and installed-package checks are separate from native
+interaction, export and performance acceptance. See the [verification ledger](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/stress3/candidate-verification.md).
 
 Expression renderItem is a closed JSON AST, not arbitrary JavaScript. It shares
 one bounded interpreter between renderer and previews. The11 former(c) visual
@@ -289,6 +287,23 @@ examples and the reference examples; this does not verify physical interactions.
 Sankey motion captures remain partial or blank despite visible charts reported
 by the user. Window automation is unavailable (native pipe, os error2), so native
 gestures, motion/export acceptance and the final currency-axis native recheck
-remain UNVERIFIED. Renderer4.39 includes current lifecycle and exact-group
-context-menu fixes; host tests are distinct from native acceptance.
-Do not interpret0.7 development as production/certification completion.
+remain UNVERIFIED. Renderer4.40 completes hidden Sankey entry clips through the
+engine's completion callbacks; a real-browser regression compares the result
+pixel-for-pixel with a settled static graph. It preserves permanent clips and
+includes exact-group context-menu fixes; those tests are distinct from native
+acceptance. Physical click/Ctrl-click, native slicer/highlight, drill-through,
+report-page tooltips, bookmarks and Edit Interactions None still need the
+Desktop checklist. Do not interpret this prerelease as certification or
+production-readiness completion.
+
+To reproduce the synthetic motion benchmark from a source checkout:
+
+```sh
+npm run build
+node scripts/benchmark-motion.mjs
+```
+
+It launches only an owned sandboxed headless browser, queries no model, keeps
+5000points and animation enabled, and records idle/canvas/dirty-rectangle/SVG
+measurements in `test-results/benchmarks/motion-options.json`. Exit code1 means
+the57RAFfps/20ms-p95 tolerance was not met. This is not a Power BI host benchmark.
