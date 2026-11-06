@@ -41,6 +41,53 @@ Requires Node.js 22.12+, 24, or 26+. Install from GitHub or clone this repositor
 
 The0.7 prerelease depends on the immutable public `core-v0.7.2` release tarball. For local core development only, install a locally packed core tarball; restore the public release URL before distributing. Native physical interaction/export acceptance is incomplete and the5000-point60fps target is not met; this release is for evaluation, not a production-readiness claim. The previous stable release remains0.6.
 
+### Fresh Windows machine: recommended installation
+
+You can use this with another report; the shipped examples are not tied to the QA model. Use your own model fields discovered by `get_schema`.
+
+1. Install a supported Node.js version (for example, Node.js 24), Power BI Desktop, and a local MCP-capable agent such as Codex or Claude Code. The MCP and Desktop must run on the **same Windows machine** for Desktop mode. The Vilsem Electron app is not required.
+2. In PowerShell, install the pinned, prebuilt public release (no Git/source checkout required):
+
+   ```powershell
+   node --version
+   $vilsemDir = Join-Path $env:USERPROFILE 'vilsem-mcp'
+   New-Item -ItemType Directory -Force -Path $vilsemDir | Out-Null
+   npm.cmd install --prefix "$vilsemDir" "https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.7.3/vilsem-mcp-0.7.3.tgz"
+   Join-Path $vilsemDir 'node_modules/vilsem-mcp/dist/index.js'
+   (Get-Command node).Source
+   ```
+
+   Keep the printed server and Node paths. If Node is missing, reopen the terminal after installing it. `npm.cmd` avoids PowerShell script execution-policy issues. Installation downloads core 0.7.2 and renderer 4.42 automatically; no application-path environment variable is needed.
+3. Configure your agent using one client example below. Replace `YOUR_NAME` with your actual Windows profile path, or use the printed server path with forward slashes. If the client cannot find `node`, use the printed full Node executable path as `command`. Restart/reconnect the client and confirm that the Vilsem tools are available. A stdio server does not open a website; the MCP client starts it.
+4. Save a **test copy of the complete report project**, preserving the relative report/model folder structure. Open it in Desktop. A `.pbix` must first be saved as a PBIP project using Desktop; MCP does not patch a PBIX binary. The target must use enhanced PBIR with `<name>.Report/definition/pages/`. If needed, convert the report using Desktop first. Create an empty page in Desktop if you want a dedicated test page, then save.
+5. For live external reload, use Desktop August 2026 or later, enable **Detect and reload external PBIP changes** under Preview features and restart Desktop. Earlier versions require a close/reopen workflow. See [Microsoft's prerequisites and reload limits](https://learn.microsoft.com/en-us/power-bi/developer/projects/projects-external-editing). Save Desktop changes before external edits.
+6. Give the agent the absolute **`.Report` folder** path, not the `.pbip` or `.pbix` file, and use the starter prompt below. Prefer `source:{kind:"report",reportDir:"C:/Reports/MyTest/MyTest.Report"}` to follow that report's binding. For a local model it must be open in Desktop for real-data previews. If discovery is ambiguous, open only the intended model or supply its port. Never reuse port 62071 from this repository's QA session; ports are machine/session-specific.
+7. Inspect the real-data preview, then commit to an existing page. Accept Desktop's external-change prompt. First-time renderer registration can require closing/reopening the project because `report.json` does not support live external reload. Alternatively import the bundled renderer in Desktop and save before committing; its installed path is `<vilsemDir>/node_modules/@vilsem/core/assets/renderer.pbiviz`.
+8. Confirm real numbers, selection, slicers, hover/context menus, resize and save/reopen yourself. Existing native visuals should remain intact. `validate_visuals` checks Vilsem objects only; it does not certify native behavior or model semantics.
+
+For animated browser previews, install Chrome/Edge/Chromium or set `VILSEM_PREVIEW_BROWSER_PATH` in the MCP server environment. Static previews do not require that browser. Model connection/preview permissions still apply; see Fabric authentication below for remote models. Moving to a different machine does not transfer Fabric credentials.
+
+### First test: generate a new visual from scratch
+
+Replace the path and analytical request, then send this to your agent:
+
+```text
+Use the vilsem MCP with my open test report:
+C:/Reports/MyTest/MyTest.Report
+
+Connect using this report's binding and inspect get_schema. Author a NEW
+.vilsem-visual.json specification from scratch for a useful category-versus-
+measure visual using actual fields from this model. Do not reuse a shipped
+template or copy example business values. Explain the chosen grain and units.
+Run validate_spec, explain_visual and preview_visual with real data. Inspect
+and improve the result. Use list_pages to choose the existing test page and
+avoid overlapping its visuals. Then commit the new Vilsem visual, read it back
+and run validate_visuals. Preserve the model, native visuals and manual format
+settings. Tell me when to accept reload/reopen and what to check in Desktop.
+```
+
+If `schemaOnly:true`, open the model in Desktop and reconnect before requesting real values. If tools are missing, check the client configuration/server path and restart it. For a renderer-version refusal, review and upgrade the registered renderer rather than changing its GUID. An administrator's custom-visual restrictions can prevent rendering; use the report's approved policy rather than bypassing it. A successful preview is not proof of native rendering. This is an evaluation release: native acceptance remains incomplete and the 5,000-point animated frame-rate target is not met.
+
 ### Model authentication
 
 Desktop requires Windows and a running Power BI Desktop model. Core identifies the Desktop Analysis Services process and reads its workspace port file. Pass `source.port` if multiple instances are open. ADOMD/XMLA uses your Windows identity; no cloud login is needed.
@@ -74,16 +121,16 @@ The process serves stdio JSON-RPC; diagnostics go to stderr.
 
 ### Claude Desktop
 
-Add to `claude_desktop_config.json`, replacing the paths:
+Add to `claude_desktop_config.json`. These examples use the recommended local release installation above; replace the profile path:
 
 ```json
-{"mcpServers":{"vilsem":{"command":"node","args":["D:/vilsem-mcp/dist/index.js"]}}}
+{"mcpServers":{"vilsem":{"command":"node","args":["C:/Users/YOUR_NAME/vilsem-mcp/node_modules/vilsem-mcp/dist/index.js"]}}}
 ```
 
 ### Claude Code
 
 ```sh
-claude mcp add --transport stdio vilsem -- node D:/vilsem-mcp/dist/index.js
+claude mcp add --transport stdio vilsem -- node "C:/Users/YOUR_NAME/vilsem-mcp/node_modules/vilsem-mcp/dist/index.js"
 ```
 
 ### Codex
@@ -93,11 +140,13 @@ Add to `~/.codex/config.toml` or a trusted project's `.codex/config.toml`:
 ```toml
 [mcp_servers.vilsem]
 command = "node"
-args = ["D:/vilsem-mcp/dist/index.js"]
+args = ["C:/Users/YOUR_NAME/vilsem-mcp/node_modules/vilsem-mcp/dist/index.js"]
+startup_timeout_sec = 60
+tool_timeout_sec = 600
 
 ```
 
-See the [official MCP configuration documentation](https://learn.chatgpt.com/docs/extend/mcp).
+The longer tool timeout accommodates schema profiling and real-data previews on larger models. See the [official MCP configuration documentation](https://learn.chatgpt.com/docs/extend/mcp).
 
 ## Desktop setup and walkthrough
 
