@@ -2,7 +2,8 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import crypto from 'node:crypto'
 import {createRequire} from 'node:module'
-import {RENDERER_GUID,validateVisualContainer} from '@vilsem/core/pbir'
+import {RENDERER_GUID} from '@vilsem/core/pbir'
+import {validateExistingContainer} from './containerCompatibility.js'
 import {migrate} from '@vilsem/core/spec/migrate'
 import {PANE_GROUPS} from '@vilsem/core/formatting/pane'
 import {listPages,validateSpec} from './reports.js'
@@ -84,7 +85,7 @@ export async function writeStoredVisual(item:any,spec:any,{resetFormatting=false
  const literal=next.visual.objects.semantica[0].properties.primitiveSpec.expr.Literal
  literal.Value=`'${JSON.stringify(migrate(spec)).replace(/'/g,"''")}'`
  if(queryState)next.visual.query={...next.visual.query,queryState}
- await validateVisualContainer(next)
+ const containerValidation=await validateExistingContainer(next)
  const lockFile=item.file+'.vilsem-lock',temp=item.file+`.vilsem-${crypto.randomUUID()}.tmp`
  const lock=await fs.open(lockFile,'wx').catch(error=>{if(error.code==='EEXIST')throw Error('Visual is being edited by another MCP call; retry after it finishes');throw error})
  try{
@@ -93,5 +94,5 @@ export async function writeStoredVisual(item:any,spec:any,{resetFormatting=false
   if(!(await fs.readFile(item.file)).equals(item.bytes))throw Error('Visual changed during update; retry after Desktop finishes saving')
   await fs.rename(temp,item.file)
  }finally{await lock.close();await fs.rm(lockFile,{force:true});await fs.rm(temp,{force:true})}
- return {path:item.file,formattingPreserved:!resetFormatting,etag:crypto.createHash('sha256').update(await fs.readFile(item.file)).digest('hex')}
+ return {path:item.file,formattingPreserved:!resetFormatting,etag:crypto.createHash('sha256').update(await fs.readFile(item.file)).digest('hex'),containerValidation}
 }

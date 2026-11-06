@@ -65,9 +65,9 @@ Quoted connection-string values are supported. Passwords and impersonation setti
 There is no npm-registry publication. Install the tagged GitHub release:
 
 ```sh
-npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.7.2
+npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.7.3
 vilsem-mcp
-# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.7.2 vilsem-mcp
+# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.7.3 vilsem-mcp
 ```
 
 The process serves stdio JSON-RPC; diagnostics go to stderr.
@@ -317,3 +317,7 @@ Verification for0.7.1:300/300 MCP tests pass against the downloaded public core0
 MCP0.7.2 corrects axis-label/name contrast when the explicitly light reference card is previewed in a dark report. It uses core0.7.2 / renderer4.42, which also preserves authored opacity for explicitly silent annotation leaves during selection/highlight. Ordinary marks still dim; no native interaction claim changes.
 
 Final0.7.2 validation:303/303 MCP tests pass against the published core0.7.2 archive with unchanged30second test deadlines. Both app/core checkouts pass1357tests. Static viewport decorations no longer produce phantom zero-measure/extra-series feedback; genuine zero data and data-driven annotations remain checked. Explicit opaque chart backgrounds are used for global contrast. Native physical acceptance remains blocked and the5000-point60fps target still fails; this remains an evaluation prerelease.
+
+### Desktop container declarations in0.7.3
+
+Desktop can save an existing visual with a newer2.x schema declaration before that schema is published. Read/edit/validation preserve the declaration. Existing payloads are accepted only when their complete field structure passes the bundled2.7 contract; an explicit known-2.7-contract diagnostic discloses that full validation against the declared schema was not performed. Unknown fields, malformed structures, other hosts/major versions and non-Vilsem visuals are refused. No remote schema is fetched and no fields are stripped. New commits continue using the vendored2.7 schema. Core0.7.2 / renderer4.42 remain the matching runtime.

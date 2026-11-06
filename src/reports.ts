@@ -2,7 +2,8 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
-import { injectVisual, validateVisualContainer, RENDERER_GUID, assertReportRenderer } from '@vilsem/core/pbir'
+import { injectVisual, RENDERER_GUID, assertReportRenderer } from '@vilsem/core/pbir'
+import {validateExistingContainer} from './containerCompatibility.js'
 import { slotCount } from '@vilsem/core/templates'
 import {validateSpecDetailed} from '@vilsem/core/spec/diagnostics'
 
@@ -91,7 +92,7 @@ export async function validateVisuals(reportDir: string) {
       }
       if(value.visual?.visualType!==RENDERER_GUID)continue
       try {
-        await validateVisualContainer(value)
+        const containerValidation=await validateExistingContainer(value)
         const literal=value.visual.objects?.semantica?.[0]?.properties?.primitiveSpec?.expr?.Literal?.Value
         if(typeof literal!=='string'||!literal.startsWith("'")||!literal.endsWith("'"))throw Error('Missing primitiveSpec literal')
         const spec=JSON.parse(literal.slice(1,-1).replace(/''/g,"'"))
@@ -99,7 +100,7 @@ export async function validateVisuals(reportDir: string) {
         const measureRoles=['content','secondary','tertiary','quaternary','quinary','senary']
         const measureCount=measureRoles.filter(role=>value.visual.query?.queryState?.[role]?.projections?.length).length
         await assertReportRenderer(root,RENDERER_GUID,spec,{measures:Array(measureCount)})
-        results.push({path:file,valid:true})
+        results.push({path:file,valid:true,containerValidation})
       } catch(error) {results.push({path:file,valid:false,error:(error as Error).message})}
     }
   }

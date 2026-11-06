@@ -59,3 +59,5 @@ are still required before claiming GroupC complete.
 
 
 For motion, inspect returned motion.kind. browser-clock is an actual canvas capture using controlled time; discrete-timeline-states is a state overview. Use motion:browser to require a browser, or states to avoid it. A contact sheet always labels timeline states. Neither screenshot mode proves native host gestures or real-time FPS.
+
+Existing-container compatibility: Desktop can advance a visual's official2.x declaration before its schema is vendored/published. update_visual dry runs and validate_visuals return containerValidation. mode:official-2.7 is full bundled-schema validation; mode:known-2.7-contract means the entire payload fits the known contract, but full validation against its declared schema was not performed. Preserve/review that warning. The declaration and other fields stay unchanged. Unknown fields or malformed structures are refused; do not strip fields or retag a report to bypass the refusal. This path is only for existing Vilsem visuals; new commits still use the bundled schema and native objects remain outside MCP scope.

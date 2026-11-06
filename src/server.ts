@@ -19,6 +19,7 @@ import {scopedMeasuresOf} from '@vilsem/core/spec/migrate'
 import {listUserTemplates,readUserTemplate,saveUserTemplate,deleteUserTemplate} from './templateLibrary.js'
 import {referenceImage,structuralDiff} from './referenceImages.js'
 import {decodeDesignImage} from '@vilsem/core/images/decode'
+import {validateExistingContainer} from './containerCompatibility.js'
 import {extractDesignTokens} from '@vilsem/core/images'
 
 const object=z.record(z.string(),z.unknown())
@@ -156,6 +157,7 @@ export function createServer(models=new Models()){
   })
   tool('update_visual','Apply RFC6902 JSON Patch to the stored vilsem spec. Validates and previews before writing; returns diff and before/after PNGs. Defaults dryRun:true. Preserves manual format-pane objects unless resetFormatting:true; renderer identity/prototype/version paths are refused. Optional etag protects a reviewed dry run from intervening saves. Native/model/report objects are never edited.',z.object({...editTarget,patch:z.array(object).min(1).max(200),dryRun:z.boolean().default(true),resetFormatting:z.boolean().default(false),etag:z.string().regex(/^[a-f0-9]{64}$/).optional()}),async args=>{
     const item=await readStoredVisual(args.reportDir,args.pageName,args.visualName)
+    const containerValidation=await validateExistingContainer(item.value)
     if(args.etag&&args.etag!==item.etag)throw Error('Visual changed since the reviewed preview; read_visual and dryRun again')
     const next=patchVisualSpec(item.spec,args.patch)
     const p=await editPreviews(args,next,item)
@@ -164,7 +166,7 @@ export function createServer(models=new Models()){
     if(JSON.stringify(item.spec.bindings)!==JSON.stringify(next.bindings))throw Error('Binding changes require explicit rebinding; this edit tool preserves existing field roles')
     await assertReportRenderer(args.reportDir,RENDERER_GUID,next,p.after.bindings)
     const written=args.dryRun?null:await writeStoredVisual(item,next,{resetFormatting:args.resetFormatting,queryState})
-    return {content:[...text({dryRun:args.dryRun,written,etag:item.etag,patch:args.patch,diff:specDiff(item.spec,next),formattingPreserved:!args.resetFormatting,beforeCritique:p.before.result.critique,afterCritique:p.after.result.critique,warnings:[...p.after.warnings,...(args.dryRun?[]:await desktopWarning(args.reportDir))]}).content,...p.content]}
+    return {content:[...text({dryRun:args.dryRun,written,etag:item.etag,patch:args.patch,diff:specDiff(item.spec,next),formattingPreserved:!args.resetFormatting,containerValidation,beforeCritique:p.before.result.critique,afterCritique:p.after.result.critique,warnings:[...containerValidation.warnings,...p.after.warnings,...(args.dryRun?[]:await desktopWarning(args.reportDir))]}).content,...p.content]}
   })
   tool('list_pages','Read existing PBIR pages and visual names, types and positions so you can choose a page and avoid overlap. This tool does not edit or validate native visuals, slicers, bookmarks, filters or report themes.',z.object({reportDir:z.string().min(1)}),async({reportDir})=>text(await listPages(reportDir)))
   tool('commit_visual','Add one Vilsem Renderer visual to one existing PBIR page using @vilsem/core. Existing visual names are refused; the only additional changes are missing renderer resources and registration. Native visuals, slicers, bookmarks, filters, themes and model objects are not edited. If Desktop is open, accept its external-change reload prompt after this call.',z.object({reportDir:z.string().min(1),pageName:z.string().min(1),visualName:z.string().min(1),spec:object,bindings,saveAs:z.string().optional(),connectionId:z.string().uuid().optional(),layout:z.object({x:z.number().min(0),y:z.number().min(0),width:z.number().positive(),height:z.number().positive(),z:z.number().min(0).optional(),tabOrder:z.number().min(0).optional()})}),async args=>{
@@ -177,7 +179,7 @@ export function createServer(models=new Models()){
     if(args.saveAs)try{return text({...committed,savedTemplate:await saveUserTemplate({name:args.saveAs,spec:args.spec})})}catch(error){return text({...committed,templateSaved:false,templateError:(error as Error).message})}
     return text(committed)
   })
-  tool('validate_visuals','Validate only PBIR visual containers whose visualType is the stable Vilsem Renderer GUID. Reports schema errors, unreadable spec literals and unsupported current-renderer specs. Native visuals and all report-level objects are neither validated nor reported.',z.object({reportDir:z.string().min(1)}),async({reportDir})=>text(await validateVisuals(reportDir)))
+  tool('validate_visuals','Validate only Vilsem Renderer specs, reader versions and known container structure. Other official2.x declarations must fit the complete bundled2.7 contract and return an explicit compatibility warning; full validation of their declared schema is not claimed. Unknown fields are refused. Native/report-level objects are neither validated nor reported.',z.object({reportDir:z.string().min(1)}),async({reportDir})=>text(await validateVisuals(reportDir)))
   for(const template of [...EXAMPLE_TEMPLATES,...SHIPPED_TEMPLATES]){
     const uri=`vilsem://templates/${template.meta.id}`
     server.registerResource(template.meta.id,uri,{mimeType:'application/json'},async uri=>({contents:[{uri:uri.href,mimeType:'application/json',text:JSON.stringify(template)}]}))
