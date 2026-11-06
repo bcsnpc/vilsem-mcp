@@ -149,7 +149,7 @@ describe('MCP end-to-end contracts',()=>{
     const {connectionId}=unpack(await client.callTool({name:'connect_model',arguments:{source:{kind:'desktop'}}}))
     const result=await client.callTool({name:'commit_visual',arguments:{connectionId,reportDir:root,pageName:'page1',visualName:'formatted_old',spec:{type:'bar',canvasTheme:'dark'},bindings,layout:{x:0,y:0,width:700,height:400}}})
     expect(result.isError).toBe(true)
-    expect(result.content[0].text).toContain('4.36.0.0')
+    expect(result.content[0].text).toContain('4.39.0.0')
     await expect(fs.stat(path.join(root,'definition/pages/page1/visuals/formatted_old'))).rejects.toThrow()
   })
   it('uses model display formats in SSR labels, axes and tooltips without rounding query values',()=>{
@@ -186,7 +186,7 @@ describe('MCP end-to-end contracts',()=>{
     const result=await validateVisuals(root)
     expect(result).toHaveLength(1)
     expect(result[0].valid).toBe(false)
-    expect(result[0].error).toMatch(/requires vilsem Renderer 4.36/)
+    expect(result[0].error).toMatch(/requires vilsem Renderer 4.39/)
     expect(await fs.readFile(native)).toEqual(before)
   })
   it('uses an explicit bounded row window consistently in explanation and preview',async()=>{

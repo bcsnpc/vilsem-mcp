@@ -15,6 +15,10 @@ function expandFontShorthand(svg) {
 }
 module.exports={expandFontShorthand}
 if(require.main===module) {
-  const { svg, background } = JSON.parse(fs.readFileSync(0,'utf8'))
-  process.stdout.write(new Resvg(expandFontShorthand(svg),{background}).render().asPng())
+  const { svg, svgs, background } = JSON.parse(fs.readFileSync(0,'utf8'))
+  const render=value=>new Resvg(expandFontShorthand(value),{background}).render().asPng()
+  if(svgs!==undefined){
+    if(!Array.isArray(svgs)||svgs.length<1||svgs.length>12||svgs.some(value=>typeof value!=='string'))throw Error('Raster batch requires1..12 SVG strings')
+    process.stdout.write(JSON.stringify(svgs.map(value=>render(value).toString('base64'))))
+  }else process.stdout.write(render(svg))
 }

@@ -283,6 +283,12 @@ See docs/motion-capture.md. No app checkout or VILSEM_APP_PATH is required.
 
 The separate real-clock5000-point animated-canvas probes missed60fps on this
 laptop (about25RAFfps in normal headless Chromium; also failed Electron
-offscreen). This target remains OPEN. Desktop has unsaved state and unavailable
-window automation; native gestures/renderer acceptance remain UNVERIFIED.
+offscreen). This target remains OPEN. The owned Desktop report has been reopened
+with clean state. Native static captures were inspected for all11 expression
+examples and the reference examples; this does not verify physical interactions.
+Sankey motion captures remain partial or blank despite visible charts reported
+by the user. Window automation is unavailable (native pipe, os error2), so native
+gestures, motion/export acceptance and the final currency-axis native recheck
+remain UNVERIFIED. Renderer4.39 includes current lifecycle and exact-group
+context-menu fixes; host tests are distinct from native acceptance.
 Do not interpret0.7 development as production/certification completion.

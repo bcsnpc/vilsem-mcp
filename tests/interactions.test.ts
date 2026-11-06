@@ -3,7 +3,7 @@ import {assessInteractions} from '../src/interactions.js'
 describe('honest preview interaction assessment',()=>{
  it('does not promise whole-group context menus for aggregate marks',()=>{
   const result=assessInteractions({}, {series:[{type:'custom',data:[{value:3,rowIndexes:[0,1]}]}]},2)
-  expect(result.selection).toBe('supported');expect(result.contextMenu).toContain('unverified');expect(result.warnings.join()).toContain('one source identity')
+  expect(result.selection).toBe('supported');expect(result.contextMenu).toContain('unverified');expect(result.warnings.join()).toContain('never the first contributor');expect(result.warnings.join()).toContain('background context menu')
  })
  it('reports selectable native-host capabilities without pretending SSR exercised them',()=>{
   const result=assessInteractions({type:'column'},{series:[{type:'bar',data:[3,2]}]},2)

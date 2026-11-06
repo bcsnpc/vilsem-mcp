@@ -1,5 +1,8 @@
 import {it,expect,vi} from 'vitest'
 import {existsSync} from 'node:fs'
+import {readFile} from 'node:fs/promises'
+import path from 'node:path'
+import {createRequire} from 'node:module'
 import {Client} from '@modelcontextprotocol/sdk/client/index.js'
 import {InMemoryTransport} from '@modelcontextprotocol/sdk/inMemory.js'
 import {createServer} from '../src/server.js'
@@ -24,3 +27,17 @@ it.runIf(browserCandidates().some(file=>existsSync(file)))('returns actual brows
   const required=await client.callTool({name:'preview_visual',arguments:args});expect(required.isError).toBe(true)
  }finally{vi.unstubAllEnvs();await client.close();await server.close()}
 },60000)
+it.runIf(browserCandidates().some(file=>existsSync(file)))('resumes a real retained canvas tween when replacing its hidden visibility controller',async()=>{
+ const {chromium}=await import('playwright-core'),require=createRequire(import.meta.url),browser=await chromium.launch({executablePath:browserCandidates().find(file=>existsSync(file)),headless:true,chromiumSandbox:true,env:browserEnvironment()})
+ try{
+  const page=await browser.newPage({viewport:{width:400,height:300}});await page.route('**/*',route=>route.abort());await page.setContent('<div id="chart" style="width:400px;height:300px"></div>')
+  await page.addScriptTag({content:await readFile(require.resolve('echarts/dist/echarts.min.js'),'utf8')})
+  const source=await readFile(path.join(path.dirname(require.resolve('@vilsem/core/templates')),'motionVisibility.js'),'utf8');await page.addScriptTag({content:source.replaceAll('export function','function')+'\nwindow.qaVisibility=createMotionVisibilityController;'})
+  const result=await page.evaluate(()=>new Promise((resolve,reject)=>{
+   const chart=window.echarts.init(document.getElementById('chart'));chart.setOption({animation:false,xAxis:{type:'category',data:['A','B']},yAxis:{type:'value',max:10},series:[{id:'values',type:'bar',data:[1,2]}]})
+   const old=window.qaVisibility(chart,()=>false);old.sync();let armed=false;const deadline=setTimeout(()=>{chart.dispose();reject(Error('Retained animation clock remained paused'))},3000)
+   chart.on('finished',()=>{if(!armed)return;clearTimeout(deadline);chart.dispose();resolve({finished:true})})
+   chart.setOption({animation:true,animationDurationUpdate:400,series:[{id:'values',type:'bar',data:[5,8]}]});armed=true;old.dispose();const next=window.qaVisibility(chart,()=>true);next.sync()
+  }));expect(result).toEqual({finished:true})
+ }finally{await browser.close()}
+},15000)
