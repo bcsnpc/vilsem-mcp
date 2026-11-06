@@ -39,8 +39,8 @@
       "title": {
         "text": "Revenue by market",
         "subtext": "Real model values; reference numbers are not data",
-        "left": 30,
-        "top": 18,
+        "left": 55,
+        "top": 43,
         "textStyle": {
           "color": "#17243b",
           "fontSize": 22
@@ -51,9 +51,9 @@
       },
       "grid": {
         "left": 155,
-        "right": 35,
+        "right": 75,
         "top": 105,
-        "bottom": 65
+        "bottom": 90
       },
       "xAxis": {
         "type": "value",
@@ -77,6 +77,294 @@
         "formatterTemplate": "{name}: USD {value:thousands}"
       },
       "series": [
+        {
+          "id": "reference-panel",
+          "type": "custom",
+          "coordinateSystem": "none",
+          "silent": true,
+          "clip": false,
+          "z": -10,
+          "data": [
+            0
+          ],
+          "tooltip": {
+            "show": false
+          },
+          "renderItem": {
+            "language": "vilsem-expression",
+            "version": 1,
+            "root": {
+              "type": "rect",
+              "name": "reference-panel",
+              "silent": true,
+              "shape": {
+                "x": {
+                  "op": "min",
+                  "args": [
+                    25,
+                    {
+                      "op": "div",
+                      "args": [
+                        {
+                          "op": "viewportWidth",
+                          "args": []
+                        },
+                        4
+                      ]
+                    },
+                    {
+                      "op": "div",
+                      "args": [
+                        {
+                          "op": "viewportHeight",
+                          "args": []
+                        },
+                        4
+                      ]
+                    }
+                  ]
+                },
+                "y": {
+                  "op": "min",
+                  "args": [
+                    25,
+                    {
+                      "op": "div",
+                      "args": [
+                        {
+                          "op": "viewportWidth",
+                          "args": []
+                        },
+                        4
+                      ]
+                    },
+                    {
+                      "op": "div",
+                      "args": [
+                        {
+                          "op": "viewportHeight",
+                          "args": []
+                        },
+                        4
+                      ]
+                    }
+                  ]
+                },
+                "width": {
+                  "op": "max",
+                  "args": [
+                    0,
+                    {
+                      "op": "sub",
+                      "args": [
+                        {
+                          "op": "viewportWidth",
+                          "args": []
+                        },
+                        {
+                          "op": "mul",
+                          "args": [
+                            2,
+                            {
+                              "op": "min",
+                              "args": [
+                                25,
+                                {
+                                  "op": "div",
+                                  "args": [
+                                    {
+                                      "op": "viewportWidth",
+                                      "args": []
+                                    },
+                                    4
+                                  ]
+                                },
+                                {
+                                  "op": "div",
+                                  "args": [
+                                    {
+                                      "op": "viewportHeight",
+                                      "args": []
+                                    },
+                                    4
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "height": {
+                  "op": "max",
+                  "args": [
+                    0,
+                    {
+                      "op": "sub",
+                      "args": [
+                        {
+                          "op": "viewportHeight",
+                          "args": []
+                        },
+                        {
+                          "op": "mul",
+                          "args": [
+                            2,
+                            {
+                              "op": "min",
+                              "args": [
+                                25,
+                                {
+                                  "op": "div",
+                                  "args": [
+                                    {
+                                      "op": "viewportWidth",
+                                      "args": []
+                                    },
+                                    4
+                                  ]
+                                },
+                                {
+                                  "op": "div",
+                                  "args": [
+                                    {
+                                      "op": "viewportHeight",
+                                      "args": []
+                                    },
+                                    4
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "r": {
+                  "op": "min",
+                  "args": [
+                    16,
+                    {
+                      "op": "div",
+                      "args": [
+                        {
+                          "op": "max",
+                          "args": [
+                            0,
+                            {
+                              "op": "sub",
+                              "args": [
+                                {
+                                  "op": "viewportWidth",
+                                  "args": []
+                                },
+                                {
+                                  "op": "mul",
+                                  "args": [
+                                    2,
+                                    {
+                                      "op": "min",
+                                      "args": [
+                                        25,
+                                        {
+                                          "op": "div",
+                                          "args": [
+                                            {
+                                              "op": "viewportWidth",
+                                              "args": []
+                                            },
+                                            4
+                                          ]
+                                        },
+                                        {
+                                          "op": "div",
+                                          "args": [
+                                            {
+                                              "op": "viewportHeight",
+                                              "args": []
+                                            },
+                                            4
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        2
+                      ]
+                    },
+                    {
+                      "op": "div",
+                      "args": [
+                        {
+                          "op": "max",
+                          "args": [
+                            0,
+                            {
+                              "op": "sub",
+                              "args": [
+                                {
+                                  "op": "viewportHeight",
+                                  "args": []
+                                },
+                                {
+                                  "op": "mul",
+                                  "args": [
+                                    2,
+                                    {
+                                      "op": "min",
+                                      "args": [
+                                        25,
+                                        {
+                                          "op": "div",
+                                          "args": [
+                                            {
+                                              "op": "viewportWidth",
+                                              "args": []
+                                            },
+                                            4
+                                          ]
+                                        },
+                                        {
+                                          "op": "div",
+                                          "args": [
+                                            {
+                                              "op": "viewportHeight",
+                                              "args": []
+                                            },
+                                            4
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        2
+                      ]
+                    }
+                  ]
+                }
+              },
+              "style": {
+                "fill": "#ffffff",
+                "stroke": "#e7eaf0",
+                "lineWidth": 1
+              }
+            }
+          }
+        },
         {
           "type": "bar",
           "data": "$slot.revenue.pieData",

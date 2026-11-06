@@ -1469,3 +1469,19 @@ status for actual runs and native verification boundaries.
 
 
 Browser capture: preview_visual also accepts motion:auto|states|browser (default auto). When a supported installed Chromium executable is available, auto returns a bounded actual canvas APNG for authored motion. VILSEM_PREVIEW_BROWSER_PATH is an optional executable override. Missing-browser auto fallback is explicit; browser mode errors. Capture uses a fresh profile, blocked HTTP/WebSocket/service workers, stripped credentials and controlled requestAnimationFrame time. It is not an FPS measurement. Source durations exceeding3seconds are marked truncated. Timeline contact sheets remain sampled state overviews. See the packaged motion-capture.md design/security notes.
+
+## Responsive expression panels (core0.7.1 / renderer4.41)
+
+Two zero-argument operations expose bounded current logical-pixel dimensions:
+`{"op":"viewportWidth","args":[]}` and
+`{"op":"viewportHeight","args":[]}`. They call only the trusted ECharts
+getWidth/getHeight APIs. Values must be finite and within0..1000000. No DOM,
+host object, arbitrary API call or property lookup is exposed. Resize evaluates
+them again; do not cache fixed900x550 dimensions in a reusable template.
+
+`stress3-reference-figma` demonstrates a rounded inset white panel on a pale
+backdrop. Its inset is min(25,width/4,height/4), and the panel dimensions and
+radius shrink safely in tiny viewports. It uses a silent, tooltip-free,
+coordinateSystem:none custom series below marks; no fake business axes or
+changes to real data are needed. The renderer compatibility check refuses
+insertion into versions older than4.41. Other0.7 specs retain their4.40 floor.

@@ -17,5 +17,12 @@ it.each(SHIPPED_SPECS.filter(s=>s.template.meta.id.startsWith('stress3-')).map(s
  expect(result.svg).not.toContain('NaN');expect(result.png.length).toBeGreaterThan(1000)
  if(series.length)expect(series.reduce((sum,s)=>sum+(s.data?.length??0),0)).toBeGreaterThan(0)
  else expect(result.option.graphic?.length).toBeGreaterThan(0)
- for(const s of series)if(s.type==='custom')expect(s.data.some(d=>d.rowIndexes?.length)).toBe(true)
+ for(const s of series)if(s.type==='custom'){
+  // A silent viewport panel is decoration, not a model-backed data mark.
+  // Interactive custom series must still retain exact source identities.
+  if(s.silent===true&&s.coordinateSystem==='none'){
+   expect(s.tooltip?.show).toBe(false)
+   expect(s.renderItem.vilsemExpression.ast.root.silent).toBe(true)
+  }else expect(s.data.some(d=>d.rowIndexes?.length)).toBe(true)
+ }
 })
