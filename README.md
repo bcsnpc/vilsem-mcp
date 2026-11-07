@@ -1,10 +1,16 @@
 # vilsem-mcp
 
-Any visual, from a chat, into your existing Power BI report, with real data, with no executable code in the report.
+Author Vilsem custom visuals from chat into an existing Power BI report, using real model data and declarative specifications.
 
 vilsem-mcp doesn't make charts - Claude Code and Codex make charts; vilsem-mcp gives them your model, real data, eyes, and a safe pen. The MCP contains no model and needs no LLM API key. The calling agent's own service/account may have its own costs.
 
 This is the custom-visual layer for agentic Power BI authoring. Use it alongside Microsoft's Power BI Report skill for native visuals and the Power BI Modeling MCP for model changes. The shared, installed renderer executes trusted application code; the authored spec is declarative JSON, not executable source.
+
+## Release status: 0.8 evaluation
+
+Current packages: **vilsem-mcp 0.8.0**, **@vilsem/core 0.8.0**, **vilsem Renderer 4.43.0.0**. They are published evaluation prereleases. They are suitable for testing on copies of your reports; **production readiness, certification and exhaustive cross-target parity have not been established**.
+
+Read [what was verified](#what-was-verified-for-08), [known failures](#known-failures-and-workarounds), and [incomplete checks](#checks-that-remain-partial-or-not-tested) before relying on a result. Passing tests do not mean every visual, property, dataset, report interaction or export works. This README on `main` includes live checks performed after the original release archive was built; existing release tags/assets are not rewritten.
 
 ## Claude, Codex and other clients
 
@@ -237,12 +243,89 @@ This table describes **MCP 0.8.0 with core 0.8.0 / renderer 4.43**. Earlier vers
 | Expressiveness | Closed JSON templates/expression AST only; no arbitrary JavaScript or callback source. Unshipped map/geo assets, 3D and arbitrary exact area-proportional Euler fitting remain unsupported. Venn circles are schematic. Some earlier Marimekko/Voronoi refusals were addressed by the later bounded expression layer; do not treat historical refusal logs as the current capability list. |
 | Interactions | Native selection/highlight/tooltips/context-menu/bookmark routes exist and have harness coverage, but depend on report configuration and source identities. Aggregated/transformed marks need correct provenance. End-to-end native gestures, bookmarks and all transform combinations are not signed off. A PNG cannot test them. |
 | Cross-target fidelity | Current commits/previews do not certify Desktop, Service, embedded/Fabric, PDF or subscriptions. Final native resize/clipping, Sankey/currency and export checks remain unverified. There is no guarantee every state is pixel-identical across hosts. |
-| Performance | The 5,000-point animated frame-rate target **FAILS**: isolated browser chart measurements were roughly 9-13 fps, not 57+ fps. This is not a Power BI host benchmark. No point dropping or hidden animation disabling is used to claim a pass. Test realistic sizes on your machine. |
+| Performance | The 5,000-point animated frame-rate target **FAILS**: canvas measurements were roughly 9-12 fps in the recorded actual-bundle run, not 57+ fps; SVG was roughly 4 fps. This is not a Power BI host benchmark. No point dropping or hidden animation disabling is used to claim a pass. Test realistic sizes on your machine. |
 | Existing renderer/schema | A spec can require a newer renderer; older registered resources are refused rather than silently replaced. Some newer official 2.x container declarations pass the complete known 2.7 field contract with an explicit compatibility warning; full validation against the declared schema is not claimed. Unknown/malformed fields still fail. Do not change GUID/schema tags to bypass guards. |
 | Reload and recovery | Save Desktop changes before external edits. Accept the external-change prompt; first-time renderer registration can require reopening. Stale Desktop saves can overwrite external work. Existing edits use ETags/locks, but Desktop does not honor MCP's lock. Test on a copy with a recoverable baseline. |
 | Distribution and acceptance | Evaluation prereleases, not production/certification sign-off. Desktop 4.43 manual upgrade and three real-data layouts were checked, including the SVG calendar mode/context menu. Live Edge checks cover all six Service comparison pages at browser 100%/150%, with leaderboard selection/clear/native tooltip/context menus; full native interactions and Windows scaling remain incomplete. No new signed/branded app installer is included in these MCP/core releases. |
 
 For this release, see [skill and renderer verification](docs/qa/skill-renderer-080.md). For earlier evidence, open the [Round 3 QA follow-up](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/stress3/round3-follow-up.md) and [native interaction checklist](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/stress3/native-interaction-checklist.md). When a test cannot run, record **Not tested / Blocked**, not PASS.
+
+
+### What was verified for 0.8
+
+Evidence below is scoped to the tested builds and QA reports on one Windows laptop, as of **November 6, 2026**. A browser fixture is not Power BI; browser zoom is not Windows display scaling.
+
+| Check | Status | What the evidence establishes |
+| --- | --- | --- |
+| App/core regression suites | Tested | 1,367 tests passed in each private/public app-core checkout, across 118 files. These suites are not an exhaustive visual/host acceptance matrix. |
+| MCP regression suite | Tested | 338 tests passed across 17 files against the public core 0.8 archive. The 20 packaged-renderer browser tests are a subset, not an additional 20 on top. |
+| Native renderer builds | Tested | Both native builds succeeded; their packaged JavaScript/CSS hashes match. The existing GUID and semantica.primitiveSpec property are preserved. |
+| Fresh public package | Tested | Public archive SHA matched; installation, stdio, three skill resources, opt-in skill CLI, overwrite refusal/force and unrelated-file retention passed. Existing home skill folders were unchanged by npm install; the isolated installed dependency set reported npm audit 0. |
+| Actual agent client | Tested, limited | A fresh Claude Code session received initialization instructions and read all three skill resources. This does not certify every Claude Desktop/Codex/other-client UI version, operating system or permission setup. |
+| Desktop renderer upgrade | Tested, limited | Imported 4.43 over 4.42, saved, closed and reopened an owned QA report. Hero, leaderboard and calendar rendered real values. SVG calendar mode/zoom/context menu and a canvas native tooltip were observed. |
+| Service layouts and browser zoom | Tested, limited | Hero, leaderboard and calendar in both canvas/SVG rendered at Edge browser zoom 100% and 150%: 12 inspections. No blank/error visual or obvious plot/title/legend escape was seen in those layouts. |
+| Numeric reconciliation | Tested, limited | Hero total and all four leaderboard values matched a separate live DAX query. Calendar displayed 45 values; its cells were not individually reconciled. |
+| Service interactions | Partially tested | Both leaderboard painters visibly selected/dimmed marks, cleared on blank-area click, showed native tooltips and opened Include/Exclude menus. Applying those menu actions, drill-through and cross-filtering to a native visual were not verified by that check. |
+| Ordinary chart animation | Tested, limited | Standard bar, yearly line, donut and scatter had browser motion previews. Service page re-entry captured a partially drawn line/entering scatter followed by settled marks. No race or timeline was present. This is not all-series/all-state motion certification. |
+| Timeline animation | Tested, limited | A separate annual bar/donut/line QA page advanced through real 2020-2026 values with playback controls; 2026 was marked partial. This does not certify long-running playback, every race transform or bookmark/recovery state. |
+| Model preservation | Tested, limited | No model-write operations were used; all 21 baseline files of the owned Desktop QA model remained byte-identical. That is evidence for this workflow/model, not every possible PBIP project. |
+
+See [release evidence and live follow-up](docs/qa/skill-renderer-080.md) and [the core QA record](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/skill-sharpness-080.md). Historical logs retain earlier failures and blockers; later verification only closes the checks it explicitly names.
+
+### Known failures and workarounds
+
+| Issue | Current result | Practical guidance |
+| --- | --- | --- |
+| Dense animated charts | **FAIL:** the 5,000-point smooth-animation target was not met. In one actual-bundle browser run, 4.42 canvas measured 11.84 RAF fps, 4.43 canvas 9.07, and 4.43 SVG 4.11. These are machine/run-specific measurements, not Service frame rates. | Test realistic data sizes and motion on the deployment machine. Use meaningful aggregation or a smaller explicitly disclosed data window when appropriate. Do not silently drop points, disable requested motion or claim 60 fps. |
+| Canvas text at small Fit-to-page sizes | **Partially improved:** zoom-aware density is implemented, but tiny canvas labels still looked soft in the Service comparison. Equal-to-native sharpness is not signed off. | For text-heavy layouts, try SVG or increase chart/text size. Browser 150% made the report's Fit-to-page scale smaller (31% in that window), so browser zoom alone does not make chart labels larger. |
+| Summary Label formatting | **Open:** reported `lastLabel`, `sumLabel`, `deltaPctLabel` measure-format mismatch remains outside this fix. | Use an explicit supported formatter, a formatted data/axis label, or the hidden-gauge detail workaround in [the cookbook](skills/vilsem-powerbi-visuals/references/spec-cookbook.md). Check displayed units against DAX. |
+| Existing report keeps old renderer | Intentional compatibility behavior; installing MCP/core does not upgrade registered report resources. | Import bundled renderer.pbiviz in Desktop, accept Update, save, close and reopen. See [native rendering and upgrade steps](#native-canvas-and-svg-rendering-08). |
+| Canvas-only effects requested under SVG | Explicit fallback to canvas with a critique/native warning. | Review the warning; remove unsupported blending/trail effects if SVG is essential. Every effect combination has not been manually checked in every host. |
+
+### Checks that remain partial or not tested
+
+These are **open acceptance items**, not implied passes from the test counts above:
+
+| Area | What still needs checking |
+| --- | --- |
+| Complete visual inventory | Every supported composition, template and expression visual in every state, on every target. The six sharpness pages and four ordinary charts are samples, not full catalog coverage. |
+| Formatting controls | Every exposed property on every visual: font family/size/weight, title, axes including secondary-axis colors/units, legends, labels, mark colors, backgrounds, borders and manual-pane precedence/reset. |
+| Data and clipping | Exhaustive empty/null/zero/negative/extreme/duplicate/Unicode/long-label/high-cardinality combinations, very small containers, extreme aspect ratios, large fonts and tooltip screen-edge placement. |
+| Native/report interactions | Full custom-to-native and native-to-custom filter/highlight matrix, native slicers, physical Ctrl-click multi-selection, deselection/reset and transformed/aggregated mark provenance. Pure-function/browser tests do not close native acceptance. |
+| Context menus and drill-through | The native menus appeared, but Include/Exclude results and configured drill-through/report-page tooltip destinations were not fully exercised. |
+| Bookmarks and recovery | Selection restoration exists and has harness coverage; full bookmark data-state behavior, save/reopen, active timeline/pause state, undo/recovery and concurrent Desktop/external editing remain incomplete. |
+| Scaling and timing | Windows display scaling 100%/150% beside native cards/tables, multiple monitor sizes/DPIs, measured native sub-300 ms zoom recovery and long resize/zoom/no-flicker sessions. Edge browser zoom checks are a separate test. |
+| Animation | Every series/effect in both painters, reduced-motion/accessibility paths in the actual hosts, hidden-tab pause/resume, long sessions and reliable frame-rate budgets. Ordinary entrance animation settles; it is not continuous autoplay. |
+| Other output targets | Full embedded/Fabric app runtime, standalone web, PDF/PowerPoint/image export, subscriptions and printing fidelity. Creating a report through the Fabric API is not testing a separately deployed Fabric app. Animations are not promised in static outputs. |
+| Clients and environments | Fresh end-to-end authoring in every supported Claude/Codex client, another physical laptop/OS, all tenant/authentication policies, proxies and locked-down installations. Agent design quality also varies; validate its fields, calculations and output. |
+| Distribution/security | Full app dependency remediation, signed/branded Electron installer readiness, Power BI certification/store acceptance and a complete security/accessibility review. The isolated MCP audit result is not a clean bill for the entire application. |
+
+### Canvas, SVG and animation: what users choose
+
+Canvas and SVG are **drawing modes for the same visual**, not two different visualization types. You create one spec and keep the same bindings. **Canvas is the default** and is generally the better starting point for dense or heavily animated scenes. SVG is optional and can keep text/fine lines sharper under zoom; dense scenes may be slower.
+
+In Power BI, select a Vilsem visual, then **Format visual > Appearance > Render mode** (renderer 4.43+). This control belongs to Vilsem, not to every built-in Power BI visual:
+
+| Setting | Behavior |
+| --- | --- |
+| Automatic (spec) | Uses `config.renderer` if authored; otherwise canvas. |
+| Canvas | Explicit pane override to use canvas. |
+| SVG | Requests SVG; canvas-only effects can trigger an explicit fallback. |
+
+A spec can set `config.renderer:"svg"`. Manually saved pane values override authored defaults; inspect/reset that override if a prompt change appears ineffective. Most supported ECharts/expression visuals share both painters, but **all visual/effect combinations have not been verified**. DOM adapters are outside this headless rendering path.
+
+Ordinary charts can animate their **entrance and data updates** without a race or changing years. Declarative `template.animation` requires `template.meta.formatVersion:4`; use the contracts in `vilsem://docs/spec-format` rather than inserting executable callbacks. The normal-chart demo uses fixed data, no timeline, and settles after the entrance. Re-entering/reloading the page replays its entrance. Timeline/race animation instead changes the displayed period and has playback controls. An author should request the intended behavior explicitly; animations must respect reduced-motion settings, and static previews/exports do not prove live motion.
+
+### Acceptance checklist for your own report
+
+1. Work on a recoverable copy; preserve its report/model folder structure. Save Desktop work before external writes and follow the first-registration/reload rules.
+2. Discover actual fields; run DAX at the intended grain/filter context. Compare the preview and host values, including totals, ratios and distinct counts.
+3. Validate the spec, inspect the real-data preview and critique, commit to an existing page, then open/reload the actual report.
+4. Check the exact visual in its intended painter, at normal and extreme sizes, with long labels, empty/filter states and your real data volume.
+5. Test it beside a native visual and slicer: filter/highlight in both directions, multi-select/clear, tooltips, context actions and bookmarks.
+6. Save/reopen, test the actual deployment/export target, and check ordinary/timeline animation separately. A successful API upload or PNG is not final acceptance.
+7. Record **Tested**, **Partially tested**, **Not tested**, **Blocked** or **Fail**, together with app/renderer versions, platform, data/filter context and evidence. Do not convert an untested item into PASS.
+
 
 ## Generic prompts for your own data
 
