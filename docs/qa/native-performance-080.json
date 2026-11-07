@@ -1,0 +1,66 @@
+{
+  "notPowerBiHost": true,
+  "headlessEdge": true,
+  "hostScale": 1.5,
+  "deviceScaleFactor": 1,
+  "unmodifiedClock": true,
+  "results": [
+    {
+      "version": "4.42",
+      "mode": "canvas",
+      "initHostMs": 2665,
+      "elapsed": 3800.6999999997206,
+      "rafFps": 11.839924224485834,
+      "p95FrameMs": 516.4000000000005,
+      "updateSyncMs": [
+        771,
+        441.89999999990687,
+        616.8999999999069
+      ],
+      "points": 5000,
+      "animationEnabled": true,
+      "surface": {
+        "renderer": "canvas",
+        "dpr": 1
+      }
+    },
+    {
+      "version": "4.43",
+      "mode": "canvas",
+      "initHostMs": 1868,
+      "elapsed": 4187.699999999721,
+      "rafFps": 9.074193471357198,
+      "p95FrameMs": 816.2000000000007,
+      "updateSyncMs": [
+        865.3999999999069,
+        724.4000000003725,
+        641.3999999999069
+      ],
+      "points": 5000,
+      "animationEnabled": true,
+      "surface": {
+        "renderer": "canvas",
+        "dpr": 1.5
+      }
+    },
+    {
+      "version": "4.43",
+      "mode": "svg",
+      "initHostMs": 2417,
+      "elapsed": 4378.4000000003725,
+      "rafFps": 4.111090809427751,
+      "p95FrameMs": 1216.1999999999998,
+      "updateSyncMs": [
+        930.9000000003725,
+        762.3999999999069,
+        717.7999999998137
+      ],
+      "points": 5000,
+      "animationEnabled": true,
+      "surface": {
+        "renderer": "svg",
+        "dpr": 1.5
+      }
+    }
+  ]
+}

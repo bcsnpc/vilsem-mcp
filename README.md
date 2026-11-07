@@ -54,7 +54,21 @@ For edits: list_visuals -> read_visual -> update_visual(dryRun:true) -> inspect 
 
 Requires Node.js 22.12+, 24, or 26+. Install from GitHub or clone this repository and run `npm install`, then `npm test`. Its `prepare` step builds the server. All model connections run through `@vilsem/core/connect`; no Vilsem app checkout, Electron installation or application path configuration is needed.
 
-The0.7 prerelease depends on the immutable public `core-v0.7.2` release tarball. For local core development only, install a locally packed core tarball; restore the public release URL before distributing. Native physical interaction/export acceptance is incomplete and the5000-point60fps target is not met; this release is for evaluation, not a production-readiness claim. The previous stable release remains0.6.
+The 0.8 prerelease depends on the immutable public `core-v0.8.0` release tarball. For local core development only, install a locally packed core tarball; restore the public release URL before distributing. Native physical interaction/export acceptance is incomplete and the5000-point60fps target is not met; this release is for evaluation, not a production-readiness claim. The previous stable release remains0.6.
+
+Agents get the Vilsem playbook automatically through MCP server instructions and `vilsem://skill/*` resources. A client must read the linked resources to load the full playbook; the server does not force client behavior. Optional native installation: `vilsem-mcp install-skill --target claude` (use your installed CLI, not an unversioned npm-registry package).
+
+### Optional native skill installation
+
+The MCP delivery works without copying anything into your agent configuration. To also make it a native skill, explicitly run one of:
+
+```powershell
+node "$env:USERPROFILE/vilsem-mcp/node_modules/vilsem-mcp/dist/index.js" install-skill --target claude
+node "$env:USERPROFILE/vilsem-mcp/node_modules/vilsem-mcp/dist/index.js" install-skill --target codex
+node "$env:USERPROFILE/vilsem-mcp/node_modules/vilsem-mcp/dist/index.js" install-skill --target "C:/Team/agent-skills"
+```
+
+`claude` installs to `~/.claude/skills/vilsem-powerbi-visuals`; `codex` uses the current documented `~/.agents/skills/vilsem-powerbi-visuals` ([OpenAI documentation](https://learn.chatgpt.com/docs/build-skills)). For older clients or a custom location, pass the skills-root directory explicitly. With no target, the installer defaults to `claude`; with no subcommand, the CLI still starts the MCP server. Existing skill folders are refused unless `--force` is supplied. Force replaces only packaged files and retains unrelated files. Linked/non-regular destinations are refused. No install hook writes a skill into your home directory: only this explicit subcommand does so. Skill installation does not configure the MCP server connection.
 
 ### Fresh Windows machine: recommended installation
 
@@ -67,12 +81,12 @@ You can use this with another report; the shipped examples are not tied to the Q
    node --version
    $vilsemDir = Join-Path $env:USERPROFILE 'vilsem-mcp'
    New-Item -ItemType Directory -Force -Path $vilsemDir | Out-Null
-   npm.cmd install --prefix "$vilsemDir" "https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.7.3/vilsem-mcp-0.7.3.tgz"
+   npm.cmd install --prefix "$vilsemDir" "https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.8.0/vilsem-mcp-0.8.0.tgz"
    Join-Path $vilsemDir 'node_modules/vilsem-mcp/dist/index.js'
    (Get-Command node).Source
    ```
 
-   Keep the printed server and Node paths. If Node is missing, reopen the terminal after installing it. `npm.cmd` avoids PowerShell script execution-policy issues. Installation downloads core 0.7.2 and renderer 4.42 automatically; no application-path environment variable is needed.
+   Keep the printed server and Node paths. If Node is missing, reopen the terminal after installing it. `npm.cmd` avoids PowerShell script execution-policy issues. Installation downloads core 0.8.0 and renderer 4.43 automatically; no application-path environment variable is needed.
 3. Configure your agent using one client example below. Replace `YOUR_NAME` with your actual Windows profile path, or use the printed server path with forward slashes. If the client cannot find `node`, use the printed full Node executable path as `command`. Restart/reconnect the client and confirm that the Vilsem tools are available. A stdio server does not open a website; the MCP client starts it.
 4. Save a **test copy of the complete report project**, preserving the relative report/model folder structure. Open it in Desktop. A `.pbix` must first be saved as a PBIP project using Desktop; MCP does not patch a PBIX binary. The target must use enhanced PBIR with `<name>.Report/definition/pages/`. If needed, convert the report using Desktop first. Create an empty page in Desktop if you want a dedicated test page, then save.
 5. For live external reload, use Desktop August 2026 or later, enable **Detect and reload external PBIP changes** under Preview features and restart Desktop. Earlier versions require a close/reopen workflow. See [Microsoft's prerequisites and reload limits](https://learn.microsoft.com/en-us/power-bi/developer/projects/projects-external-editing). Save Desktop changes before external edits.
@@ -127,9 +141,9 @@ Quoted connection-string values are supported. Passwords and impersonation setti
 There is no npm-registry publication. Install the tagged GitHub release:
 
 ```sh
-npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.7.3
+npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.8.0
 vilsem-mcp
-# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.7.3 vilsem-mcp
+# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.8.0 vilsem-mcp
 ```
 
 The process serves stdio JSON-RPC; diagnostics go to stderr.
@@ -176,7 +190,7 @@ In Desktop, open File → Options and settings → Options → Preview features.
 2. Call `get_schema` and choose existing dimensions/measures, or declare query-only `spec.measures`. With scoped measures pass `connectionId` to validation, explanation and commit as well as preview. Use `run_dax` to verify the data.
 3. Call `list_templates`, read `vilsem://docs/spec-format`, then `validate_spec`, `explain_visual` and `preview_visual`. Check the PNG and option before writing.
 4. Call `list_pages`, choose a position without overlap, then `commit_visual` with the report folder, page folder name, a new visualName, spec, bindings and layout.
-5. Accept Desktop's external-change reload prompt. Avoid saving stale Desktop state over external changes. Microsoft excludes report-level `report.json` changes from live reload: first-time custom-visual registration can require reopening the project. For visual-only reload, first import the renderer package in Desktop and save the project, then commit a visual.
+5. First renderer registration (`rendererRegistered:true`) or newly authored pages: close the report **without saving stale Desktop state** and reopen the project. Later commits/updates: accept Desktop's external-change apply/reload prompt. Avoid saving stale Desktop state over external changes. Microsoft excludes report-level `report.json` changes from live reload: first-time custom-visual registration can require reopening the project. For visual-only reload, first import the renderer package in Desktop and save the project, then commit a visual.
 6. Inspect the rendered result and call `validate_visuals`. Save the report from Desktop when satisfied.
 
 ## Tools and resources
@@ -209,7 +223,7 @@ Headless previews support the core ECharts composition types and declarative tem
 
 ## Current report and visual limitations
 
-This table describes **MCP 0.7.3 with core 0.7.2 / renderer 4.42**. Earlier version-specific audit sections below are historical. A tool PASS or saved `visual.json` is not evidence that every report, visual state or Power BI target works.
+This table describes **MCP 0.8.0 with core 0.8.0 / renderer 4.43**. Earlier version-specific audit sections below are historical. A tool PASS or saved `visual.json` is not evidence that every report, visual state or Power BI target works.
 
 | Area | Current boundary / what to check |
 | --- | --- |
@@ -226,9 +240,9 @@ This table describes **MCP 0.7.3 with core 0.7.2 / renderer 4.42**. Earlier vers
 | Performance | The 5,000-point animated frame-rate target **FAILS**: isolated browser chart measurements were roughly 9-13 fps, not 57+ fps. This is not a Power BI host benchmark. No point dropping or hidden animation disabling is used to claim a pass. Test realistic sizes on your machine. |
 | Existing renderer/schema | A spec can require a newer renderer; older registered resources are refused rather than silently replaced. Some newer official 2.x container declarations pass the complete known 2.7 field contract with an explicit compatibility warning; full validation against the declared schema is not claimed. Unknown/malformed fields still fail. Do not change GUID/schema tags to bypass guards. |
 | Reload and recovery | Save Desktop changes before external edits. Accept the external-change prompt; first-time renderer registration can require reopening. Stale Desktop saves can overwrite external work. Existing edits use ETags/locks, but Desktop does not honor MCP's lock. Test on a copy with a recoverable baseline. |
-| Distribution and acceptance | Evaluation prereleases, not production/certification sign-off. Our supported native automation helper is unavailable, so physical-host acceptance remains blocked in the QA environment; that does not prevent manual tests on your machine. No new signed/branded app installer is included in these MCP/core releases. |
+| Distribution and acceptance | Evaluation prereleases, not production/certification sign-off. Desktop 4.43 manual upgrade and three real-data layouts were checked, including the SVG calendar mode/context menu. Full native interactions and scaling remain incomplete; Service UI automation is unavailable. No new signed/branded app installer is included in these MCP/core releases. |
 
-For exact evidence, open the [current QA follow-up](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/stress3/round3-follow-up.md) and [native interaction checklist](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/stress3/native-interaction-checklist.md). When a test cannot run, record **Not tested / Blocked**, not PASS.
+For this release, see [skill and renderer verification](docs/qa/skill-renderer-080.md). For earlier evidence, open the [Round 3 QA follow-up](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/stress3/round3-follow-up.md) and [native interaction checklist](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/stress3/native-interaction-checklist.md). When a test cannot run, record **Not tested / Blocked**, not PASS.
 
 ## Generic prompts for your own data
 
@@ -428,3 +442,18 @@ Final0.7.2 validation:303/303 MCP tests pass against the published core0.7.2 arc
 ### Desktop container declarations in0.7.3
 
 Desktop can save an existing visual with a newer2.x schema declaration before that schema is published. Read/edit/validation preserve the declaration. Existing payloads are accepted only when their complete field structure passes the bundled2.7 contract; an explicit known-2.7-contract diagnostic discloses that full validation against the declared schema was not performed. Unknown fields, malformed structures, other hosts/major versions and non-Vilsem visuals are refused. No remote schema is fetched and no fields are stripped. New commits continue using the vendored2.7 schema. Core0.7.2 / renderer4.42 remain the matching runtime.
+
+
+## Native canvas and SVG rendering (0.8)
+
+Native renderer 4.43 accounts for Power BI page zoom in the canvas backing store, clamps the effective pixel ratio to 1-4, and debounces surface recreation. `config.renderer` accepts `canvas` (default) or `svg`. The Desktop Appearance > Render mode dropdown overrides the spec; Automatic follows it. SVG is useful for text-heavy layouts; thousands of marks and animation may be slower. Canvas-only trail/blend effects fall back to canvas with an explicit critique/native warning. Preview SSR behavior is unchanged.
+
+**Upgrade an existing report explicitly:** save existing Desktop work before external edits. With no pending external changes, use Home > More visuals > From my files; select `<install>/node_modules/@vilsem/core/assets/renderer.pbiviz`, accept Update, then save, close and reopen the report. The GUID and `objects.semantica.primitiveSpec` remain unchanged. `commit_visual` intentionally preserves a registered renderer; installing a new MCP/core package alone does not upgrade old reports.
+
+For a one-shot native skill installation from the prebuilt GitHub package:
+
+```powershell
+npx.cmd --yes --package=https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.8.0/vilsem-mcp-0.8.0.tgz vilsem-mcp install-skill --target claude
+```
+
+Use `--target codex` or an explicit skills-root directory as needed. There is no unversioned npm-registry distribution; use the pinned release URL.

@@ -1506,3 +1506,8 @@ visual/style API reads. Data-dependent annotation series still count. Text
 clipping/contrast inspection remains enabled. An explicit opaque option
 background takes precedence over the report background for global text contrast;
 contrast against arbitrary filled marks still needs visual review.
+
+
+## Native render surface (core 0.8 / renderer 4.43)
+
+`config.renderer` is `"canvas"` (default) or `"svg"`; unknown values are rejected at `/config/renderer`. The native Appearance > Render mode setting (`formatting.appearance.renderMode`: `auto`, `canvas`, `svg`) overrides it; Automatic follows config. Manual Power BI pane values retain their existing precedence. Canvas accounts for transformed viewport width and device DPR, clamped to 1-4, and debounces recreation at a 0.05 change threshold. SVG remains vector at host zoom; very dense charts/animation may be slower. Canvas-only trail/blend effects fall back with a critique and host warning. Preview SSR stays unchanged. Re-import the bundled renderer into existing reports, accept Update, save, close and reopen; commit_visual preserves registered resources. Both painter settings require renderer 4.43 when explicitly authored, even default canvas.

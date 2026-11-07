@@ -10,6 +10,7 @@ export function designBrief(intent, context, pageContext, referenceTokens) {
             'Complete the brief below from the actual schema. Explain the grain, units, filter context and row-limit assumptions. Never invent fields or business definitions.',
             'Use existing model measures or query-only visual-scoped DAX. Never write to the model or modify native report objects through this MCP.',
             ...(edit ? ['Use list_visuals -> read_visual -> update_visual dryRun -> inspect before/after PNGs and diff -> obtain confirmation if not already authorized -> update_visual. Preserve manual pane overrides unless reset was explicitly requested.'] : ['Run validate_spec -> explain_visual -> preview_visual with critique -> inspect -> iterate (optionally preview_variants) -> commit_visual. Never commit without a preview.']),
+            'Before authoring or editing, follow vilsem://skill/powerbi-visuals; its references cover page preparation, reload and spec patterns.',
             'Read vilsem://docs/design-guide and vilsem://docs/workflow. Request full schema if measure semantics or relationships are needed.',
         ],
         briefToComplete: {

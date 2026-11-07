@@ -1,5 +1,6 @@
 import { McpServer,ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
+import {AGENT_INSTRUCTIONS} from './agent-instructions.js'
 import fs from 'node:fs/promises'
 import {createRequire} from 'node:module'
 import { EXAMPLE_TEMPLATES } from '@vilsem/core/templates/examples'
@@ -28,7 +29,7 @@ const bindings=z.object({dimensions:z.array(z.object({table:z.string().min(1),co
 const text=(value:any)=>({content:[{type:'text' as const,text:JSON.stringify(value,(_key,value)=>typeof value==='function'?'[formatter]':value)}]})
 
 export function createServer(models=new Models()){
-  const server=new McpServer({name:'vilsem-mcp',version:packageVersion})
+  const server=new McpServer({name:'vilsem-mcp',version:packageVersion},{instructions:AGENT_INSTRUCTIONS})
   server.registerPrompt('design_visual',{description:'Get model context and a structured brief for the CALLING AGENT to design a new Vilsem visual or edit an existing one. Optional reference_image is a local PNG/JPEG path or data URI. No LLM/model/API key inside the MCP.',argsSchema:{intent:z.string().min(1),connectionId:z.string().uuid(),page:z.string().optional(),reportDir:z.string().optional(),reference_image:z.string().optional()}},async({intent,connectionId,page,reportDir,reference_image})=>{
     const context=await models.schema(connectionId,{detail:'summary'})
     let pageContext
@@ -184,6 +185,7 @@ export function createServer(models=new Models()){
     const uri=`vilsem://templates/${template.meta.id}`
     server.registerResource(template.meta.id,uri,{mimeType:'application/json'},async uri=>({contents:[{uri:uri.href,mimeType:'application/json',text:JSON.stringify(template)}]}))
   }
+  for(const [name,file]of [['powerbi-visuals','SKILL.md'],['pbir-pages','references/pbir-pages.md'],['spec-cookbook','references/spec-cookbook.md']])server.registerResource(`skill-${name}`,`vilsem://skill/${name}`,{mimeType:'text/markdown'},async uri=>({contents:[{uri:uri.href,mimeType:'text/markdown',text:await fs.readFile(new URL(`../skills/vilsem-powerbi-visuals/${file}`,import.meta.url),'utf8')}]}))
   server.registerResource('spec-format','vilsem://docs/spec-format',{mimeType:'text/markdown'},async uri=>({contents:[{uri:uri.href,mimeType:'text/markdown',text:await fs.readFile(new URL('../docs/spec-format.md',import.meta.url),'utf8')}]}))
   for(const name of ['design-guide','workflow','expression-language','motion-capture'])server.registerResource(name,`vilsem://docs/${name}`,{mimeType:'text/markdown'},async uri=>({contents:[{uri:uri.href,mimeType:'text/markdown',text:await fs.readFile(new URL(`../docs/${name}.md`,import.meta.url),'utf8')}]}))
   server.registerResource('user-template',new ResourceTemplate('vilsem://templates/user/{name}',{list:async()=>({resources:(await listUserTemplates()).filter(t=>!t.unreadable).map(t=>({uri:t.uri,name:t.name,mimeType:'application/json'}))})}),{mimeType:'application/json'},async(uri,{name})=>({contents:[{uri:uri.href,mimeType:'application/json',text:JSON.stringify(await readUserTemplate(String(name)))}]}))

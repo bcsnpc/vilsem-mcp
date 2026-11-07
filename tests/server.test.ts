@@ -303,7 +303,7 @@ describe('MCP end-to-end contracts',()=>{
     const templates:any=await client.callTool({name:'list_templates',arguments:{}})
     expect(unpack(templates)).toHaveLength(EXAMPLE_TEMPLATES.length+SHIPPED_TEMPLATES.length)
     const resources=await client.listResources()
-    expect(resources.resources).toHaveLength(EXAMPLE_TEMPLATES.length+SHIPPED_TEMPLATES.length+5)
+    expect(resources.resources).toHaveLength(EXAMPLE_TEMPLATES.length+SHIPPED_TEMPLATES.length+8)
     expect(resources.resources.map(r=>r.uri)).toContain('vilsem://docs/expression-language')
     const docs=await client.readResource({uri:'vilsem://docs/spec-format'})
     expect((docs.contents[0] as any).text).toContain('_val3')

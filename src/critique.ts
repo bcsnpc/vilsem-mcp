@@ -1,3 +1,5 @@
+import {rendererPolicy} from '@vilsem/core/rendering'
+import {effectivePaneObjects} from '@vilsem/core/formatting/pane'
 import {assessInteractions} from './interactions.js'
 import {isStaticDecoration} from './decorativeSeries.js'
 
@@ -48,6 +50,7 @@ export function critiqueVisual(spec:any,option:any,rows:any[],width:number,heigh
   }
   findings.push({code,severity,path,message,suggestedFix,...(evidence===undefined?{}:{evidence})})
  }
+ for(const warning of rendererPolicy(spec,option,effectivePaneObjects(spec,context.formatPaneOverrides)).warnings)add('renderer-fallback','/config/renderer',warning,'Choose canvas, or remove Canvas-only blending/trail effects; manual appearance.renderMode overrides the spec.')
  const series=list(option.series),base=spec.template?'/template/template':'/config'
  const timeline=list(option.baseOption?.timeline??option.timeline)[0],steps=Array.isArray(option.options)?option.options.length:list(timeline?.data).length
  if(steps>60)add('timeline-steps','/template/template/options','Timeline has more than60 states.','Aggregate the time grain or filter to at most60 states.',{steps})
