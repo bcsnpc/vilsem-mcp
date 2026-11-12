@@ -2,7 +2,7 @@
 
 These requests use the same Vilsem MCP tools in Claude Code, Claude Desktop or
 Codex. They are not tied to this repository's QA model or machine. Install and
-connect the local server using the [README](../README.md#fresh-windows-machine-recommended-installation),
+connect the local server using the [README](../README.md#quick-start-windows),
 then review its [current limitations](../README.md#current-report-and-visual-limitations).
 The examples are instructions for the calling agent, not a benchmark proving
 all requests have been executed on your data.
@@ -17,7 +17,8 @@ be discovered again; do not copy them from someone else's session.
 ## Setup message: discover my report and protect existing work
 
 ```text
-Use the vilsem MCP. My test report folder is:
+Use the vilsem MCP. First call get_playbook without arguments and follow it;
+request relevant sections as needed. My test report folder is:
 <REPORT_DIR>
 
 This report is a test copy, saved in Desktop. Connect with source.kind=report
