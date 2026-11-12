@@ -6,6 +6,26 @@ import { injectVisual, RENDERER_GUID, assertReportRenderer } from '@vilsem/core/
 import { validateExistingContainer } from './containerCompatibility.js';
 import { slotCount } from '@vilsem/core/templates';
 import { validateSpecDetailed } from '@vilsem/core/spec/diagnostics';
+import { scopedMeasuresOf } from '@vilsem/core/spec/migrate';
+export function committedGuidance(rendererRegistered, spec) {
+    const names = Object.keys(scopedMeasuresOf(spec)).sort();
+    return { nextStep: rendererRegistered
+            ? "FIRST VILSEM VISUAL IN THIS REPORT: tell the user to close Power BI Desktop WITHOUT saving, then reopen the .pbip. 'Apply external changes' is not enough this time."
+            : "Tell the user to click 'Apply' on Power BI Desktop's external-changes prompt (no restart needed). Do not save in Desktop before applying.",
+        ...(names.length ? { measureWarning: `This visual uses visual-scoped measures (${names.join(', ')}). They hide fields in the Build pane and FAIL under Publish to web. For reports that will be shared, persist them as model measures: see get_playbook section '9a' or run the bundled scripts/promote-measures.py (ask the user first, it edits the model).` } : {}) };
+}
+function nativeMeasureNames(value) {
+    const names = new Set();
+    for (const state of Object.values(value.visual?.query?.queryState ?? {}))
+        for (const p of Array.isArray(state?.projections) ? state.projections : []) {
+            if (p?.field?.NativeMeasure)
+                names.add(p.field.NativeMeasure.ProposedName ?? p.nativeQueryRef ?? '(unnamed NativeMeasure)');
+        }
+    return [...names].sort();
+}
+export function visualValidationSummary(results) {
+    return { visualCount: results.length, visualsWithNativeMeasures: results.filter(v => v.nativeMeasures.length > 0).length, nativeMeasureCount: results.reduce((n, v) => n + v.nativeMeasures.length, 0) };
+}
 export function validateSpec(spec) {
     const result = validateSpecDetailed(spec);
     if (!result.valid) {
@@ -111,11 +131,12 @@ export async function validateVisuals(reportDir) {
             }
             catch (error) {
                 if (text.includes(RENDERER_GUID))
-                    results.push({ path: file, valid: false, error: 'Unreadable Vilsem visual JSON' });
+                    results.push({ path: file, valid: false, nativeMeasures: [], error: 'Unreadable Vilsem visual JSON' });
                 continue;
             }
             if (value.visual?.visualType !== RENDERER_GUID)
                 continue;
+            const nativeMeasures = nativeMeasureNames(value);
             try {
                 const containerValidation = await validateExistingContainer(value);
                 const literal = value.visual.objects?.semantica?.[0]?.properties?.primitiveSpec?.expr?.Literal?.Value;
@@ -126,10 +147,10 @@ export async function validateVisuals(reportDir) {
                 const measureRoles = ['content', 'secondary', 'tertiary', 'quaternary', 'quinary', 'senary'];
                 const measureCount = measureRoles.filter(role => value.visual.query?.queryState?.[role]?.projections?.length).length;
                 await assertReportRenderer(root, RENDERER_GUID, spec, { measures: Array(measureCount) });
-                results.push({ path: file, valid: true, containerValidation });
+                results.push({ path: file, valid: true, containerValidation, nativeMeasures });
             }
             catch (error) {
-                results.push({ path: file, valid: false, error: error.message });
+                results.push({ path: file, valid: false, nativeMeasures, error: error.message });
             }
         }
     }
@@ -160,5 +181,6 @@ export async function commitVisual(args) {
     validateSpec(args.spec);
     validateBindings(args.spec, args.bindings);
     const warnings = await desktopWarning(args.reportDir);
-    return { ...await injectVisual(args), warnings };
+    const result = await injectVisual(args);
+    return { ...result, warnings, ...committedGuidance(result.rendererRegistered === true, args.spec) };
 }

@@ -96,9 +96,9 @@ describe('MCP end-to-end contracts',()=>{
     const list=unpack(await client.callTool({name:'list_visuals',arguments:{reportDir:root,thumbnails:false}}));expect(list.visuals.map(v=>v.name)).toEqual(['editable'])
     const read=unpack(await client.callTool({name:'read_visual',arguments:target}));expect(read.spec.config.title).toBe('Before');expect(read.formatPaneOverrides.appearance).toEqual(container.visual.objects.appearance)
     const patch=[{op:'replace',path:'/config/title',value:'After'}]
-    const dry=await client.callTool({name:'update_visual',arguments:{...target,patch}});expect(dry.isError,JSON.stringify(dry.content.filter(c=>c.type==='text'))).toBeFalsy();expect(dry.content.filter(c=>c.type==='image')).toHaveLength(2);expect(unpack(dry).dryRun).toBe(true);expect(await fs.readFile(file)).toEqual(before)
+    const dry=await client.callTool({name:'update_visual',arguments:{...target,patch}});expect(dry.isError,JSON.stringify(dry.content.filter(c=>c.type==='text'))).toBeFalsy();expect(dry.content.filter(c=>c.type==='image')).toHaveLength(2);expect(unpack(dry).dryRun).toBe(true);expect(unpack(dry).nextStep).toBeUndefined();expect(await fs.readFile(file)).toEqual(before)
     const diff=await client.callTool({name:'diff_visual',arguments:{...target,spec:{...read.spec,config:{title:'Compared'}}}});expect(diff.isError).toBeFalsy();expect(diff.content.filter(c=>c.type==='image')).toHaveLength(2);expect(await fs.readFile(file)).toEqual(before)
-    const write=await client.callTool({name:'update_visual',arguments:{...target,patch,dryRun:false,etag:read.etag}});expect(write.isError).toBeFalsy();expect(unpack(write).formattingPreserved).toBe(true)
+    const write=await client.callTool({name:'update_visual',arguments:{...target,patch,dryRun:false,etag:read.etag}});expect(write.isError).toBeFalsy();expect(unpack(write).formattingPreserved).toBe(true);expect(unpack(write).nextStep).toContain("click 'Apply'");expect(unpack(write).measureWarning).toBeUndefined()
     const after=JSON.parse(await fs.readFile(file,'utf8'));expect(after.visual.objects.appearance).toEqual(container.visual.objects.appearance);expect(after.visual.query).toEqual(container.visual.query);expect(await fs.readFile(native)).toEqual(nativeBefore)
     const stale=await client.callTool({name:'update_visual',arguments:{...target,patch,dryRun:false,etag:read.etag}});expect(stale.isError).toBe(true)
   },30000)
@@ -303,7 +303,7 @@ describe('MCP end-to-end contracts',()=>{
     const templates:any=await client.callTool({name:'list_templates',arguments:{}})
     expect(unpack(templates)).toHaveLength(EXAMPLE_TEMPLATES.length+SHIPPED_TEMPLATES.length)
     const resources=await client.listResources()
-    expect(resources.resources).toHaveLength(EXAMPLE_TEMPLATES.length+SHIPPED_TEMPLATES.length+8)
+    expect(resources.resources).toHaveLength(EXAMPLE_TEMPLATES.length+SHIPPED_TEMPLATES.length+9)
     expect(resources.resources.map(r=>r.uri)).toContain('vilsem://docs/expression-language')
     const docs=await client.readResource({uri:'vilsem://docs/spec-format'})
     expect((docs.contents[0] as any).text).toContain('_val3')
@@ -311,4 +311,32 @@ describe('MCP end-to-end contracts',()=>{
     expect(tools.tools.map(tool=>tool.name)).toContain('validate_visuals')
     expect(tools.tools.map(tool=>tool.name)).not.toContain('validate_report')
   },20000)
+})
+
+
+it('returns first/later reload guidance and scoped-measure warnings and validation counts without touching native objects',async()=>{
+ const root=await fixture(),model=adapter()
+ model.schema=vi.fn(async()=>({tables:[{name:'Measures',columns:[]},{name:'Product',columns:[{name:'Category'}]}],measures:[{table:'Measures',name:'Sales'}]}))
+ const client=await clientFor(model)
+ const native=path.join(root,'definition/pages/page1/visuals/native/visual.json'),before=await fs.readFile(native)
+ const base={reportDir:root,pageName:'page1',bindings,layout:{x:200,y:100,width:600,height:300}}
+ const first=await client.callTool({name:'commit_visual',arguments:{...base,visualName:'first',spec:{type:'bar'}}})
+ expect(first.isError,JSON.stringify(first)).not.toBe(true)
+ expect(unpack(first)).toMatchObject({rendererRegistered:true,nextStep:expect.stringContaining('close Power BI Desktop WITHOUT saving')});expect(unpack(first).measureWarning).toBeUndefined()
+ const connection=unpack(await client.callTool({name:'connect_model',arguments:{source:{kind:'desktop',port:12345}}}))
+ const second=await client.callTool({name:'commit_visual',arguments:{...base,...connection,visualName:'scoped',spec:{type:'bar',measures:{Margin:'DIVIDE([Sales],100)'}},bindings:{...bindings,measures:[{table:'Measures',name:'Margin'}]}}})
+ expect(second.isError,JSON.stringify(second)).not.toBe(true)
+ expect(unpack(second)).toMatchObject({rendererRegistered:false,nextStep:expect.stringContaining("click 'Apply'"),measureWarning:expect.stringContaining('visual-scoped measures (Margin)')})
+ const validated:any=await client.callTool({name:'validate_visuals',arguments:{reportDir:root}})
+ const results=unpack(validated);expect(results).toHaveLength(2);expect(results.map(v=>v.nativeMeasures)).toContainEqual(['Margin']);expect(results.map(v=>v.nativeMeasures)).toContainEqual([])
+ expect(JSON.parse(validated.content[1].text)).toEqual({summary:{visualCount:2,visualsWithNativeMeasures:1,nativeMeasureCount:1}})
+ expect(await fs.readFile(native)).toEqual(before)
+ const target={reportDir:root,pageName:'page1',visualName:'scoped',connectionId:connection.connectionId}
+ const read=unpack(await client.callTool({name:'read_visual',arguments:target}))
+ const update=await client.callTool({name:'update_visual',arguments:{...target,dryRun:false,etag:read.etag,patch:[{op:'add',path:'/config',value:{title:'Scoped update'}}]}})
+ expect(update.isError,JSON.stringify(update)).not.toBe(true);expect(unpack(update).nextStep).toContain("click 'Apply'");expect(unpack(update).measureWarning).toContain('visual-scoped measures (Margin)')
+ const file=path.join(root,'definition/pages/page1/visuals/scoped/visual.json'),value=JSON.parse(await fs.readFile(file,'utf8'))
+ for(const state of Object.values(value.visual.query.queryState) as any[])state.projections=(state.projections??[]).filter(p=>!p.field?.NativeMeasure)
+ value.visual.query.queryState.content=null
+ await fs.writeFile(file,JSON.stringify(value));const invalid=await validateVisuals(root);expect(invalid.every(v=>v.nativeMeasures.length===0)).toBe(true);expect(invalid.find(v=>v.path===file)?.valid).toBe(false)
 })

@@ -22,6 +22,8 @@ import { referenceImage, structuralDiff } from './referenceImages.js';
 import { decodeDesignImage } from '@vilsem/core/images/decode';
 import { validateExistingContainer } from './containerCompatibility.js';
 import { extractDesignTokens } from '@vilsem/core/images';
+import { getPlaybook } from './playbook.js';
+import { committedGuidance, visualValidationSummary } from './reports.js';
 const object = z.record(z.string(), z.unknown());
 const packageVersion = createRequire(import.meta.url)('../package.json').version;
 const bindings = z.object({ dimensions: z.array(z.object({ table: z.string().min(1), column: z.string().min(1) })).max(6).default([]), measures: z.array(z.object({ table: z.string().min(1), name: z.string().min(1) })).min(1).max(6) });
@@ -80,7 +82,7 @@ export function createServer(models = new Models()) {
             throw measureError(Error(`Visual-scoped measure validation: ${error.message}`));
         }
     }
-    const tool = (name, description, schema, handler) => server.registerTool(name, { description, inputSchema: schema.shape }, async (args) => {
+    const tool = (name, description, schema, handler, annotations) => server.registerTool(name, { description, inputSchema: schema.shape, ...(annotations ? { annotations } : {}) }, async (args) => {
         try {
             return await handler(args);
         }
@@ -88,6 +90,7 @@ export function createServer(models = new Models()) {
             return { isError: true, content: [{ type: 'text', text: error.diagnostics ? JSON.stringify({ valid: false, errors: error.diagnostics, suggestions: error.suggestions }) : error.message }] };
         }
     });
+    tool('get_playbook', 'Return the Vilsem playbook the agent must follow before building or editing visuals. Call with no arguments first (compact core + index), then request sections such as `9a` or `cookbook:sankey` when needed. Read-only.', z.object({ section: z.string().optional() }), async ({ section }) => ({ content: [{ type: 'text', text: (await getPlaybook(section)).text }] }), { readOnlyHint: true, idempotentHint: true, openWorldHint: false, destructiveHint: false });
     async function previewData({ connectionId, spec, bindings, reportDir, theme, maxRows }) {
         const dimensions = bindings.dimensions.map(field => `${field.table}[${field.column}]`), measures = bindings.measures.map(field => field.name);
         const dax = buildVisualDax({ ...bindings, scopedMeasures: scopedMeasuresOf(spec), maxRows });
@@ -231,10 +234,10 @@ export function createServer(models = new Models()) {
             throw Error('Binding changes require explicit rebinding; this edit tool preserves existing field roles');
         await assertReportRenderer(args.reportDir, RENDERER_GUID, next, p.after.bindings);
         const written = args.dryRun ? null : await writeStoredVisual(item, next, { resetFormatting: args.resetFormatting, queryState });
-        return { content: [...text({ dryRun: args.dryRun, written, etag: item.etag, patch: args.patch, diff: specDiff(item.spec, next), formattingPreserved: !args.resetFormatting, containerValidation, beforeCritique: p.before.result.critique, afterCritique: p.after.result.critique, warnings: [...containerValidation.warnings, ...p.after.warnings, ...(args.dryRun ? [] : await desktopWarning(args.reportDir))] }).content, ...p.content] };
+        return { content: [...text({ dryRun: args.dryRun, written, etag: item.etag, patch: args.patch, diff: specDiff(item.spec, next), formattingPreserved: !args.resetFormatting, containerValidation, beforeCritique: p.before.result.critique, afterCritique: p.after.result.critique, ...(args.dryRun ? {} : committedGuidance(false, next)), warnings: [...containerValidation.warnings, ...p.after.warnings, ...(args.dryRun ? [] : await desktopWarning(args.reportDir))] }).content, ...p.content] };
     });
     tool('list_pages', 'Read existing PBIR pages and visual names, types and positions so you can choose a page and avoid overlap. This tool does not edit or validate native visuals, slicers, bookmarks, filters or report themes.', z.object({ reportDir: z.string().min(1) }), async ({ reportDir }) => text(await listPages(reportDir)));
-    tool('commit_visual', 'Add one Vilsem Renderer visual to one existing PBIR page using @vilsem/core. Existing visual names are refused; the only additional changes are missing renderer resources and registration. Native visuals, slicers, bookmarks, filters, themes and model objects are not edited. If Desktop is open, accept its external-change reload prompt after this call.', z.object({ reportDir: z.string().min(1), pageName: z.string().min(1), visualName: z.string().min(1), spec: object, bindings, saveAs: z.string().optional(), connectionId: z.string().uuid().optional(), layout: z.object({ x: z.number().min(0), y: z.number().min(0), width: z.number().positive(), height: z.number().positive(), z: z.number().min(0).optional(), tabOrder: z.number().min(0).optional() }) }), async (args) => {
+    tool('commit_visual', 'Add one Vilsem Renderer visual to one existing PBIR page using @vilsem/core. Existing visual names are refused; the only additional changes are missing renderer resources and registration. Native visuals, slicers, bookmarks, filters, themes and model objects are not edited. After committing, relay the returned nextStep to the user verbatim.', z.object({ reportDir: z.string().min(1), pageName: z.string().min(1), visualName: z.string().min(1), spec: object, bindings, saveAs: z.string().optional(), connectionId: z.string().uuid().optional(), layout: z.object({ x: z.number().min(0), y: z.number().min(0), width: z.number().positive(), height: z.number().positive(), z: z.number().min(0).optional(), tabOrder: z.number().min(0).optional() }) }), async (args) => {
         await checkMeasures(args.spec, args.connectionId, args.bindings);
         // Preserve preview/native parity for model formats even when canvasTheme
         // deliberately selects a legacy light/dark appearance.
@@ -250,12 +253,15 @@ export function createServer(models = new Models()) {
             }
         return text(committed);
     });
-    tool('validate_visuals', 'Validate only Vilsem Renderer specs, reader versions and known container structure. Other official2.x declarations must fit the complete bundled2.7 contract and return an explicit compatibility warning; full validation of their declared schema is not claimed. Unknown fields are refused. Native/report-level objects are neither validated nor reported.', z.object({ reportDir: z.string().min(1) }), async ({ reportDir }) => text(await validateVisuals(reportDir)));
+    tool('validate_visuals', 'Validate only Vilsem Renderer specs, reader versions and known container structure. Other official2.x declarations must fit the complete bundled2.7 contract and return an explicit compatibility warning; full validation of their declared schema is not claimed. Unknown fields are refused. Native/report-level objects are neither validated nor reported. Includes per-visual nativeMeasures and a separate summary of promotion counts.', z.object({ reportDir: z.string().min(1) }), async ({ reportDir }) => {
+        const results = await validateVisuals(reportDir);
+        return { content: [...text(results).content, ...text({ summary: visualValidationSummary(results) }).content] };
+    });
     for (const template of [...EXAMPLE_TEMPLATES, ...SHIPPED_TEMPLATES]) {
         const uri = `vilsem://templates/${template.meta.id}`;
         server.registerResource(template.meta.id, uri, { mimeType: 'application/json' }, async (uri) => ({ contents: [{ uri: uri.href, mimeType: 'application/json', text: JSON.stringify(template) }] }));
     }
-    for (const [name, file] of [['powerbi-visuals', 'SKILL.md'], ['pbir-pages', 'references/pbir-pages.md'], ['spec-cookbook', 'references/spec-cookbook.md']])
+    for (const [name, file] of [['powerbi-visuals', 'SKILL.md'], ['pbir-pages', 'references/pbir-pages.md'], ['spec-cookbook', 'references/spec-cookbook.md'], ['data-art-recipes', 'references/data-art-recipes.md']])
         server.registerResource(`skill-${name}`, `vilsem://skill/${name}`, { mimeType: 'text/markdown' }, async (uri) => ({ contents: [{ uri: uri.href, mimeType: 'text/markdown', text: await fs.readFile(new URL(`../skills/vilsem-powerbi-visuals/${file}`, import.meta.url), 'utf8') }] }));
     server.registerResource('spec-format', 'vilsem://docs/spec-format', { mimeType: 'text/markdown' }, async (uri) => ({ contents: [{ uri: uri.href, mimeType: 'text/markdown', text: await fs.readFile(new URL('../docs/spec-format.md', import.meta.url), 'utf8') }] }));
     for (const name of ['design-guide', 'workflow', 'expression-language', 'motion-capture'])
