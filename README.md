@@ -22,6 +22,8 @@ This is the custom-visual layer for agentic Power BI authoring. Use it alongside
 
 ## Release status: 0.8 evaluation
 
+Read [SECURITY.md](SECURITY.md) for local-mode boundaries, AI-provider disclosure, sample opt-out and vulnerability reporting.
+
 Prepared release: **vilsem-mcp 0.8.2**, **@vilsem/core 0.8.0**, **Vilsem Renderer 4.43.0.0**. MCP 0.8.2 is pending approval and publication; the installation URLs below become available after publication. The last published MCP is 0.8.1. These are evaluation prereleases, suitable for testing on copies of your reports. **Production readiness, certification and exhaustive cross-target parity have not been established.** The previous stable release remains 0.6.
 
 Read [what was verified](#what-was-verified-for-08), [known failures](#known-failures-and-workarounds) and [incomplete checks](#checks-that-remain-partial-or-not-tested) before relying on a result. Passing tests do not mean every visual, property, dataset, report interaction or export works. This README on `main` includes live checks performed after the original release archive was built; existing release tags and assets are not rewritten.
