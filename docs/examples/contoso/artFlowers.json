@@ -1,0 +1,813 @@
+{
+ "_note": "Working Vilsem spec from the Contoso 10M demo report (renderer 4.43). Contoso-specific fields/measures; use as a reference, not a shipped template.",
+ "visual": "artFlowers",
+ "layout": {
+  "x": 640,
+  "y": 720,
+  "width": 640,
+  "height": 720,
+  "z": 3,
+  "tabOrder": 3
+ },
+ "bindings": {
+  "dimensions": [
+   {
+    "table": "Product",
+    "column": "CategoryName"
+   },
+   {
+    "table": "Date",
+    "column": "MonthNumber"
+   }
+  ],
+  "measures": [
+   {
+    "name": "flC",
+    "scoped": true
+   },
+   {
+    "name": "flM",
+    "scoped": true
+   },
+   {
+    "name": "flL",
+    "scoped": true
+   },
+   {
+    "name": "flG",
+    "scoped": true
+   }
+  ]
+ },
+ "spec": {
+  "version": 1,
+  "type": "custom",
+  "config": {
+   "cardStyle": "plain",
+   "renderer": "svg"
+  },
+  "measures": {
+   "flC": {
+    "expression": "VAR y = YEAR([Global Last Sale Date]) RETURN IF(NOT ISBLANK([Net Sales]), RANKX(ALLSELECTED(Product[CategoryName]), ROUND(CALCULATE([Net Sales], REMOVEFILTERS('Date'), 'Date'[Year] = y), 0), ROUND(CALCULATE([Net Sales], REMOVEFILTERS('Date'), 'Date'[Year] = y), 0), DESC) - 1)",
+    "format": "0"
+   },
+   "flM": {
+    "expression": "IF(NOT ISBLANK([Net Sales]), MAX('Date'[MonthNumber]))",
+    "format": "0"
+   },
+   "flL": {
+    "expression": "VAR y = YEAR([Global Last Sale Date]) VAR s = CALCULATE([Net Sales], 'Date'[Year] = y) VAR m = MAXX(CROSSJOIN(ALLSELECTED(Product[CategoryName]), ALLSELECTED('Date'[MonthNumber])), CALCULATE([Net Sales], 'Date'[Year] = y)) RETURN DIVIDE(s, m)",
+    "format": "0.00"
+   },
+   "flG": {
+    "expression": "VAR y = YEAR([Global Last Sale Date]) VAR s = CALCULATE([Net Sales], 'Date'[Year] = y) VAR p = CALCULATE([Net Sales], 'Date'[Year] = y - 1) RETURN IF(s > 0, DIVIDE(s, p) - 1)",
+    "format": "+0%;-0%"
+   }
+  },
+  "template": {
+   "meta": {
+    "id": "art_data_flowers",
+    "name": "Data flowers",
+    "formatVersion": 4
+   },
+   "slots": {
+    "cat": {
+     "kind": "dimension"
+    },
+    "month": {
+     "kind": "dimension"
+    },
+    "c": {
+     "kind": "measure"
+    },
+    "m": {
+     "kind": "measure"
+    },
+    "l": {
+     "kind": "measure"
+    },
+    "g": {
+     "kind": "measure"
+    }
+   },
+   "params": [],
+   "transforms": [
+    {
+     "points": {
+      "fields": [
+       "c",
+       "m",
+       "l",
+       "g"
+      ],
+      "numeric": [
+       "c",
+       "m",
+       "l",
+       "g"
+      ],
+      "name": "cat"
+     },
+     "as": "pts"
+    }
+   ],
+   "template": {
+    "animation": true,
+    "animationDuration": 1500,
+    "backgroundColor": "#0E1525",
+    "textStyle": {
+     "fontFamily": "'Segoe UI', Arial",
+     "color": "#E6EDF7"
+    },
+    "title": [
+     {
+      "text": "DATA FLOWERS",
+      "left": 32,
+      "top": 28,
+      "textStyle": {
+       "fontSize": 11,
+       "fontWeight": 800,
+       "color": "#F6C76B"
+      }
+     },
+     {
+      "text": "A year in bloom, category by category",
+      "left": 32,
+      "top": 46,
+      "textStyle": {
+       "fontSize": 22,
+       "fontWeight": 800,
+       "color": "#FFFFFF"
+      }
+     },
+     {
+      "text": "12 petals = Jan to Dec, clockwise from the top  ·  length = FY2025 sales  ·  colour = vs prior year",
+      "left": 32,
+      "top": 80,
+      "textStyle": {
+       "fontSize": 11,
+       "color": "#9FB0CC"
+      }
+     },
+     {
+      "text": "In the style of Nadieh Bremer (Visual Cinnamon)",
+      "left": 32,
+      "bottom": 20,
+      "textStyle": {
+       "fontSize": 10,
+       "color": "#7D8CA8"
+      }
+     }
+    ],
+    "tooltip": {
+     "trigger": "item",
+     "confine": true,
+     "formatterTemplate": "{name}  ·  month {value.1}  ·  vs PY {value.3:percent}"
+    },
+    "xAxis": {
+     "type": "value",
+     "show": false
+    },
+    "yAxis": {
+     "type": "value",
+     "show": false
+    },
+    "grid": {
+     "left": 0,
+     "right": 0,
+     "top": 0,
+     "bottom": 0
+    },
+    "series": [
+     {
+      "type": "custom",
+      "name": "Stems",
+      "silent": true,
+      "clip": false,
+      "tooltip": {
+       "show": false
+      },
+      "dimensions": [
+       "c",
+       "m",
+       {
+        "name": "n",
+        "type": "ordinal"
+       }
+      ],
+      "encode": {
+       "tooltip": []
+      },
+      "data": {
+       "repeat": "$calc.pts.data",
+       "template": {
+        "name": "$item.name",
+        "value": [
+         "$item.value.0",
+         "$item.value.1",
+         "$item.name"
+        ]
+       }
+      },
+      "renderItem": {
+       "language": "vilsem-expression",
+       "version": 1,
+       "root": {
+        "type": "group",
+        "when": {
+         "op": "eq",
+         "args": [
+          {
+           "op": "value",
+           "args": [
+            1
+           ]
+          },
+          1
+         ]
+        },
+        "children": [
+         {
+          "type": "polyline",
+          "shape": {
+           "points": [
+            [
+             {
+              "op": "mul",
+              "args": [
+               {
+                "op": "viewportWidth",
+                "args": []
+               },
+               {
+                "op": "add",
+                "args": [
+                 0.125,
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "mod",
+                    "args": [
+                     {
+                      "op": "value",
+                      "args": [
+                       0
+                      ]
+                     },
+                     4
+                    ]
+                   },
+                   0.25
+                  ]
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "op": "mul",
+              "args": [
+               {
+                "op": "viewportHeight",
+                "args": []
+               },
+               {
+                "op": "add",
+                "args": [
+                 0.37,
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "floor",
+                    "args": [
+                     {
+                      "op": "div",
+                      "args": [
+                       {
+                        "op": "value",
+                        "args": [
+                         0
+                        ]
+                       },
+                       4
+                      ]
+                     }
+                    ]
+                   },
+                   0.33
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ],
+            [
+             {
+              "op": "mul",
+              "args": [
+               {
+                "op": "viewportWidth",
+                "args": []
+               },
+               {
+                "op": "add",
+                "args": [
+                 0.125,
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "mod",
+                    "args": [
+                     {
+                      "op": "value",
+                      "args": [
+                       0
+                      ]
+                     },
+                     4
+                    ]
+                   },
+                   0.25
+                  ]
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "op": "add",
+              "args": [
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 {
+                  "op": "add",
+                  "args": [
+                   0.37,
+                   {
+                    "op": "mul",
+                    "args": [
+                     {
+                      "op": "floor",
+                      "args": [
+                       {
+                        "op": "div",
+                        "args": [
+                         {
+                          "op": "value",
+                          "args": [
+                           0
+                          ]
+                         },
+                         4
+                        ]
+                       }
+                      ]
+                     },
+                     0.33
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.14
+                ]
+               }
+              ]
+             }
+            ]
+           ]
+          },
+          "style": {
+           "fill": "none",
+           "stroke": "#3B5B4F",
+           "lineWidth": 2
+          }
+         },
+         {
+          "type": "circle",
+          "shape": {
+           "cx": {
+            "op": "mul",
+            "args": [
+             {
+              "op": "viewportWidth",
+              "args": []
+             },
+             {
+              "op": "add",
+              "args": [
+               0.125,
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "mod",
+                  "args": [
+                   {
+                    "op": "value",
+                    "args": [
+                     0
+                    ]
+                   },
+                   4
+                  ]
+                 },
+                 0.25
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           "cy": {
+            "op": "mul",
+            "args": [
+             {
+              "op": "viewportHeight",
+              "args": []
+             },
+             {
+              "op": "add",
+              "args": [
+               0.37,
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "floor",
+                  "args": [
+                   {
+                    "op": "div",
+                    "args": [
+                     {
+                      "op": "value",
+                      "args": [
+                       0
+                      ]
+                     },
+                     4
+                    ]
+                   }
+                  ]
+                 },
+                 0.33
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           "r": 3
+          },
+          "style": {
+           "fill": "#FFFFFF"
+          }
+         },
+         {
+          "type": "text",
+          "style": {
+           "text": {
+            "op": "value",
+            "args": [
+             2
+            ]
+           },
+           "x": {
+            "op": "mul",
+            "args": [
+             {
+              "op": "viewportWidth",
+              "args": []
+             },
+             {
+              "op": "add",
+              "args": [
+               0.125,
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "mod",
+                  "args": [
+                   {
+                    "op": "value",
+                    "args": [
+                     0
+                    ]
+                   },
+                   4
+                  ]
+                 },
+                 0.25
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           "y": {
+            "op": "add",
+            "args": [
+             {
+              "op": "mul",
+              "args": [
+               {
+                "op": "viewportHeight",
+                "args": []
+               },
+               {
+                "op": "add",
+                "args": [
+                 0.37,
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "floor",
+                    "args": [
+                     {
+                      "op": "div",
+                      "args": [
+                       {
+                        "op": "value",
+                        "args": [
+                         0
+                        ]
+                       },
+                       4
+                      ]
+                     }
+                    ]
+                   },
+                   0.33
+                  ]
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "op": "mul",
+              "args": [
+               {
+                "op": "viewportHeight",
+                "args": []
+               },
+               0.155
+              ]
+             }
+            ]
+           },
+           "align": "center",
+           "verticalAlign": "top",
+           "width": 140,
+           "overflow": "break",
+           "fill": "#E6EDF7",
+           "fontSize": 11,
+           "fontWeight": 700
+          }
+         }
+        ]
+       }
+      },
+      "z": 1
+     },
+     {
+      "type": "custom",
+      "name": "Petals",
+      "clip": false,
+      "data": "$calc.pts.data",
+      "encode": {
+       "tooltip": [
+        3
+       ]
+      },
+      "renderItem": {
+       "language": "vilsem-expression",
+       "version": 1,
+       "root": {
+        "type": "path",
+        "shape": {
+         "pathData": "M0,0 C0.3,-0.25 0.26,-0.8 0,-1 C-0.26,-0.8 -0.3,-0.25 0,0 Z"
+        },
+        "x": {
+         "op": "mul",
+         "args": [
+          {
+           "op": "viewportWidth",
+           "args": []
+          },
+          {
+           "op": "add",
+           "args": [
+            0.125,
+            {
+             "op": "mul",
+             "args": [
+              {
+               "op": "mod",
+               "args": [
+                {
+                 "op": "value",
+                 "args": [
+                  0
+                 ]
+                },
+                4
+               ]
+              },
+              0.25
+             ]
+            }
+           ]
+          }
+         ]
+        },
+        "y": {
+         "op": "mul",
+         "args": [
+          {
+           "op": "viewportHeight",
+           "args": []
+          },
+          {
+           "op": "add",
+           "args": [
+            0.37,
+            {
+             "op": "mul",
+             "args": [
+              {
+               "op": "floor",
+               "args": [
+                {
+                 "op": "div",
+                 "args": [
+                  {
+                   "op": "value",
+                   "args": [
+                    0
+                   ]
+                  },
+                  4
+                 ]
+                }
+               ]
+              },
+              0.33
+             ]
+            }
+           ]
+          }
+         ]
+        },
+        "scaleX": {
+         "op": "mul",
+         "args": [
+          {
+           "op": "mul",
+           "args": [
+            {
+             "op": "viewportHeight",
+             "args": []
+            },
+            0.12
+           ]
+          },
+          {
+           "op": "sqrt",
+           "args": [
+            {
+             "op": "value",
+             "args": [
+              2
+             ]
+            }
+           ]
+          }
+         ]
+        },
+        "scaleY": {
+         "op": "mul",
+         "args": [
+          {
+           "op": "mul",
+           "args": [
+            {
+             "op": "viewportHeight",
+             "args": []
+            },
+            0.12
+           ]
+          },
+          {
+           "op": "sqrt",
+           "args": [
+            {
+             "op": "value",
+             "args": [
+              2
+             ]
+            }
+           ]
+          }
+         ]
+        },
+        "rotation": {
+         "op": "mul",
+         "args": [
+          {
+           "op": "sub",
+           "args": [
+            {
+             "op": "value",
+             "args": [
+              1
+             ]
+            },
+            1
+           ]
+          },
+          -0.5235988
+         ]
+        },
+        "style": {
+         "fill": {
+          "op": "colorScale",
+          "args": [
+           {
+            "op": "value",
+            "args": [
+             3
+            ]
+           },
+           -0.3,
+           0.3,
+           [
+            "#F2557A",
+            "#F6C76B",
+            "#5FD3B6"
+           ]
+          ]
+         },
+         "opacity": 0.82,
+         "stroke": "#FFFFFF",
+         "lineWidth": 0.6
+        }
+       }
+      },
+      "z": 2
+     }
+    ]
+   }
+  },
+  "specVersion": "0.7",
+  "bindings": {
+   "dimensions": [
+    {
+     "table": "Product",
+     "column": "CategoryName"
+    },
+    {
+     "table": "Date",
+     "column": "MonthNumber"
+    }
+   ],
+   "measures": [
+    {
+     "table": "KPI Measures",
+     "name": "flC"
+    },
+    {
+     "table": "KPI Measures",
+     "name": "flM"
+    },
+    {
+     "table": "KPI Measures",
+     "name": "flL"
+    },
+    {
+     "table": "KPI Measures",
+     "name": "flG"
+    }
+   ]
+  }
+ }
+}

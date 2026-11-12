@@ -104,9 +104,10 @@ The query returns categories in query order, not by value. To sort, use the `top
 "yAxis":[{"gridIndex":1,"type":"category","inverse":true,"data":"$calc.order.categories"}],
 "series":[
   {"type":"bar","xAxisIndex":1,"yAxisIndex":1,"data":"$calc.order.values"},
-  {"type":"scatter","xAxisIndex":2,"yAxisIndex":2,"data":"$slot.canc.pairsSwapped",
-   "markLine":{"silent":true,"symbol":"none","data":[{"type":"average","valueIndex":0}]}}]
+  {"type":"scatter","xAxisIndex":2,"yAxisIndex":2,"data":"$slot.canc.pairsSwapped"}]
 ```
+
+**Reference lines (average/limits):** `markLine` with `type:"average"` can render at 0 in renderer 4.43. The reliable pattern is a flat `line` series. Compute the value with a `stat` transform (`sum` and `count`, then `calculate` sum/count; don't rely on `mean`), and repeat it across `$calc.x.values` as its data, with `symbol:"none"`, a dashed `lineStyle` and `silent:true`.
 
 - Use one grid per column, all with `inverse:true` y-axes that share `$calc.order.categories`.
 - To colour dots green to red: add a hidden `visualMap` with `seriesIndex` set to that series, `dimension:0`, `min:"$slot.canc.min"`, `max:"$slot.canc.max"`.
@@ -202,3 +203,55 @@ Canvas remains the default. It accounts for host page zoom and device pixel rati
 ```
 
 Merge this into the existing config; keep the rest of the spec. Desktop Appearance > Render mode overrides it; Automatic follows the spec. Very dense charts or animation may be slower with SVG. Canvas-only trail/blend effects fall back to canvas and produce a critique/native warning. SSR previews keep their existing rendering behavior. Existing reports must re-import the installed `@vilsem/core/assets/renderer.pbiviz`, accept Update, save, close and reopen; committing a spec does not replace a registered renderer. The independent `*Label` formatting workaround above still applies.
+
+
+## Top-N without an Other row
+
+**Top-N without an "Other" row.** The `top` transform appends an "Other" row. For a clean top-N, gate the measure in DAX instead: `IF(RANKX(ALLSELECTED(T[c]), ROUND([m],0), ROUND([m],0)) <= N, [m])`.
+
+
+## Overlay bars
+
+**Overlay bars (bullet / actual vs target).** Put the second bar series on a **second hidden `yAxis`** in the same grid (`yAxisIndex:1`, `show:false`), rather than using `barGap:"-100%"`.
+
+
+## Previous-row values
+
+**Previous-row values.** Use the `window` transform with `lag` to get the previous row (for drawing segments from previous to current). Don't compute "next row" in DAX.
+
+
+## Literal labels in expression series
+
+**Literal labels in custom (expression) series.** Text measures can't travel through `points`. Generate labels with `data:{repeat:"$calc.pts.data", template:{name:"$item.name", value:["$item.value.0", …, "$item.name"]}}` and an ordinal dimension. Text then reads the name from the item.
+
+
+## Cumulative race values
+
+**Cumulative race values.** `VAR y = MAX('Date'[Year]) RETURN IF([Sales] > 0, CALCULATE([Sales], REMOVEFILTERS('Date'), 'Date'[Year] <= y))`, with `race: {time, category, value, topN}` and the year slot as `kind:"time"`.
+
+
+## Bubble race
+
+**Bubble race.** `race: {time, category, value, topN, x, y, size}` animates a scatter. Fix the axis `min`/`max` explicitly so frames don't rescale, and consider `type:"log"` for wide ranges.
+
+
+## Radial and polar stacked bars
+
+**Radial / polar stacked bars by month.** Use a `facet` transform `{by: <series dim>, category: <month>, value}` and `series: {repeat: "$calc.f.panels", template: {type:"bar", coordinateSystem:"polar", stack:"total", …}}`. Bind **`MonthNumber`**, not month names, and give `angleAxis.data` a literal `["Jan",…,"Dec"]` so months stay in calendar order.
+
+
+## Sankey source colours
+
+**Sankey with one colour per source node.** The `flows` transform has no per-node colour option. List the nodes explicitly as `$calc.flow.nodes.<i>.{id,name,label,depth,value,rowIndexes}` and add `itemStyle.color` per index. Indexes past the end resolve to null and are ignored, so you can list a few spare entries. Test a filtered state (one slicer value) to confirm the empty slots don't break the layout.
+
+
+## Cheap previews
+
+**Cheap previews (token saving).**
+   - Prefer `preview_variants` with a single spec over `preview_visual` while iterating: it returns the PNG and critique without the large option JSON.
+   - To look at an already committed visual, call `update_visual` with `dryRun:true` and a no-op patch (e.g. replace a title with the same value); you get the PNG without re-sending the spec.
+
+
+## Responsive custom geometry
+
+**Responsive custom geometry.** Size everything from `viewportWidth`/`viewportHeight` (e.g. a grid cell = `viewportWidth * (0.125 + (i mod 4) * 0.25)`), so the visual survives resizing. Use `mod`/`floor` on a rank to lay items out in a grid.

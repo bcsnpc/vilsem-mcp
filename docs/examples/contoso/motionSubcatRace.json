@@ -1,0 +1,242 @@
+{
+ "_note": "Working Vilsem spec from the Contoso 10M demo report (renderer 4.43). Contoso-specific fields/measures; use as a reference, not a shipped template.",
+ "visual": "motionSubcatRace",
+ "layout": {
+  "x": 772,
+  "y": 16,
+  "width": 492,
+  "height": 688,
+  "z": 1,
+  "tabOrder": 1
+ },
+ "bindings": {
+  "dimensions": [
+   {
+    "table": "Date",
+    "column": "Year"
+   },
+   {
+    "table": "Product",
+    "column": "SubCategoryName"
+   }
+  ],
+  "measures": [
+   {
+    "name": "xrCum",
+    "scoped": true
+   }
+  ]
+ },
+ "spec": {
+  "version": 1,
+  "type": "custom",
+  "config": {
+   "cardStyle": "plain",
+   "renderer": "svg"
+  },
+  "measures": {
+   "xrCum": {
+    "expression": "VAR y = MAX('Date'[Year]) RETURN IF([Net Sales] > 0, CALCULATE([Net Sales], REMOVEFILTERS('Date'), 'Date'[Year] <= y) / 1e6)",
+    "format": "$#,0\"M\""
+   }
+  },
+  "template": {
+   "meta": {
+    "id": "subcat_bar_race",
+    "name": "Subcategory bar race",
+    "formatVersion": 4
+   },
+   "slots": {
+    "yr": {
+     "kind": "dimension"
+    },
+    "sub": {
+     "kind": "dimension"
+    },
+    "cum": {
+     "kind": "measure"
+    }
+   },
+   "transforms": [
+    {
+     "as": "race",
+     "race": {
+      "time": "yr",
+      "category": "sub",
+      "value": "cum",
+      "topN": 12,
+      "history": 1
+     }
+    }
+   ],
+   "animation": {
+    "enter": {
+     "duration": 400
+    },
+    "update": {
+     "duration": 1200,
+     "easing": "linear"
+    }
+   },
+   "template": {
+    "baseOption": {
+     "backgroundColor": "$theme.background",
+     "textStyle": {
+      "fontFamily": "$theme.font",
+      "color": "$theme.textPrimary"
+     },
+     "title": {
+      "text": "The subcategory race",
+      "left": 20,
+      "top": 16,
+      "textStyle": {
+       "fontSize": 18,
+       "fontWeight": 700
+      },
+      "subtext": "Cumulative net sales since 2016, top 12 subcategories",
+      "subtextStyle": {
+       "fontSize": 12,
+       "color": "$theme.textMuted"
+      }
+     },
+     "timeline": {
+      "axisType": "category",
+      "autoPlay": true,
+      "playInterval": 1600,
+      "loop": true,
+      "left": 40,
+      "right": 30,
+      "bottom": 10,
+      "label": {
+       "color": "$theme.textMuted",
+       "fontSize": 10
+      },
+      "data": "$calc.race.labels"
+     },
+     "grid": {
+      "left": 170,
+      "right": 70,
+      "top": 84,
+      "bottom": 80
+     },
+     "tooltip": {
+      "trigger": "item"
+     },
+     "xAxis": {
+      "type": "value",
+      "max": "dataMax",
+      "axisLabel": {
+       "show": false
+      },
+      "splitLine": {
+       "lineStyle": {
+        "color": "$theme.gridStroke",
+        "type": "dashed"
+       }
+      }
+     },
+     "yAxis": {
+      "type": "category",
+      "inverse": true,
+      "animationDuration": 300,
+      "animationDurationUpdate": 300,
+      "axisTick": {
+       "show": false
+      },
+      "axisLine": {
+       "show": false
+      },
+      "axisLabel": {
+       "color": "$theme.textPrimary",
+       "fontSize": 11,
+       "width": 150,
+       "overflow": "truncate"
+      }
+     }
+    },
+    "options": {
+     "repeat": "$calc.race.frames",
+     "template": {
+      "graphic": [
+       {
+        "type": "text",
+        "right": 70,
+        "bottom": 100,
+        "style": {
+         "text": "$item.label",
+         "fontSize": 72,
+         "fontWeight": 800,
+         "fill": "$theme.gridStroke"
+        }
+       }
+      ],
+      "yAxis": {
+       "data": "$item.categories"
+      },
+      "series": [
+       {
+        "id": "subcat-race",
+        "type": "bar",
+        "data": "$item.data",
+        "realtimeSort": true,
+        "barCategoryGap": "28%",
+        "itemStyle": {
+         "color": {
+          "type": "linear",
+          "x": 0,
+          "y": 0,
+          "x2": 1,
+          "y2": 0,
+          "colorStops": [
+           {
+            "offset": 0,
+            "color": "#12239E"
+           },
+           {
+            "offset": 1,
+            "color": "#118DFF"
+           }
+          ]
+         },
+         "borderRadius": [
+          0,
+          6,
+          6,
+          0
+         ]
+        },
+        "label": {
+         "show": true,
+         "position": "right",
+         "valueAnimation": true,
+         "fontWeight": 600,
+         "color": "$theme.textPrimary",
+         "formatterTemplate": "{value:thousands}"
+        }
+       }
+      ]
+     }
+    }
+   }
+  },
+  "specVersion": "0.7",
+  "bindings": {
+   "dimensions": [
+    {
+     "table": "Date",
+     "column": "Year"
+    },
+    {
+     "table": "Product",
+     "column": "SubCategoryName"
+    }
+   ],
+   "measures": [
+    {
+     "table": "KPI Measures",
+     "name": "xrCum"
+    }
+   ]
+  }
+ }
+}

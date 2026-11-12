@@ -1,0 +1,1755 @@
+{
+ "_note": "Working Vilsem spec from the Contoso 10M demo report (renderer 4.43). Contoso-specific fields/measures; use as a reference, not a shipped template.",
+ "visual": "artMinard",
+ "layout": {
+  "x": 0,
+  "y": 2160,
+  "width": 640,
+  "height": 720,
+  "z": 6,
+  "tabOrder": 6
+ },
+ "bindings": {
+  "dimensions": [
+   {
+    "table": "Date",
+    "column": "Year"
+   }
+  ],
+  "measures": [
+   {
+    "name": "mnA",
+    "scoped": true
+   },
+   {
+    "name": "mnS",
+    "scoped": true
+   },
+   {
+    "name": "mnR",
+    "scoped": true
+   }
+  ]
+ },
+ "spec": {
+  "version": 1,
+  "type": "custom",
+  "config": {
+   "cardStyle": "plain",
+   "renderer": "svg"
+  },
+  "measures": {
+   "mnA": {
+    "expression": "VAR f = YEAR(CALCULATE(MIN(Sales[OrderDate]), REMOVEFILTERS('Date'))) VAR c0 = CALCULATETABLE(VALUES(Sales[CustomerKey]), REMOVEFILTERS('Date'), 'Date'[Year] = f) VAR yr = MAX('Date'[Year]) VAR a = COUNTROWS(INTERSECT(CALCULATETABLE(VALUES(Sales[CustomerKey]), REMOVEFILTERS('Date'), 'Date'[Year] = yr), c0)) RETURN IF(a > 0, a)",
+    "format": "#,0"
+   },
+   "mnS": {
+    "expression": "VAR f = YEAR(CALCULATE(MIN(Sales[OrderDate]), REMOVEFILTERS('Date'))) VAR c0 = CALCULATETABLE(VALUES(Sales[CustomerKey]), REMOVEFILTERS('Date'), 'Date'[Year] = f) VAR yr = MAX('Date'[Year]) VAR s = CALCULATE([Net Sales], REMOVEFILTERS('Date'), 'Date'[Year] = yr, TREATAS(c0, Sales[CustomerKey])) / 1e6 RETURN IF(s > 0, s)",
+    "format": "\"$\"#,0\"M\""
+   },
+   "mnR": {
+    "expression": "VAR f = YEAR(CALCULATE(MIN(Sales[OrderDate]), REMOVEFILTERS('Date'))) VAR c0 = CALCULATETABLE(VALUES(Sales[CustomerKey]), REMOVEFILTERS('Date'), 'Date'[Year] = f) VAR yr = MAX('Date'[Year]) VAR a = COUNTROWS(INTERSECT(CALCULATETABLE(VALUES(Sales[CustomerKey]), REMOVEFILTERS('Date'), 'Date'[Year] = yr), c0)) RETURN IF(a > 0, DIVIDE(a, COUNTROWS(c0)))",
+    "format": "0%"
+   }
+  },
+  "template": {
+   "meta": {
+    "id": "art_minard_march",
+    "name": "Minard cohort march",
+    "formatVersion": 4
+   },
+   "slots": {
+    "year": {
+     "kind": "time"
+    },
+    "a": {
+     "kind": "measure"
+    },
+    "s": {
+     "kind": "measure"
+    },
+    "r": {
+     "kind": "measure"
+    }
+   },
+   "params": [],
+   "transforms": [
+    {
+     "window": {
+      "op": "lag",
+      "field": "a",
+      "orderBy": "year",
+      "offset": 1,
+      "default": -1
+     },
+     "as": "pa"
+    },
+    {
+     "window": {
+      "op": "lag",
+      "field": "s",
+      "orderBy": "year",
+      "offset": 1,
+      "default": 0
+     },
+     "as": "ps"
+    },
+    {
+     "window": {
+      "op": "lag",
+      "field": "r",
+      "orderBy": "year",
+      "offset": 1,
+      "default": 0
+     },
+     "as": "pr"
+    },
+    {
+     "points": {
+      "fields": [
+       "a",
+       "pa",
+       "s",
+       "ps",
+       "r",
+       "pr"
+      ],
+      "numeric": [
+       "a",
+       "pa",
+       "s",
+       "ps",
+       "r",
+       "pr"
+      ],
+      "name": "year"
+     },
+     "as": "pts"
+    }
+   ],
+   "template": {
+    "animation": false,
+    "backgroundColor": "#F3EAD3",
+    "textStyle": {
+     "fontFamily": "Georgia, 'Times New Roman', serif",
+     "color": "#1B1B1B"
+    },
+    "title": [
+     {
+      "text": "CARTE FIGURATIVE",
+      "left": "center",
+      "top": 24,
+      "textStyle": {
+       "fontSize": 17,
+       "fontWeight": 700,
+       "color": "#1B1B1B",
+       "fontFamily": "Georgia, 'Times New Roman', serif"
+      }
+     },
+     {
+      "text": "des pertes successives en clients de la cohorte 2016, année par année",
+      "left": "center",
+      "top": 48,
+      "textStyle": {
+       "fontSize": 11,
+       "fontStyle": "italic",
+       "color": "#3A3020",
+       "fontFamily": "Georgia, 'Times New Roman', serif"
+      }
+     },
+     {
+      "text": "Tan band = 2016 customers still buying (width = head-count)  ·  black band = what they spent  ·  line = share still active",
+      "left": "center",
+      "top": 68,
+      "textStyle": {
+       "fontSize": 9.5,
+       "color": "#5A4E3C",
+       "fontFamily": "Georgia, 'Times New Roman', serif"
+      }
+     },
+     {
+      "text": "After Charles Joseph Minard, Napoleon's march on Moscow, 1869",
+      "left": "center",
+      "bottom": 10,
+      "textStyle": {
+       "fontSize": 9,
+       "color": "#8C7B60",
+       "fontFamily": "Georgia, 'Times New Roman', serif"
+      }
+     }
+    ],
+    "tooltip": {
+     "trigger": "item",
+     "confine": true,
+     "formatterTemplate": "{name}  ·  {value.0} customers  ·  {value.4:percent} retained"
+    },
+    "grid": {
+     "left": "7%",
+     "right": "9%",
+     "top": 0,
+     "bottom": 0
+    },
+    "xAxis": {
+     "type": "value",
+     "min": 0,
+     "max": 9.4,
+     "show": false
+    },
+    "yAxis": {
+     "type": "value",
+     "show": false
+    },
+    "series": [
+     {
+      "type": "custom",
+      "name": "Cohort",
+      "clip": false,
+      "dimensions": [
+       "a",
+       "pa",
+       "s",
+       "ps",
+       "r",
+       "pr",
+       {
+        "name": "year",
+        "type": "ordinal"
+       }
+      ],
+      "encode": {
+       "tooltip": [
+        0,
+        4
+       ]
+      },
+      "data": {
+       "repeat": "$calc.pts.data",
+       "template": {
+        "name": "$item.name",
+        "value": [
+         "$item.value.0",
+         "$item.value.1",
+         "$item.value.2",
+         "$item.value.3",
+         "$item.value.4",
+         "$item.value.5",
+         "$item.name"
+        ],
+        "rowIndexes": "$item.rowIndexes"
+       }
+      },
+      "renderItem": {
+       "language": "vilsem-expression",
+       "version": 1,
+       "root": {
+        "type": "group",
+        "children": [
+         {
+          "type": "polygon",
+          "when": {
+           "op": "gte",
+           "args": [
+            {
+             "op": "value",
+             "args": [
+              1
+             ]
+            },
+            0
+           ]
+          },
+          "shape": {
+           "points": [
+            [
+             {
+              "op": "at",
+              "args": [
+               {
+                "op": "coord",
+                "args": [
+                 [
+                  {
+                   "op": "sub",
+                   "args": [
+                    {
+                     "op": "dataIndex",
+                     "args": []
+                    },
+                    1
+                   ]
+                  },
+                  0
+                 ]
+                ]
+               },
+               0
+              ]
+             },
+             {
+              "op": "sub",
+              "args": [
+               {
+                "op": "add",
+                "args": [
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "viewportHeight",
+                    "args": []
+                   },
+                   0.33
+                  ]
+                 },
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "viewportHeight",
+                    "args": []
+                   },
+                   0.025,
+                   {
+                    "op": "sin",
+                    "args": [
+                     {
+                      "op": "mul",
+                      "args": [
+                       {
+                        "op": "sub",
+                        "args": [
+                         {
+                          "op": "dataIndex",
+                          "args": []
+                         },
+                         1
+                        ]
+                       },
+                       1.7
+                      ]
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "div",
+                  "args": [
+                   {
+                    "op": "value",
+                    "args": [
+                     1
+                    ]
+                   },
+                   220000
+                  ]
+                 },
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.075
+                ]
+               }
+              ]
+             }
+            ],
+            [
+             {
+              "op": "at",
+              "args": [
+               {
+                "op": "coord",
+                "args": [
+                 [
+                  {
+                   "op": "dataIndex",
+                   "args": []
+                  },
+                  0
+                 ]
+                ]
+               },
+               0
+              ]
+             },
+             {
+              "op": "sub",
+              "args": [
+               {
+                "op": "add",
+                "args": [
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "viewportHeight",
+                    "args": []
+                   },
+                   0.33
+                  ]
+                 },
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "viewportHeight",
+                    "args": []
+                   },
+                   0.025,
+                   {
+                    "op": "sin",
+                    "args": [
+                     {
+                      "op": "mul",
+                      "args": [
+                       {
+                        "op": "dataIndex",
+                        "args": []
+                       },
+                       1.7
+                      ]
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "div",
+                  "args": [
+                   {
+                    "op": "value",
+                    "args": [
+                     0
+                    ]
+                   },
+                   220000
+                  ]
+                 },
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.075
+                ]
+               }
+              ]
+             }
+            ],
+            [
+             {
+              "op": "at",
+              "args": [
+               {
+                "op": "coord",
+                "args": [
+                 [
+                  {
+                   "op": "dataIndex",
+                   "args": []
+                  },
+                  0
+                 ]
+                ]
+               },
+               0
+              ]
+             },
+             {
+              "op": "add",
+              "args": [
+               {
+                "op": "add",
+                "args": [
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "viewportHeight",
+                    "args": []
+                   },
+                   0.33
+                  ]
+                 },
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "viewportHeight",
+                    "args": []
+                   },
+                   0.025,
+                   {
+                    "op": "sin",
+                    "args": [
+                     {
+                      "op": "mul",
+                      "args": [
+                       {
+                        "op": "dataIndex",
+                        "args": []
+                       },
+                       1.7
+                      ]
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "div",
+                  "args": [
+                   {
+                    "op": "value",
+                    "args": [
+                     0
+                    ]
+                   },
+                   220000
+                  ]
+                 },
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.075
+                ]
+               }
+              ]
+             }
+            ],
+            [
+             {
+              "op": "at",
+              "args": [
+               {
+                "op": "coord",
+                "args": [
+                 [
+                  {
+                   "op": "sub",
+                   "args": [
+                    {
+                     "op": "dataIndex",
+                     "args": []
+                    },
+                    1
+                   ]
+                  },
+                  0
+                 ]
+                ]
+               },
+               0
+              ]
+             },
+             {
+              "op": "add",
+              "args": [
+               {
+                "op": "add",
+                "args": [
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "viewportHeight",
+                    "args": []
+                   },
+                   0.33
+                  ]
+                 },
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "viewportHeight",
+                    "args": []
+                   },
+                   0.025,
+                   {
+                    "op": "sin",
+                    "args": [
+                     {
+                      "op": "mul",
+                      "args": [
+                       {
+                        "op": "sub",
+                        "args": [
+                         {
+                          "op": "dataIndex",
+                          "args": []
+                         },
+                         1
+                        ]
+                       },
+                       1.7
+                      ]
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "div",
+                  "args": [
+                   {
+                    "op": "value",
+                    "args": [
+                     1
+                    ]
+                   },
+                   220000
+                  ]
+                 },
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.075
+                ]
+               }
+              ]
+             }
+            ]
+           ]
+          },
+          "style": {
+           "fill": "#E2C79A",
+           "stroke": "#A2804F",
+           "lineWidth": 0.8
+          }
+         },
+         {
+          "type": "polygon",
+          "when": {
+           "op": "gte",
+           "args": [
+            {
+             "op": "value",
+             "args": [
+              1
+             ]
+            },
+            0
+           ]
+          },
+          "shape": {
+           "points": [
+            [
+             {
+              "op": "at",
+              "args": [
+               {
+                "op": "coord",
+                "args": [
+                 [
+                  {
+                   "op": "sub",
+                   "args": [
+                    {
+                     "op": "dataIndex",
+                     "args": []
+                    },
+                    1
+                   ]
+                  },
+                  0
+                 ]
+                ]
+               },
+               0
+              ]
+             },
+             {
+              "op": "sub",
+              "args": [
+               {
+                "op": "add",
+                "args": [
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "viewportHeight",
+                    "args": []
+                   },
+                   0.56
+                  ]
+                 },
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "viewportHeight",
+                    "args": []
+                   },
+                   0.025,
+                   {
+                    "op": "sin",
+                    "args": [
+                     {
+                      "op": "mul",
+                      "args": [
+                       {
+                        "op": "sub",
+                        "args": [
+                         {
+                          "op": "dataIndex",
+                          "args": []
+                         },
+                         0.4
+                        ]
+                       },
+                       1.7
+                      ]
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "div",
+                  "args": [
+                   {
+                    "op": "value",
+                    "args": [
+                     3
+                    ]
+                   },
+                   800
+                  ]
+                 },
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.04
+                ]
+               }
+              ]
+             }
+            ],
+            [
+             {
+              "op": "at",
+              "args": [
+               {
+                "op": "coord",
+                "args": [
+                 [
+                  {
+                   "op": "dataIndex",
+                   "args": []
+                  },
+                  0
+                 ]
+                ]
+               },
+               0
+              ]
+             },
+             {
+              "op": "sub",
+              "args": [
+               {
+                "op": "add",
+                "args": [
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "viewportHeight",
+                    "args": []
+                   },
+                   0.56
+                  ]
+                 },
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "viewportHeight",
+                    "args": []
+                   },
+                   0.025,
+                   {
+                    "op": "sin",
+                    "args": [
+                     {
+                      "op": "mul",
+                      "args": [
+                       {
+                        "op": "add",
+                        "args": [
+                         {
+                          "op": "dataIndex",
+                          "args": []
+                         },
+                         0.6
+                        ]
+                       },
+                       1.7
+                      ]
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "div",
+                  "args": [
+                   {
+                    "op": "value",
+                    "args": [
+                     2
+                    ]
+                   },
+                   800
+                  ]
+                 },
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.04
+                ]
+               }
+              ]
+             }
+            ],
+            [
+             {
+              "op": "at",
+              "args": [
+               {
+                "op": "coord",
+                "args": [
+                 [
+                  {
+                   "op": "dataIndex",
+                   "args": []
+                  },
+                  0
+                 ]
+                ]
+               },
+               0
+              ]
+             },
+             {
+              "op": "add",
+              "args": [
+               {
+                "op": "add",
+                "args": [
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "viewportHeight",
+                    "args": []
+                   },
+                   0.56
+                  ]
+                 },
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "viewportHeight",
+                    "args": []
+                   },
+                   0.025,
+                   {
+                    "op": "sin",
+                    "args": [
+                     {
+                      "op": "mul",
+                      "args": [
+                       {
+                        "op": "add",
+                        "args": [
+                         {
+                          "op": "dataIndex",
+                          "args": []
+                         },
+                         0.6
+                        ]
+                       },
+                       1.7
+                      ]
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "div",
+                  "args": [
+                   {
+                    "op": "value",
+                    "args": [
+                     2
+                    ]
+                   },
+                   800
+                  ]
+                 },
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.04
+                ]
+               }
+              ]
+             }
+            ],
+            [
+             {
+              "op": "at",
+              "args": [
+               {
+                "op": "coord",
+                "args": [
+                 [
+                  {
+                   "op": "sub",
+                   "args": [
+                    {
+                     "op": "dataIndex",
+                     "args": []
+                    },
+                    1
+                   ]
+                  },
+                  0
+                 ]
+                ]
+               },
+               0
+              ]
+             },
+             {
+              "op": "add",
+              "args": [
+               {
+                "op": "add",
+                "args": [
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "viewportHeight",
+                    "args": []
+                   },
+                   0.56
+                  ]
+                 },
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "viewportHeight",
+                    "args": []
+                   },
+                   0.025,
+                   {
+                    "op": "sin",
+                    "args": [
+                     {
+                      "op": "mul",
+                      "args": [
+                       {
+                        "op": "sub",
+                        "args": [
+                         {
+                          "op": "dataIndex",
+                          "args": []
+                         },
+                         0.4
+                        ]
+                       },
+                       1.7
+                      ]
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "div",
+                  "args": [
+                   {
+                    "op": "value",
+                    "args": [
+                     3
+                    ]
+                   },
+                   800
+                  ]
+                 },
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.04
+                ]
+               }
+              ]
+             }
+            ]
+           ]
+          },
+          "style": {
+           "fill": "#1B1B1B",
+           "stroke": "#1B1B1B",
+           "lineWidth": 0.5
+          }
+         },
+         {
+          "type": "polyline",
+          "when": {
+           "op": "gte",
+           "args": [
+            {
+             "op": "value",
+             "args": [
+              1
+             ]
+            },
+            0
+           ]
+          },
+          "shape": {
+           "points": [
+            [
+             {
+              "op": "at",
+              "args": [
+               {
+                "op": "coord",
+                "args": [
+                 [
+                  {
+                   "op": "sub",
+                   "args": [
+                    {
+                     "op": "dataIndex",
+                     "args": []
+                    },
+                    1
+                   ]
+                  },
+                  0
+                 ]
+                ]
+               },
+               0
+              ]
+             },
+             {
+              "op": "sub",
+              "args": [
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.93
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "value",
+                  "args": [
+                   5
+                  ]
+                 },
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.17
+                ]
+               }
+              ]
+             }
+            ],
+            [
+             {
+              "op": "at",
+              "args": [
+               {
+                "op": "coord",
+                "args": [
+                 [
+                  {
+                   "op": "dataIndex",
+                   "args": []
+                  },
+                  0
+                 ]
+                ]
+               },
+               0
+              ]
+             },
+             {
+              "op": "sub",
+              "args": [
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.93
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "value",
+                  "args": [
+                   4
+                  ]
+                 },
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.17
+                ]
+               }
+              ]
+             }
+            ]
+           ]
+          },
+          "style": {
+           "fill": "none",
+           "stroke": "#1B1B1B",
+           "lineWidth": 1.2
+          }
+         },
+         {
+          "type": "polyline",
+          "shape": {
+           "points": [
+            [
+             {
+              "op": "at",
+              "args": [
+               {
+                "op": "coord",
+                "args": [
+                 [
+                  {
+                   "op": "dataIndex",
+                   "args": []
+                  },
+                  0
+                 ]
+                ]
+               },
+               0
+              ]
+             },
+             {
+              "op": "add",
+              "args": [
+               {
+                "op": "add",
+                "args": [
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "viewportHeight",
+                    "args": []
+                   },
+                   0.56
+                  ]
+                 },
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "viewportHeight",
+                    "args": []
+                   },
+                   0.025,
+                   {
+                    "op": "sin",
+                    "args": [
+                     {
+                      "op": "mul",
+                      "args": [
+                       {
+                        "op": "add",
+                        "args": [
+                         {
+                          "op": "dataIndex",
+                          "args": []
+                         },
+                         0.6
+                        ]
+                       },
+                       1.7
+                      ]
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "div",
+                  "args": [
+                   {
+                    "op": "value",
+                    "args": [
+                     2
+                    ]
+                   },
+                   800
+                  ]
+                 },
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.04
+                ]
+               },
+               4
+              ]
+             }
+            ],
+            [
+             {
+              "op": "at",
+              "args": [
+               {
+                "op": "coord",
+                "args": [
+                 [
+                  {
+                   "op": "dataIndex",
+                   "args": []
+                  },
+                  0
+                 ]
+                ]
+               },
+               0
+              ]
+             },
+             {
+              "op": "sub",
+              "args": [
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.93
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "value",
+                  "args": [
+                   4
+                  ]
+                 },
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.17
+                ]
+               }
+              ]
+             }
+            ]
+           ]
+          },
+          "style": {
+           "fill": "none",
+           "stroke": "#8C7B60",
+           "lineWidth": 0.6,
+           "lineDash": [
+            2,
+            3
+           ]
+          }
+         },
+         {
+          "type": "circle",
+          "shape": {
+           "cx": {
+            "op": "at",
+            "args": [
+             {
+              "op": "coord",
+              "args": [
+               [
+                {
+                 "op": "dataIndex",
+                 "args": []
+                },
+                0
+               ]
+              ]
+             },
+             0
+            ]
+           },
+           "cy": {
+            "op": "sub",
+            "args": [
+             {
+              "op": "mul",
+              "args": [
+               {
+                "op": "viewportHeight",
+                "args": []
+               },
+               0.93
+              ]
+             },
+             {
+              "op": "mul",
+              "args": [
+               {
+                "op": "value",
+                "args": [
+                 4
+                ]
+               },
+               {
+                "op": "viewportHeight",
+                "args": []
+               },
+               0.17
+              ]
+             }
+            ]
+           },
+           "r": 2.5
+          },
+          "style": {
+           "fill": "#1B1B1B"
+          }
+         },
+         {
+          "type": "text",
+          "style": {
+           "text": {
+            "op": "formatNumber",
+            "args": [
+             {
+              "op": "value",
+              "args": [
+               0
+              ]
+             },
+             "#,0"
+            ]
+           },
+           "x": {
+            "op": "at",
+            "args": [
+             {
+              "op": "coord",
+              "args": [
+               [
+                {
+                 "op": "dataIndex",
+                 "args": []
+                },
+                0
+               ]
+              ]
+             },
+             0
+            ]
+           },
+           "y": {
+            "op": "sub",
+            "args": [
+             {
+              "op": "add",
+              "args": [
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.33
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.025,
+                 {
+                  "op": "sin",
+                  "args": [
+                   {
+                    "op": "mul",
+                    "args": [
+                     {
+                      "op": "dataIndex",
+                      "args": []
+                     },
+                     1.7
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "op": "add",
+              "args": [
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "div",
+                  "args": [
+                   {
+                    "op": "value",
+                    "args": [
+                     0
+                    ]
+                   },
+                   220000
+                  ]
+                 },
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.075
+                ]
+               },
+               6
+              ]
+             }
+            ]
+           },
+           "align": "center",
+           "verticalAlign": "bottom",
+           "fill": "#5A4325",
+           "fontSize": 9,
+           "fontFamily": "Georgia, 'Times New Roman', serif",
+           "fontWeight": 700
+          }
+         },
+         {
+          "type": "text",
+          "style": {
+           "text": {
+            "op": "formatNumber",
+            "args": [
+             {
+              "op": "value",
+              "args": [
+               2
+              ]
+             },
+             {
+              "op": "literal",
+              "args": [
+               "$#,0M"
+              ]
+             }
+            ]
+           },
+           "x": {
+            "op": "at",
+            "args": [
+             {
+              "op": "coord",
+              "args": [
+               [
+                {
+                 "op": "dataIndex",
+                 "args": []
+                },
+                0
+               ]
+              ]
+             },
+             0
+            ]
+           },
+           "y": {
+            "op": "add",
+            "args": [
+             {
+              "op": "add",
+              "args": [
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.56
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.025,
+                 {
+                  "op": "sin",
+                  "args": [
+                   {
+                    "op": "mul",
+                    "args": [
+                     {
+                      "op": "add",
+                      "args": [
+                       {
+                        "op": "dataIndex",
+                        "args": []
+                       },
+                       0.6
+                      ]
+                     },
+                     1.7
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "op": "mul",
+              "args": [
+               {
+                "op": "div",
+                "args": [
+                 {
+                  "op": "value",
+                  "args": [
+                   2
+                  ]
+                 },
+                 800
+                ]
+               },
+               {
+                "op": "viewportHeight",
+                "args": []
+               },
+               0.04
+              ]
+             },
+             5
+            ]
+           },
+           "align": "left",
+           "verticalAlign": "top",
+           "fill": "#1B1B1B",
+           "fontSize": 8.5,
+           "fontFamily": "Georgia, 'Times New Roman', serif"
+          }
+         },
+         {
+          "type": "text",
+          "style": {
+           "text": {
+            "op": "concat",
+            "args": [
+             {
+              "op": "value",
+              "args": [
+               6
+              ]
+             },
+             "  ",
+             {
+              "op": "formatNumber",
+              "args": [
+               {
+                "op": "value",
+                "args": [
+                 4
+                ]
+               },
+               "0%"
+              ]
+             }
+            ]
+           },
+           "x": {
+            "op": "at",
+            "args": [
+             {
+              "op": "coord",
+              "args": [
+               [
+                {
+                 "op": "dataIndex",
+                 "args": []
+                },
+                0
+               ]
+              ]
+             },
+             0
+            ]
+           },
+           "y": {
+            "op": "add",
+            "args": [
+             {
+              "op": "sub",
+              "args": [
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.93
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "value",
+                  "args": [
+                   4
+                  ]
+                 },
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.17
+                ]
+               }
+              ]
+             },
+             8
+            ]
+           },
+           "align": "center",
+           "verticalAlign": "top",
+           "fill": "#1B1B1B",
+           "fontSize": 9,
+           "fontFamily": "Georgia, 'Times New Roman', serif"
+          }
+         }
+        ]
+       }
+      }
+     }
+    ]
+   }
+  },
+  "specVersion": "0.7",
+  "bindings": {
+   "dimensions": [
+    {
+     "table": "Date",
+     "column": "Year"
+    }
+   ],
+   "measures": [
+    {
+     "table": "KPI Measures",
+     "name": "mnA"
+    },
+    {
+     "table": "KPI Measures",
+     "name": "mnS"
+    },
+    {
+     "table": "KPI Measures",
+     "name": "mnR"
+    }
+   ]
+  }
+ }
+}

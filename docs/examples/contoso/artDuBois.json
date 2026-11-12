@@ -1,0 +1,1061 @@
+{
+ "_note": "Working Vilsem spec from the Contoso 10M demo report (renderer 4.43). Contoso-specific fields/measures; use as a reference, not a shipped template.",
+ "visual": "artDuBois",
+ "layout": {
+  "x": 0,
+  "y": 720,
+  "width": 640,
+  "height": 720,
+  "z": 2,
+  "tabOrder": 2
+ },
+ "bindings": {
+  "dimensions": [
+   {
+    "table": "Customer",
+    "column": "CountryFull"
+   }
+  ],
+  "measures": [
+   {
+    "name": "duS",
+    "scoped": true
+   },
+   {
+    "name": "duSh",
+    "scoped": true
+   },
+   {
+    "name": "duR",
+    "scoped": true
+   }
+  ]
+ },
+ "spec": {
+  "version": 1,
+  "type": "custom",
+  "config": {
+   "cardStyle": "plain",
+   "renderer": "svg"
+  },
+  "measures": {
+   "duS": {
+    "expression": "VAR y = YEAR([Global Last Sale Date]) RETURN CALCULATE([Net Sales], REMOVEFILTERS('Date'), 'Date'[Year] = y) / 1e6",
+    "format": "\"$\"#,0\"M\""
+   },
+   "duSh": {
+    "expression": "VAR y = YEAR([Global Last Sale Date]) VAR s = CALCULATE([Net Sales], REMOVEFILTERS('Date'), 'Date'[Year] = y) VAR m = MAXX(ALLSELECTED(Customer[CountryFull]), CALCULATE([Net Sales], REMOVEFILTERS('Date'), 'Date'[Year] = y)) RETURN DIVIDE(s, m)",
+    "format": "0.00"
+   },
+   "duR": {
+    "expression": "VAR y = YEAR([Global Last Sale Date]) RETURN IF(NOT ISBLANK([Net Sales]), RANKX(ALLSELECTED(Customer[CountryFull]), ROUND(CALCULATE([Net Sales], REMOVEFILTERS('Date'), 'Date'[Year] = y), 0), ROUND(CALCULATE([Net Sales], REMOVEFILTERS('Date'), 'Date'[Year] = y), 0), DESC))",
+    "format": "0"
+   }
+  },
+  "template": {
+   "meta": {
+    "id": "art_dubois_spiral",
+    "name": "Du Bois spiral bars",
+    "formatVersion": 4
+   },
+   "slots": {
+    "country": {
+     "kind": "dimension"
+    },
+    "s": {
+     "kind": "measure"
+    },
+    "sh": {
+     "kind": "measure"
+    },
+    "r": {
+     "kind": "measure"
+    }
+   },
+   "params": [],
+   "transforms": [
+    {
+     "top": {
+      "category": "country",
+      "value": "s",
+      "count": 12
+     },
+     "as": "order"
+    },
+    {
+     "points": {
+      "fields": [
+       "s",
+       "sh",
+       "r"
+      ],
+      "numeric": [
+       "s",
+       "sh",
+       "r"
+      ],
+      "name": "country"
+     },
+     "as": "pts"
+    }
+   ],
+   "template": {
+    "animation": false,
+    "backgroundColor": "#E4D3B3",
+    "textStyle": {
+     "fontFamily": "'Trebuchet MS', Arial",
+     "color": "#1C1C1C"
+    },
+    "title": [
+     {
+      "text": "CUSTOMER SALES BY COUNTRY OF RESIDENCE, 2025.",
+      "left": "center",
+      "top": 34,
+      "textStyle": {
+       "fontSize": 15,
+       "fontWeight": 700,
+       "color": "#1C1C1C"
+      }
+     },
+     {
+      "text": "DONE AFTER W.E.B. DU BOIS, PARIS EXPOSITION, 1900.",
+      "left": "center",
+      "top": 58,
+      "textStyle": {
+       "fontSize": 10,
+       "fontWeight": 400,
+       "color": "#4A3F2C"
+      }
+     },
+     {
+      "text": "THE LONGER THE BAR, THE FURTHER IT COILS.",
+      "left": "center",
+      "bottom": 50,
+      "textStyle": {
+       "fontSize": 10,
+       "fontWeight": 700,
+       "color": "#4A3F2C"
+      }
+     }
+    ],
+    "tooltip": {
+     "trigger": "item",
+     "confine": true
+    },
+    "grid": {
+     "left": "20%",
+     "right": "5%",
+     "top": "22%",
+     "bottom": "46%"
+    },
+    "xAxis": {
+     "type": "value",
+     "min": 0,
+     "max": 1,
+     "show": false
+    },
+    "yAxis": {
+     "type": "category",
+     "inverse": true,
+     "data": "$calc.order.categories",
+     "axisLine": {
+      "show": false
+     },
+     "axisTick": {
+      "show": false
+     },
+     "axisLabel": {
+      "color": "#1C1C1C",
+      "fontSize": 10,
+      "fontWeight": 700,
+      "margin": 10
+     }
+    },
+    "series": [
+     {
+      "type": "custom",
+      "name": "Sales",
+      "clip": false,
+      "data": "$calc.pts.data",
+      "encode": {
+       "tooltip": [
+        0
+       ]
+      },
+      "renderItem": {
+       "language": "vilsem-expression",
+       "version": 1,
+       "root": {
+        "type": "group",
+        "children": [
+         {
+          "type": "path",
+          "shape": {
+           "pathData": {
+            "op": "if",
+            "args": [
+             {
+              "op": "gt",
+              "args": [
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "value",
+                  "args": [
+                   1
+                  ]
+                 },
+                 {
+                  "op": "viewportWidth",
+                  "args": []
+                 },
+                 2.2
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportWidth",
+                  "args": []
+                 },
+                 0.4
+                ]
+               }
+              ]
+             },
+             {
+              "op": "concat",
+              "args": [
+               "M ",
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportWidth",
+                  "args": []
+                 },
+                 0.2
+                ]
+               },
+               " ",
+               {
+                "op": "at",
+                "args": [
+                 {
+                  "op": "coord",
+                  "args": [
+                   [
+                    0,
+                    {
+                     "op": "sub",
+                     "args": [
+                      {
+                       "op": "value",
+                       "args": [
+                        2
+                       ]
+                      },
+                      1
+                     ]
+                    }
+                   ]
+                  ]
+                 },
+                 1
+                ]
+               },
+               " L ",
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportWidth",
+                  "args": []
+                 },
+                 0.6
+                ]
+               },
+               " ",
+               {
+                "op": "at",
+                "args": [
+                 {
+                  "op": "coord",
+                  "args": [
+                   [
+                    0,
+                    {
+                     "op": "sub",
+                     "args": [
+                      {
+                       "op": "value",
+                       "args": [
+                        2
+                       ]
+                      },
+                      1
+                     ]
+                    }
+                   ]
+                  ]
+                 },
+                 1
+                ]
+               },
+               " A ",
+               {
+                "op": "sub",
+                "args": [
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "viewportHeight",
+                    "args": []
+                   },
+                   0.505
+                  ]
+                 },
+                 {
+                  "op": "at",
+                  "args": [
+                   {
+                    "op": "coord",
+                    "args": [
+                     [
+                      0,
+                      {
+                       "op": "sub",
+                       "args": [
+                        {
+                         "op": "value",
+                         "args": [
+                          2
+                         ]
+                        },
+                        1
+                       ]
+                      }
+                     ]
+                    ]
+                   },
+                   1
+                  ]
+                 }
+                ]
+               },
+               " ",
+               {
+                "op": "sub",
+                "args": [
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "viewportHeight",
+                    "args": []
+                   },
+                   0.505
+                  ]
+                 },
+                 {
+                  "op": "at",
+                  "args": [
+                   {
+                    "op": "coord",
+                    "args": [
+                     [
+                      0,
+                      {
+                       "op": "sub",
+                       "args": [
+                        {
+                         "op": "value",
+                         "args": [
+                          2
+                         ]
+                        },
+                        1
+                       ]
+                      }
+                     ]
+                    ]
+                   },
+                   1
+                  ]
+                 }
+                ]
+               },
+               " 0 ",
+               {
+                "op": "if",
+                "args": [
+                 {
+                  "op": "gt",
+                  "args": [
+                   {
+                    "op": "min",
+                    "args": [
+                     {
+                      "op": "div",
+                      "args": [
+                       {
+                        "op": "sub",
+                        "args": [
+                         {
+                          "op": "mul",
+                          "args": [
+                           {
+                            "op": "value",
+                            "args": [
+                             1
+                            ]
+                           },
+                           {
+                            "op": "viewportWidth",
+                            "args": []
+                           },
+                           2.2
+                          ]
+                         },
+                         {
+                          "op": "mul",
+                          "args": [
+                           {
+                            "op": "viewportWidth",
+                            "args": []
+                           },
+                           0.4
+                          ]
+                         }
+                        ]
+                       },
+                       {
+                        "op": "sub",
+                        "args": [
+                         {
+                          "op": "mul",
+                          "args": [
+                           {
+                            "op": "viewportHeight",
+                            "args": []
+                           },
+                           0.505
+                          ]
+                         },
+                         {
+                          "op": "at",
+                          "args": [
+                           {
+                            "op": "coord",
+                            "args": [
+                             [
+                              0,
+                              {
+                               "op": "sub",
+                               "args": [
+                                {
+                                 "op": "value",
+                                 "args": [
+                                  2
+                                 ]
+                                },
+                                1
+                               ]
+                              }
+                             ]
+                            ]
+                           },
+                           1
+                          ]
+                         }
+                        ]
+                       }
+                      ]
+                     },
+                     6.2
+                    ]
+                   },
+                   3.14159
+                  ]
+                 },
+                 1,
+                 0
+                ]
+               },
+               " 1 ",
+               {
+                "op": "add",
+                "args": [
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "viewportWidth",
+                    "args": []
+                   },
+                   0.6
+                  ]
+                 },
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "sub",
+                    "args": [
+                     {
+                      "op": "mul",
+                      "args": [
+                       {
+                        "op": "viewportHeight",
+                        "args": []
+                       },
+                       0.505
+                      ]
+                     },
+                     {
+                      "op": "at",
+                      "args": [
+                       {
+                        "op": "coord",
+                        "args": [
+                         [
+                          0,
+                          {
+                           "op": "sub",
+                           "args": [
+                            {
+                             "op": "value",
+                             "args": [
+                              2
+                             ]
+                            },
+                            1
+                           ]
+                          }
+                         ]
+                        ]
+                       },
+                       1
+                      ]
+                     }
+                    ]
+                   },
+                   {
+                    "op": "sin",
+                    "args": [
+                     {
+                      "op": "min",
+                      "args": [
+                       {
+                        "op": "div",
+                        "args": [
+                         {
+                          "op": "sub",
+                          "args": [
+                           {
+                            "op": "mul",
+                            "args": [
+                             {
+                              "op": "value",
+                              "args": [
+                               1
+                              ]
+                             },
+                             {
+                              "op": "viewportWidth",
+                              "args": []
+                             },
+                             2.2
+                            ]
+                           },
+                           {
+                            "op": "mul",
+                            "args": [
+                             {
+                              "op": "viewportWidth",
+                              "args": []
+                             },
+                             0.4
+                            ]
+                           }
+                          ]
+                         },
+                         {
+                          "op": "sub",
+                          "args": [
+                           {
+                            "op": "mul",
+                            "args": [
+                             {
+                              "op": "viewportHeight",
+                              "args": []
+                             },
+                             0.505
+                            ]
+                           },
+                           {
+                            "op": "at",
+                            "args": [
+                             {
+                              "op": "coord",
+                              "args": [
+                               [
+                                0,
+                                {
+                                 "op": "sub",
+                                 "args": [
+                                  {
+                                   "op": "value",
+                                   "args": [
+                                    2
+                                   ]
+                                  },
+                                  1
+                                 ]
+                                }
+                               ]
+                              ]
+                             },
+                             1
+                            ]
+                           }
+                          ]
+                         }
+                        ]
+                       },
+                       6.2
+                      ]
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               },
+               " ",
+               {
+                "op": "sub",
+                "args": [
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "viewportHeight",
+                    "args": []
+                   },
+                   0.505
+                  ]
+                 },
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "sub",
+                    "args": [
+                     {
+                      "op": "mul",
+                      "args": [
+                       {
+                        "op": "viewportHeight",
+                        "args": []
+                       },
+                       0.505
+                      ]
+                     },
+                     {
+                      "op": "at",
+                      "args": [
+                       {
+                        "op": "coord",
+                        "args": [
+                         [
+                          0,
+                          {
+                           "op": "sub",
+                           "args": [
+                            {
+                             "op": "value",
+                             "args": [
+                              2
+                             ]
+                            },
+                            1
+                           ]
+                          }
+                         ]
+                        ]
+                       },
+                       1
+                      ]
+                     }
+                    ]
+                   },
+                   {
+                    "op": "cos",
+                    "args": [
+                     {
+                      "op": "min",
+                      "args": [
+                       {
+                        "op": "div",
+                        "args": [
+                         {
+                          "op": "sub",
+                          "args": [
+                           {
+                            "op": "mul",
+                            "args": [
+                             {
+                              "op": "value",
+                              "args": [
+                               1
+                              ]
+                             },
+                             {
+                              "op": "viewportWidth",
+                              "args": []
+                             },
+                             2.2
+                            ]
+                           },
+                           {
+                            "op": "mul",
+                            "args": [
+                             {
+                              "op": "viewportWidth",
+                              "args": []
+                             },
+                             0.4
+                            ]
+                           }
+                          ]
+                         },
+                         {
+                          "op": "sub",
+                          "args": [
+                           {
+                            "op": "mul",
+                            "args": [
+                             {
+                              "op": "viewportHeight",
+                              "args": []
+                             },
+                             0.505
+                            ]
+                           },
+                           {
+                            "op": "at",
+                            "args": [
+                             {
+                              "op": "coord",
+                              "args": [
+                               [
+                                0,
+                                {
+                                 "op": "sub",
+                                 "args": [
+                                  {
+                                   "op": "value",
+                                   "args": [
+                                    2
+                                   ]
+                                  },
+                                  1
+                                 ]
+                                }
+                               ]
+                              ]
+                             },
+                             1
+                            ]
+                           }
+                          ]
+                         }
+                        ]
+                       },
+                       6.2
+                      ]
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "op": "concat",
+              "args": [
+               "M ",
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportWidth",
+                  "args": []
+                 },
+                 0.2
+                ]
+               },
+               " ",
+               {
+                "op": "at",
+                "args": [
+                 {
+                  "op": "coord",
+                  "args": [
+                   [
+                    0,
+                    {
+                     "op": "sub",
+                     "args": [
+                      {
+                       "op": "value",
+                       "args": [
+                        2
+                       ]
+                      },
+                      1
+                     ]
+                    }
+                   ]
+                  ]
+                 },
+                 1
+                ]
+               },
+               " L ",
+               {
+                "op": "add",
+                "args": [
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "viewportWidth",
+                    "args": []
+                   },
+                   0.2
+                  ]
+                 },
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "value",
+                    "args": [
+                     1
+                    ]
+                   },
+                   {
+                    "op": "viewportWidth",
+                    "args": []
+                   },
+                   2.2
+                  ]
+                 }
+                ]
+               },
+               " ",
+               {
+                "op": "at",
+                "args": [
+                 {
+                  "op": "coord",
+                  "args": [
+                   [
+                    0,
+                    {
+                     "op": "sub",
+                     "args": [
+                      {
+                       "op": "value",
+                       "args": [
+                        2
+                       ]
+                      },
+                      1
+                     ]
+                    }
+                   ]
+                  ]
+                 },
+                 1
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          },
+          "style": {
+           "fill": "none",
+           "stroke": {
+            "op": "at",
+            "args": [
+             [
+              "#DC143C",
+              "#D4A017",
+              "#00843D",
+              "#4682B4",
+              "#8B5A2B",
+              "#E79AA6",
+              "#1C1C1C",
+              "#7A6A4F"
+             ],
+             {
+              "op": "mod",
+              "args": [
+               {
+                "op": "sub",
+                "args": [
+                 {
+                  "op": "value",
+                  "args": [
+                   2
+                  ]
+                 },
+                 1
+                ]
+               },
+               8
+              ]
+             }
+            ]
+           },
+           "lineWidth": {
+            "op": "mul",
+            "args": [
+             {
+              "op": "viewportHeight",
+              "args": []
+             },
+             0.02
+            ]
+           },
+           "lineCap": "butt"
+          }
+         },
+         {
+          "type": "text",
+          "style": {
+           "text": {
+            "op": "formatNumber",
+            "args": [
+             {
+              "op": "value",
+              "args": [
+               0
+              ]
+             },
+             {
+              "op": "literal",
+              "args": [
+               "$#,0M"
+              ]
+             }
+            ]
+           },
+           "x": {
+            "op": "add",
+            "args": [
+             {
+              "op": "mul",
+              "args": [
+               {
+                "op": "viewportWidth",
+                "args": []
+               },
+               0.2
+              ]
+             },
+             6
+            ]
+           },
+           "y": {
+            "op": "at",
+            "args": [
+             {
+              "op": "coord",
+              "args": [
+               [
+                0,
+                {
+                 "op": "sub",
+                 "args": [
+                  {
+                   "op": "value",
+                   "args": [
+                    2
+                   ]
+                  },
+                  1
+                 ]
+                }
+               ]
+              ]
+             },
+             1
+            ]
+           },
+           "verticalAlign": "middle",
+           "align": "left",
+           "fill": {
+            "op": "if",
+            "args": [
+             {
+              "op": "eq",
+              "args": [
+               {
+                "op": "value",
+                "args": [
+                 2
+                ]
+               },
+               6
+              ]
+             },
+             "#1C1C1C",
+             "#FFFFFF"
+            ]
+           },
+           "fontSize": 9,
+           "fontWeight": 700
+          }
+         }
+        ]
+       }
+      }
+     }
+    ]
+   }
+  },
+  "specVersion": "0.7",
+  "bindings": {
+   "dimensions": [
+    {
+     "table": "Customer",
+     "column": "CountryFull"
+    }
+   ],
+   "measures": [
+    {
+     "table": "KPI Measures",
+     "name": "duS"
+    },
+    {
+     "table": "KPI Measures",
+     "name": "duSh"
+    },
+    {
+     "table": "KPI Measures",
+     "name": "duR"
+    }
+   ]
+  }
+ }
+}

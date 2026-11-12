@@ -1,0 +1,194 @@
+{
+ "_note": "Working Vilsem spec from the Contoso 10M demo report (renderer 4.43). Contoso-specific fields/measures; use as a reference, not a shipped template.",
+ "visual": "demoDailyCalendar",
+ "layout": {
+  "x": 640,
+  "y": 0,
+  "width": 640,
+  "height": 360,
+  "z": 1,
+  "tabOrder": 1
+ },
+ "bindings": {
+  "dimensions": [
+   {
+    "table": "Date",
+    "column": "Date"
+   }
+  ],
+  "measures": [
+   {
+    "name": "demoDaySales",
+    "scoped": true
+   }
+  ]
+ },
+ "spec": {
+  "version": 1,
+  "type": "custom",
+  "config": {
+   "cardStyle": "plain",
+   "renderer": "svg"
+  },
+  "measures": {
+   "demoDaySales": {
+    "expression": "VAR last = [Global Last Sale Date] VAR fy = IF(MONTH(last) = 12 && DAY(last) = 31, YEAR(last), YEAR(last) - 1) VAR d = MAX('Date'[Date]) RETURN IF(YEAR(d) = fy, [Net Sales] / 1e6)",
+    "format": "\"$\"#,0.0\"M\""
+   }
+  },
+  "template": {
+   "meta": {
+    "id": "demo_daily_calendar",
+    "name": "Daily sales calendar",
+    "formatVersion": 2
+   },
+   "slots": {
+    "day": {
+     "kind": "time"
+    },
+    "s": {
+     "kind": "measure"
+    }
+   },
+   "params": [],
+   "template": {
+    "animation": true,
+    "backgroundColor": "#FFFFFF",
+    "textStyle": {
+     "fontFamily": "$theme.font",
+     "color": "#0B1220"
+    },
+    "title": [
+     {
+      "text": "DAILY SALES CALENDAR",
+      "left": 20,
+      "top": 12,
+      "textStyle": {
+       "fontSize": 10,
+       "fontWeight": 800,
+       "color": "#1554B0"
+      }
+     },
+     {
+      "text": "Net sales per day, latest full year",
+      "left": 20,
+      "top": 26,
+      "textStyle": {
+       "fontSize": 17,
+       "fontWeight": 800,
+       "color": "#0B1220"
+      }
+     },
+     {
+      "text": "Darker = higher sales · hover a day for its value",
+      "left": 20,
+      "bottom": 18,
+      "textStyle": {
+       "fontSize": 10,
+       "fontWeight": 400,
+       "color": "#4E5B70"
+      }
+     }
+    ],
+    "tooltip": {
+     "trigger": "item",
+     "confine": true,
+     "formatterTemplate": "{value.0:date}: {value.1:thousands}"
+    },
+    "calendar": {
+     "range": "$slot.day.dateRange",
+     "orient": "horizontal",
+     "left": 64,
+     "right": 16,
+     "top": 92,
+     "cellSize": [
+      "auto",
+      27
+     ],
+     "yearLabel": {
+      "show": true,
+      "position": "left",
+      "margin": 30,
+      "color": "#0B2A66",
+      "fontSize": 14,
+      "fontWeight": 800
+     },
+     "dayLabel": {
+      "firstDay": 1,
+      "nameMap": "en",
+      "color": "#4E5B70",
+      "fontSize": 9,
+      "margin": 6
+     },
+     "monthLabel": {
+      "color": "#0B1220",
+      "fontWeight": 700,
+      "fontSize": 10,
+      "margin": 6
+     },
+     "itemStyle": {
+      "color": "#F3F6FA",
+      "borderColor": "#FFFFFF",
+      "borderWidth": 1.5
+     },
+     "splitLine": {
+      "show": false
+     }
+    },
+    "visualMap": {
+     "type": "continuous",
+     "seriesIndex": 0,
+     "min": "$slot.s.min",
+     "max": "$slot.s.max",
+     "orient": "horizontal",
+     "right": 20,
+     "bottom": 14,
+     "itemWidth": 10,
+     "itemHeight": 160,
+     "text": [
+      "more",
+      "less"
+     ],
+     "textStyle": {
+      "color": "#4E5B70",
+      "fontSize": 10
+     },
+     "inRange": {
+      "color": [
+       "#E8F1FD",
+       "#9CC8F5",
+       "#3B8EE0",
+       "#1554B0",
+       "#0B2A66"
+      ]
+     }
+    },
+    "series": [
+     {
+      "type": "heatmap",
+      "coordinateSystem": "calendar",
+      "data": "$slot.s.pairs",
+      "itemStyle": {
+       "borderRadius": 2
+      }
+     }
+    ]
+   }
+  },
+  "specVersion": "0.7",
+  "bindings": {
+   "dimensions": [
+    {
+     "table": "Date",
+     "column": "Date"
+    }
+   ],
+   "measures": [
+    {
+     "table": "KPI Measures",
+     "name": "demoDaySales"
+    }
+   ]
+  }
+ }
+}

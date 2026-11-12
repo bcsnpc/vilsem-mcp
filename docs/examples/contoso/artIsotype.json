@@ -1,0 +1,200 @@
+{
+ "_note": "Working Vilsem spec from the Contoso 10M demo report (renderer 4.43). Contoso-specific fields/measures; use as a reference, not a shipped template.",
+ "visual": "artIsotype",
+ "layout": {
+  "x": 640,
+  "y": 0,
+  "width": 640,
+  "height": 720,
+  "z": 1,
+  "tabOrder": 1
+ },
+ "bindings": {
+  "dimensions": [
+   {
+    "table": "Store",
+    "column": "CountryName"
+   }
+  ],
+  "measures": [
+   {
+    "name": "isoS",
+    "scoped": true
+   }
+  ]
+ },
+ "spec": {
+  "version": 1,
+  "type": "custom",
+  "config": {
+   "cardStyle": "plain",
+   "renderer": "svg"
+  },
+  "measures": {
+   "isoS": {
+    "expression": "VAR y = YEAR([Global Last Sale Date]) VAR c = SELECTEDVALUE(Store[CountryName]) RETURN IF(c <> \"Online\", CALCULATE([Net Sales], REMOVEFILTERS('Date'), 'Date'[Year] = y) / 1e6)",
+    "format": "\"$\"#,0\"M\""
+   }
+  },
+  "template": {
+   "meta": {
+    "id": "art_isotype",
+    "name": "Isotype pictogram",
+    "formatVersion": 2
+   },
+   "slots": {
+    "country": {
+     "kind": "dimension"
+    },
+    "s": {
+     "kind": "measure"
+    }
+   },
+   "params": [],
+   "transforms": [
+    {
+     "top": {
+      "category": "country",
+      "value": "s",
+      "count": 12
+     },
+     "as": "order"
+    }
+   ],
+   "template": {
+    "animation": true,
+    "animationDuration": 1400,
+    "backgroundColor": "#F1E7D0",
+    "textStyle": {
+     "fontFamily": "Futura, 'Century Gothic', Arial",
+     "color": "#1B1B1B"
+    },
+    "title": [
+     {
+      "text": "ISOTYPE",
+      "left": 36,
+      "top": 30,
+      "textStyle": {
+       "fontSize": 12,
+       "fontWeight": 900,
+       "color": "#C8102E"
+      }
+     },
+     {
+      "text": "Where the store money is made",
+      "left": 36,
+      "top": 48,
+      "textStyle": {
+       "fontSize": 24,
+       "fontWeight": 800,
+       "color": "#1B1B1B"
+      }
+     },
+     {
+      "text": "Each bag = $30M of FY2025 store sales (online excluded)",
+      "left": 36,
+      "top": 84,
+      "textStyle": {
+       "fontSize": 12,
+       "fontWeight": 400,
+       "color": "#5A4E3C"
+      }
+     },
+     {
+      "text": "After Otto & Marie Neurath, Vienna Method of Picture Statistics, 1925",
+      "left": 36,
+      "bottom": 22,
+      "textStyle": {
+       "fontSize": 10,
+       "fontWeight": 400,
+       "color": "#6B5C44"
+      }
+     }
+    ],
+    "tooltip": {
+     "trigger": "item",
+     "confine": true
+    },
+    "grid": {
+     "left": 140,
+     "right": 36,
+     "top": 130,
+     "bottom": 60
+    },
+    "xAxis": {
+     "type": "value",
+     "min": 0,
+     "max": 690,
+     "show": false
+    },
+    "yAxis": {
+     "type": "category",
+     "inverse": true,
+     "data": "$calc.order.categories",
+     "axisLine": {
+      "show": false
+     },
+     "axisTick": {
+      "show": false
+     },
+     "axisLabel": {
+      "color": "#1B1B1B",
+      "fontSize": 12,
+      "fontWeight": 700,
+      "margin": 14
+     }
+    },
+    "series": [
+     {
+      "type": "pictorialBar",
+      "name": "Store sales",
+      "data": "$slot.s.pairsSwapped",
+      "encode": {
+       "x": 0,
+       "y": 1
+      },
+      "symbol": "path://M2,8 L22,8 L20,24 L4,24 Z M7,8 L7,6 C7,0 17,0 17,6 L17,8 L15,8 L15,6 C15,2 9,2 9,6 L9,8 Z",
+      "symbolRepeat": true,
+      "symbolClip": true,
+      "symbolSize": [
+       16,
+       20
+      ],
+      "symbolMargin": 2,
+      "barCategoryGap": "30%",
+      "itemStyle": {
+       "color": "#C8102E"
+      },
+      "label": {
+       "show": true,
+       "position": "right",
+       "offset": [
+        6,
+        0
+       ],
+       "formatterTemplate": "{value.0:thousands}",
+       "color": "#5A4E3C",
+       "fontSize": 11,
+       "fontWeight": 700
+      }
+     }
+    ]
+   }
+  },
+  "specVersion": "0.7",
+  "bindings": {
+   "dimensions": [
+    {
+     "table": "Store",
+     "column": "CountryName"
+    }
+   ],
+   "measures": [
+    {
+     "table": "KPI Measures",
+     "name": "isoS"
+    }
+   ]
+  }
+ }
+}

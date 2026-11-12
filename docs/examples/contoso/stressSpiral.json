@@ -1,0 +1,256 @@
+{
+ "_note": "Working Vilsem spec from the Contoso 10M demo report (renderer 4.43). Contoso-specific fields/measures; use as a reference, not a shipped template.",
+ "visual": "stressSpiral",
+ "layout": {
+  "x": 0,
+  "y": 0,
+  "width": 640,
+  "height": 720,
+  "z": 0,
+  "tabOrder": 0
+ },
+ "bindings": {
+  "dimensions": [
+   {
+    "table": "Date",
+    "column": "YearMonthNumber"
+   }
+  ],
+  "measures": [
+   {
+    "name": "xspT",
+    "scoped": true
+   },
+   {
+    "name": "xspV",
+    "scoped": true
+   }
+  ]
+ },
+ "spec": {
+  "version": 1,
+  "type": "custom",
+  "config": {
+   "cardStyle": "plain",
+   "renderer": "svg"
+  },
+  "measures": {
+   "xspT": {
+    "expression": "IF([Net Sales] > 0, MAX('Date'[YearMonthNumber]) - 24196)",
+    "format": "0"
+   },
+   "xspV": {
+    "expression": "IF([Net Sales] > 0, [Net Sales] / 1e6)",
+    "format": "$#,0\"M\""
+   }
+  },
+  "template": {
+   "meta": {
+    "id": "lab_decade_spiral",
+    "name": "Decade spiral",
+    "formatVersion": 2
+   },
+   "slots": {
+    "ym": {
+     "kind": "time"
+    },
+    "t": {
+     "kind": "measure"
+    },
+    "v": {
+     "kind": "measure"
+    }
+   },
+   "params": [],
+   "transforms": [
+    {
+     "calculate": "20 + t * 1.0 + v * 0.05",
+     "as": "r"
+    },
+    {
+     "calculate": "(t + 4) - floor((t + 4) / 12) * 12",
+     "as": "ang"
+    },
+    {
+     "points": {
+      "fields": [
+       "r",
+       "ang",
+       "v"
+      ],
+      "numeric": [
+       "r",
+       "ang",
+       "v"
+      ],
+      "name": "ym"
+     },
+     "as": "pts"
+    }
+   ],
+   "template": {
+    "animation": true,
+    "animationDuration": 3000,
+    "backgroundColor": {
+     "type": "radial",
+     "x": 0.5,
+     "y": 0.55,
+     "r": 0.8,
+     "colorStops": [
+      {
+       "offset": 0,
+       "color": "#0F2A2E"
+      },
+      {
+       "offset": 1,
+       "color": "#03070A"
+      }
+     ]
+    },
+    "textStyle": {
+     "fontFamily": "$theme.font",
+     "color": "#E6EDF7"
+    },
+    "title": [
+     {
+      "text": "STRESS TEST 01 · DECADE SPIRAL",
+      "left": 32,
+      "top": 28,
+      "textStyle": {
+       "fontSize": 11,
+       "fontWeight": 800,
+       "color": "#2DD4BF"
+      }
+     },
+     {
+      "text": "Ten years, one spiral",
+      "left": 32,
+      "top": 46,
+      "textStyle": {
+       "fontSize": 24,
+       "fontWeight": 900,
+       "color": "#FFFFFF"
+      }
+     },
+     {
+      "text": "Each lap is a year (Jan at top, clockwise). Distance from centre grows with time and bulges with monthly sales; dot size = sales.",
+      "left": 32,
+      "top": 82,
+      "textStyle": {
+       "fontSize": 12,
+       "color": "#99F6E4",
+       "width": 580,
+       "overflow": "break"
+      }
+     }
+    ],
+    "tooltip": {
+     "trigger": "item",
+     "confine": true
+    },
+    "polar": {
+     "center": [
+      "50%",
+      "58%"
+     ],
+     "radius": [
+      "0%",
+      "76%"
+     ]
+    },
+    "angleAxis": {
+     "type": "value",
+     "min": 0,
+     "max": 12,
+     "startAngle": 90,
+     "clockwise": true,
+     "interval": 1,
+     "axisLine": {
+      "lineStyle": {
+       "color": "rgba(45,212,191,0.25)"
+      }
+     },
+     "axisTick": {
+      "show": false
+     },
+     "splitLine": {
+      "show": true,
+      "lineStyle": {
+       "color": "rgba(45,212,191,0.10)"
+      }
+     },
+     "axisLabel": {
+      "show": false
+     }
+    },
+    "radiusAxis": {
+     "type": "value",
+     "min": 0,
+     "show": false
+    },
+    "visualMap": {
+     "show": false,
+     "seriesIndex": 1,
+     "dimension": 2,
+     "min": 0,
+     "max": "$slot.v.max",
+     "inRange": {
+      "symbolSize": [
+       3,
+       18
+      ],
+      "color": [
+       "#0E7490",
+       "#2DD4BF",
+       "#FDE68A",
+       "#FB7185"
+      ]
+     }
+    },
+    "series": [
+     {
+      "type": "line",
+      "coordinateSystem": "polar",
+      "data": "$calc.pts.data",
+      "smooth": 0.5,
+      "showSymbol": false,
+      "silent": true,
+      "lineStyle": {
+       "width": 2,
+       "color": "rgba(45,212,191,0.55)",
+       "shadowColor": "rgba(45,212,191,0.8)",
+       "shadowBlur": 8
+      }
+     },
+     {
+      "type": "scatter",
+      "coordinateSystem": "polar",
+      "data": "$calc.pts.data",
+      "itemStyle": {
+       "opacity": 0.9
+      }
+     }
+    ]
+   }
+  },
+  "specVersion": "0.7",
+  "bindings": {
+   "dimensions": [
+    {
+     "table": "Date",
+     "column": "YearMonthNumber"
+    }
+   ],
+   "measures": [
+    {
+     "table": "KPI Measures",
+     "name": "xspT"
+    },
+    {
+     "table": "KPI Measures",
+     "name": "xspV"
+    }
+   ]
+  }
+ }
+}

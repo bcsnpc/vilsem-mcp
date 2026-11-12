@@ -1,0 +1,370 @@
+{
+ "_note": "Working Vilsem spec from the Contoso 10M demo report (renderer 4.43). Contoso-specific fields/measures; use as a reference, not a shipped template.",
+ "visual": "demoCountryFlow",
+ "layout": {
+  "x": 0,
+  "y": 360,
+  "width": 640,
+  "height": 360,
+  "z": 2,
+  "tabOrder": 2
+ },
+ "bindings": {
+  "dimensions": [
+   {
+    "table": "Customer",
+    "column": "CountryFull"
+   },
+   {
+    "table": "Product",
+    "column": "CategoryName"
+   }
+  ],
+  "measures": [
+   {
+    "name": "demoFlowSales",
+    "scoped": true
+   }
+  ]
+ },
+ "spec": {
+  "version": 1,
+  "type": "custom",
+  "config": {
+   "cardStyle": "plain",
+   "renderer": "svg"
+  },
+  "measures": {
+   "demoFlowSales": {
+    "expression": "[Net Sales] / 1e6",
+    "format": "\"$\"#,0\"M\""
+   }
+  },
+  "template": {
+   "meta": {
+    "id": "demo_country_category_flow",
+    "name": "Country to category flow",
+    "formatVersion": 2
+   },
+   "slots": {
+    "country": {
+     "kind": "dimension"
+    },
+    "category": {
+     "kind": "dimension"
+    },
+    "s": {
+     "kind": "measure"
+    }
+   },
+   "params": [],
+   "transforms": [
+    {
+     "flows": {
+      "levels": [
+       "country",
+       "category"
+      ],
+      "value": "s",
+      "order": "value"
+     },
+     "as": "flow"
+    }
+   ],
+   "template": {
+    "animation": true,
+    "backgroundColor": "#FFFFFF",
+    "textStyle": {
+     "fontFamily": "$theme.font",
+     "color": "#0B1220"
+    },
+    "title": [
+     {
+      "text": "SALES FLOW",
+      "left": 20,
+      "top": 12,
+      "textStyle": {
+       "fontSize": 10,
+       "fontWeight": 800,
+       "color": "#1554B0"
+      }
+     },
+     {
+      "text": "Customer country → product category",
+      "left": 20,
+      "top": 26,
+      "textStyle": {
+       "fontSize": 17,
+       "fontWeight": 800,
+       "color": "#0B1220"
+      }
+     },
+     {
+      "text": "Net sales, all years · hover to trace a flow",
+      "right": 20,
+      "top": 32,
+      "textStyle": {
+       "fontSize": 10,
+       "fontWeight": 400,
+       "color": "#4E5B70"
+      }
+     }
+    ],
+    "tooltip": {
+     "trigger": "item",
+     "confine": true,
+     "formatterTemplate": "{label}: {value:thousands}"
+    },
+    "series": [
+     {
+      "type": "sankey",
+      "left": 112,
+      "right": 176,
+      "top": 62,
+      "bottom": 14,
+      "data": [
+       {
+        "id": "$calc.flow.nodes.0.id",
+        "name": "$calc.flow.nodes.0.name",
+        "label": "$calc.flow.nodes.0.label",
+        "depth": "$calc.flow.nodes.0.depth",
+        "value": "$calc.flow.nodes.0.value",
+        "rowIndexes": "$calc.flow.nodes.0.rowIndexes",
+        "itemStyle": {
+         "color": "#4E79A7"
+        }
+       },
+       {
+        "id": "$calc.flow.nodes.1.id",
+        "name": "$calc.flow.nodes.1.name",
+        "label": "$calc.flow.nodes.1.label",
+        "depth": "$calc.flow.nodes.1.depth",
+        "value": "$calc.flow.nodes.1.value",
+        "rowIndexes": "$calc.flow.nodes.1.rowIndexes",
+        "itemStyle": {
+         "color": "#F28E2B"
+        }
+       },
+       {
+        "id": "$calc.flow.nodes.2.id",
+        "name": "$calc.flow.nodes.2.name",
+        "label": "$calc.flow.nodes.2.label",
+        "depth": "$calc.flow.nodes.2.depth",
+        "value": "$calc.flow.nodes.2.value",
+        "rowIndexes": "$calc.flow.nodes.2.rowIndexes",
+        "itemStyle": {
+         "color": "#E15759"
+        }
+       },
+       {
+        "id": "$calc.flow.nodes.3.id",
+        "name": "$calc.flow.nodes.3.name",
+        "label": "$calc.flow.nodes.3.label",
+        "depth": "$calc.flow.nodes.3.depth",
+        "value": "$calc.flow.nodes.3.value",
+        "rowIndexes": "$calc.flow.nodes.3.rowIndexes",
+        "itemStyle": {
+         "color": "#59A14F"
+        }
+       },
+       {
+        "id": "$calc.flow.nodes.4.id",
+        "name": "$calc.flow.nodes.4.name",
+        "label": "$calc.flow.nodes.4.label",
+        "depth": "$calc.flow.nodes.4.depth",
+        "value": "$calc.flow.nodes.4.value",
+        "rowIndexes": "$calc.flow.nodes.4.rowIndexes",
+        "itemStyle": {
+         "color": "#B07AA1"
+        }
+       },
+       {
+        "id": "$calc.flow.nodes.5.id",
+        "name": "$calc.flow.nodes.5.name",
+        "label": "$calc.flow.nodes.5.label",
+        "depth": "$calc.flow.nodes.5.depth",
+        "value": "$calc.flow.nodes.5.value",
+        "rowIndexes": "$calc.flow.nodes.5.rowIndexes",
+        "itemStyle": {
+         "color": "#76B7B2"
+        }
+       },
+       {
+        "id": "$calc.flow.nodes.6.id",
+        "name": "$calc.flow.nodes.6.name",
+        "label": "$calc.flow.nodes.6.label",
+        "depth": "$calc.flow.nodes.6.depth",
+        "value": "$calc.flow.nodes.6.value",
+        "rowIndexes": "$calc.flow.nodes.6.rowIndexes",
+        "itemStyle": {
+         "color": "#EDC948"
+        }
+       },
+       {
+        "id": "$calc.flow.nodes.7.id",
+        "name": "$calc.flow.nodes.7.name",
+        "label": "$calc.flow.nodes.7.label",
+        "depth": "$calc.flow.nodes.7.depth",
+        "value": "$calc.flow.nodes.7.value",
+        "rowIndexes": "$calc.flow.nodes.7.rowIndexes",
+        "itemStyle": {
+         "color": "#9C755F"
+        }
+       },
+       {
+        "id": "$calc.flow.nodes.8.id",
+        "name": "$calc.flow.nodes.8.name",
+        "label": "$calc.flow.nodes.8.label",
+        "depth": "$calc.flow.nodes.8.depth",
+        "value": "$calc.flow.nodes.8.value",
+        "rowIndexes": "$calc.flow.nodes.8.rowIndexes",
+        "itemStyle": {
+         "color": "#5B6577"
+        }
+       },
+       {
+        "id": "$calc.flow.nodes.9.id",
+        "name": "$calc.flow.nodes.9.name",
+        "label": "$calc.flow.nodes.9.label",
+        "depth": "$calc.flow.nodes.9.depth",
+        "value": "$calc.flow.nodes.9.value",
+        "rowIndexes": "$calc.flow.nodes.9.rowIndexes",
+        "itemStyle": {
+         "color": "#5B6577"
+        }
+       },
+       {
+        "id": "$calc.flow.nodes.10.id",
+        "name": "$calc.flow.nodes.10.name",
+        "label": "$calc.flow.nodes.10.label",
+        "depth": "$calc.flow.nodes.10.depth",
+        "value": "$calc.flow.nodes.10.value",
+        "rowIndexes": "$calc.flow.nodes.10.rowIndexes",
+        "itemStyle": {
+         "color": "#5B6577"
+        }
+       },
+       {
+        "id": "$calc.flow.nodes.11.id",
+        "name": "$calc.flow.nodes.11.name",
+        "label": "$calc.flow.nodes.11.label",
+        "depth": "$calc.flow.nodes.11.depth",
+        "value": "$calc.flow.nodes.11.value",
+        "rowIndexes": "$calc.flow.nodes.11.rowIndexes",
+        "itemStyle": {
+         "color": "#5B6577"
+        }
+       },
+       {
+        "id": "$calc.flow.nodes.12.id",
+        "name": "$calc.flow.nodes.12.name",
+        "label": "$calc.flow.nodes.12.label",
+        "depth": "$calc.flow.nodes.12.depth",
+        "value": "$calc.flow.nodes.12.value",
+        "rowIndexes": "$calc.flow.nodes.12.rowIndexes",
+        "itemStyle": {
+         "color": "#5B6577"
+        }
+       },
+       {
+        "id": "$calc.flow.nodes.13.id",
+        "name": "$calc.flow.nodes.13.name",
+        "label": "$calc.flow.nodes.13.label",
+        "depth": "$calc.flow.nodes.13.depth",
+        "value": "$calc.flow.nodes.13.value",
+        "rowIndexes": "$calc.flow.nodes.13.rowIndexes",
+        "itemStyle": {
+         "color": "#5B6577"
+        }
+       },
+       {
+        "id": "$calc.flow.nodes.14.id",
+        "name": "$calc.flow.nodes.14.name",
+        "label": "$calc.flow.nodes.14.label",
+        "depth": "$calc.flow.nodes.14.depth",
+        "value": "$calc.flow.nodes.14.value",
+        "rowIndexes": "$calc.flow.nodes.14.rowIndexes",
+        "itemStyle": {
+         "color": "#5B6577"
+        }
+       },
+       {
+        "id": "$calc.flow.nodes.15.id",
+        "name": "$calc.flow.nodes.15.name",
+        "label": "$calc.flow.nodes.15.label",
+        "depth": "$calc.flow.nodes.15.depth",
+        "value": "$calc.flow.nodes.15.value",
+        "rowIndexes": "$calc.flow.nodes.15.rowIndexes",
+        "itemStyle": {
+         "color": "#5B6577"
+        }
+       }
+      ],
+      "links": "$calc.flow.links",
+      "nodeAlign": "justify",
+      "layoutIterations": 0,
+      "nodeWidth": 12,
+      "nodeGap": 10,
+      "draggable": false,
+      "itemStyle": {
+       "borderWidth": 0,
+       "borderRadius": 2
+      },
+      "label": {
+       "color": "#0B1220",
+       "fontSize": 11,
+       "fontWeight": 600,
+       "formatterTemplate": "{label}"
+      },
+      "levels": [
+       {
+        "depth": 0,
+        "label": {
+         "position": "left",
+         "distance": 6
+        }
+       },
+       {
+        "depth": 1,
+        "label": {
+         "position": "right",
+         "distance": 6
+        }
+       }
+      ],
+      "lineStyle": {
+       "color": "source",
+       "opacity": 0.45,
+       "curveness": 0.5
+      },
+      "emphasis": {
+       "focus": "adjacency",
+       "lineStyle": {
+        "opacity": 0.8
+       }
+      }
+     }
+    ]
+   }
+  },
+  "specVersion": "0.7",
+  "bindings": {
+   "dimensions": [
+    {
+     "table": "Customer",
+     "column": "CountryFull"
+    },
+    {
+     "table": "Product",
+     "column": "CategoryName"
+    }
+   ],
+   "measures": [
+    {
+     "table": "KPI Measures",
+     "name": "demoFlowSales"
+    }
+   ]
+  }
+ }
+}
