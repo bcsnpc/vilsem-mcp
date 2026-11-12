@@ -30,9 +30,13 @@ jobs:
       - name: Verify release tag and main ancestry
         shell: pwsh
         run: |
-          $releaseVersion = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          # Read versions with Node: npm lockfiles contain an empty-string key ("" root package)
+          # that PowerShell's ConvertFrom-Json refuses to parse.
+          $releaseVersion = node -p "require('./package.json').version"
+          if ($LASTEXITCODE -ne 0 -or -not $releaseVersion) { throw 'Could not read package version' }
           if ($env:GITHUB_REF_NAME -notmatch '^v\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$' -or $env:GITHUB_REF_NAME -ne "v$releaseVersion") { throw 'Tag must match package version' }
-          if ((Get-Content npm-shrinkwrap.json -Raw | ConvertFrom-Json).version -ne $releaseVersion) { throw 'Shrinkwrap version mismatch' }
+          $shrinkwrapVersion = node -p "const s=require('./npm-shrinkwrap.json'); [s.version, s.packages[''].version].join('|')"
+          if ($LASTEXITCODE -ne 0 -or $shrinkwrapVersion -ne "$releaseVersion|$releaseVersion") { throw "Shrinkwrap version mismatch: $shrinkwrapVersion" }
           git merge-base --is-ancestor HEAD origin/main
           if ($LASTEXITCODE -ne 0) { throw 'Release commit must belong to main' }
           "RELEASE_VERSION=$releaseVersion" >> $env:GITHUB_ENV
