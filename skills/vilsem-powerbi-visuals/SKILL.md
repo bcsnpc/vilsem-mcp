@@ -98,6 +98,7 @@ Wrap `SUMMARIZECOLUMNS` in `FILTER(..., [m] > 0)` when measures return 0, or you
   - Bind them with `{"table":"<an existing table>","name":"name"}`. Every scoped binding uses the first measure binding's table.
   - Use them for windows (return BLANK outside a date range), top-N (`IF([rank] <= 15, ...)`), constants broadcast to every row, and numeric copies of text measures.
 - Formatting:
+  - Show large values in compact units by default ($5.1B, $5,067M, 14.6K): scale in DAX and put the unit **once**, either in the measure's format string or in the formatter, never both. Check a label in the preview: `$14.6MM` means the unit was applied twice.
   - Use `formatterTemplate` with `{value:thousands}`, `{value:percent}`, `{value:date}`, `{name}`, `{label}`, `{d}`.
   - Functions and JavaScript strings are rejected.
 
@@ -118,6 +119,10 @@ Wrap `SUMMARIZECOLUMNS` in `FILTER(..., [m] > 0)` when measures return 0, or you
 `commit_visual` only adds to **existing** pages. If the user wants a new page, create it in the PBIR files first (`references/pbir-pages.md`). Use the page's internal `name` (the folder id), not its display name, as `pageName`.
 
 ### 9. Commit
+
+**Relay the tool's `nextStep` verbatim; don't infer the reload step yourself.**
+
+If the user doesn't give a size, choose one from `list_pages` that keeps all text readable and avoids overlap. Don't default to small tiles. If a size is fixed, scale fonts, label density and margins to it (e.g. `fontSize` from `viewportWidth`, hide secondary labels), and re-check the critique's text-bounds and overlap findings before committing.
 
 - Call `commit_visual` with the page, a unique `visualName`, the layout (page pixels; 16px margins on a 1280×720 page gives x=16, y=16, w=1248, h=688), the spec and the bindings.
 - **Tell the user how to see the change in Desktop.** The step depends on whether this is the report's first vilsem visual:
@@ -228,6 +233,7 @@ Tell the user:
 | `fontStyle` in an expression text style is refused | Not an allowed style property in the expression language | Use `fontWeight`/`fontSize`/`fill` only. |
 | A `graphic` outline rectangle is cut off in Desktop | Container clipping differs from the preview | Avoid outline rects at the edges; use filled panels with an inset, or the card style. |
 | A comparison chart shows flat, near-identical bars | The data has no variance for that KPI (**synthetic or sample datasets** (e.g. Contoso) often have near-identical margin %, AOV, units/order and discount across groups) | Probe variance with `run_dax` **before** designing comparisons. Pick KPIs that move (growth, orders per customer, sales per customer, share). |
+| Labels show a doubled unit (`$14.6MM`) | The value was scaled in DAX with a unit in its format string, and the formatter added the unit again | Apply the unit in one place only. |
 
 ## References
 
