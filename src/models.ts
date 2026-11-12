@@ -1,7 +1,23 @@
+import fs from 'node:fs/promises'
+import path from 'node:path'
+import {assertLocalPath,localRealpath} from './paths.js'
 import {validateInputPaths} from './paths.js'
 import crypto from 'node:crypto'
 import { createConnector } from '@vilsem/core/connect'
 import { enrichSchema, schemaDetail } from '@vilsem/core/connect/context'
+
+export const ONLINE_DISABLED='Online models (Power BI Service / Fabric) are not supported in this release. Open the model in Power BI Desktop and connect with kind:"report" or kind:"desktop".'
+async function checkConnectionSource(source:Source){
+ if(source.kind==='fabric'&&process.env.VILSEM_ENABLE_ONLINE!=='1')throw Error(ONLINE_DISABLED)
+ if(source.kind!=='report')return
+ const root=await localRealpath(source.reportDir,'source.reportDir')
+ const file=await localRealpath(path.join(root,'definition.pbir'),'definition.pbir')
+ const definition=JSON.parse((await fs.readFile(file,'utf8')).replace(/^\uFEFF/,'')),ref=definition.datasetReference
+ if(ref&&Object.hasOwn(ref,'byConnection')){if(process.env.VILSEM_ENABLE_ONLINE!=='1')throw Error(ONLINE_DISABLED);return}
+ if(typeof ref?.byPath?.path!=='string'||!ref.byPath.path.trim())throw Error('Report must have a local byPath dataset reference')
+ assertLocalPath(ref.byPath.path,'datasetReference.byPath.path')
+ await localRealpath(path.resolve(root,ref.byPath.path),'datasetReference.byPath.path')
+}
 
 type Source = {kind:'desktop',port?:number} | {kind:'fabric',workspaceId:string,datasetId:string} | {kind:'report',reportDir:string}
 export interface ModelAdapter {
@@ -16,7 +32,7 @@ export class Models {
   private metadata=new Map<string,any>()
   private profiles=new Map<string,{expires:number,promise:Promise<any>}>()
   constructor(private adapter:ModelAdapter=new VilsemAdapter()){}
-  async connect(source:Source){await validateInputPaths({source});const connection=await this.adapter.connect(source);const connectionId=crypto.randomUUID();this.connections.set(connectionId,connection);return {connectionId,kind:source.kind,schemaOnly:!!connection.schemaOnly,...(connection.discovery?{discovery:connection.discovery,...(connection.source.port?{port:connection.source.port}:{})}:{})}}
+  async connect(source:Source){await validateInputPaths({source});await checkConnectionSource(source);const connection=await this.adapter.connect(source);const connectionId=crypto.randomUUID();this.connections.set(connectionId,connection);return {connectionId,kind:source.kind,schemaOnly:!!connection.schemaOnly,...(connection.discovery?{discovery:connection.discovery,...(connection.source.port?{port:connection.source.port}:{})}:{})}}
   private get(id:string){const connection=this.connections.get(id);if(!connection)throw Error('Unknown connectionId; connect_model first');return connection}
   async query(id:string,dax:string,maxRows=200){
     // This endpoint is for DAX table queries, not XMLA/model commands.
@@ -46,8 +62,9 @@ export class Models {
 }
 
 export class VilsemAdapter implements ModelAdapter {
- private connector=createConnector()
- connect(source:Source){return this.connector.connect(source)}
- query(connection:any,dax:string,maxRows:number){return this.connector.query(connection,dax,maxRows)}
- schema(connection:any,options?:any){return this.connector.schema(connection,options)}
+ private connector:ReturnType<typeof createConnector>|undefined
+ private getConnector(){return this.connector??=createConnector()}
+ connect(source:Source){return this.getConnector().connect(source)}
+ query(connection:any,dax:string,maxRows:number){return this.getConnector().query(connection,dax,maxRows)}
+ schema(connection:any,options?:any){return this.getConnector().schema(connection,options)}
 }
