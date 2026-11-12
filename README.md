@@ -10,7 +10,7 @@ This is the custom-visual layer for agentic Power BI authoring. Use it alongside
 
 - [Release status](#release-status-09-evaluation)
 - [Quick start (Windows)](#quick-start-windows)
-- [Connect your agent](#connect-your-agent) — [Claude Code](#claude-code) · [Claude Desktop](#claude-desktop) · [Codex](#codex) · [GitHub Copilot](#github-copilot-vs-code-agent-mode) ? [Other clients](#other-mcp-clients)
+- [Connect your agent](#connect-your-agent) — [Claude Code](#claude-code) · [Claude Desktop](#claude-desktop) · [Codex](#codex) · [GitHub Copilot](#github-copilot-vs-code-agent-mode) · [Other clients](#other-mcp-clients)
 - [First test prompt](#first-test-generate-a-new-visual-from-scratch)
 - [Measures: prototype vs publish](#measures-prototype-vs-publish)
 - [Desktop setup and reload rules](#desktop-setup-and-reload-rules)
@@ -24,7 +24,7 @@ This is the custom-visual layer for agentic Power BI authoring. Use it alongside
 
 Read [SECURITY.md](SECURITY.md) for local-mode boundaries, AI-provider disclosure, sample opt-out and vulnerability reporting.
 
-Prepared release: **vilsem-mcp 0.9.0**, **@vilsem/core 0.8.0**, **Vilsem Renderer 4.43.0.0**. MCP 0.9.0 is pending approval and publication; the installation URLs below become available after publication. The last published MCP is 0.8.2. These are evaluation prereleases, suitable for testing on copies of your reports. **Production readiness, certification and exhaustive cross-target parity have not been established.** The previous stable release remains 0.6.
+Current release: **vilsem-mcp 0.9.0**, **@vilsem/core 0.8.0**, **Vilsem Renderer 4.43.0.0**. Releases are built and published by CI, with SHA-256 checksums and verifiable [build provenance](#3-verify-the-download-recommended). These are evaluation prereleases, suitable for testing on copies of your reports. **Production readiness, certification and exhaustive cross-target parity have not been established.** The previous stable release remains 0.6.
 
 Read [what was verified](#what-was-verified-for-08), [known failures](#known-failures-and-workarounds) and [incomplete checks](#checks-that-remain-partial-or-not-tested) before relying on a result. Passing tests do not mean every visual, property, dataset, report interaction or export works. This README on `main` includes live checks performed after the original release archive was built; existing release tags and assets are not rewritten.
 
@@ -87,6 +87,8 @@ $tgz = Join-Path $env:TEMP 'vilsem-mcp-0.9.0.tgz'
 Invoke-WebRequest "https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.9.0/vilsem-mcp-0.9.0.tgz" -OutFile $tgz
 (Get-FileHash $tgz -Algorithm SHA256).Hash.ToLower()
 # Compare with the vilsem-mcp-0.9.0.tgz line in SHA256SUMS-0.9.0.txt on the release page
+# Optional, with the GitHub CLI: confirm the archive was built by this repository's release workflow
+gh attestation verify $tgz --repo bcsnpc/vilsem-mcp
 ```
 
 If you verified a local copy, you can install from it instead: `npm.cmd install --prefix "$vilsemDir" "$tgz"`.
@@ -234,7 +236,7 @@ Configuration compatibility: newer Copilot harnesses also have a native `.mcp.js
 | Claude Code | Partially tested | Contoso authoring field run; exhaustive client/version coverage not established. |
 | Codex | Partially tested | Recorded Desktop/Service QA workflows; exhaustive coverage not established. |
 | Claude Desktop | Not fully tested | Setup documented; full current-version build run pending. |
-| GitHub Copilot | Partially tested | Connected, summarized the model and received instructions in 0.8.1, but could not read the resource-based playbook. Full live build run on 0.8.2 pending. |
+| GitHub Copilot | Partially tested | 0.8.2 with the auto-selected model (GPT-6 Luna): connected, retrieved the playbook through `get_playbook` (when prompted), previewed before committing and bound model measures. It repeated the close-and-reopen step for later commits; 0.9.0 makes the returned `nextStep` the explicit instruction. |
 
 ### Other MCP clients
 
@@ -562,9 +564,9 @@ For an independent test, follow [author a visual from scratch](docs/author-from-
 
 ## Release history
 
-**0.9.0 (prepared, not published)** ? Local Desktop models only by default; online connectors require the unsupported `VILSEM_ENABLE_ONLINE=1` escape hatch. Network-path rejection, schema sample opt-out, read-only DAX comment handling, optional lazy Playwright, locked dependencies, CI scanners and CI-built releases with provenance/checksums. Tool results nudge agents to fetch the playbook; recipes use model-neutral placeholders; guidance reinforces exact reload steps, readable sizing and compact units applied once. Core 0.8.0 / renderer 4.43 unchanged; Part 2 hardening remains separate. See [verification and owner steps](docs/qa/security-local-090.md).
+**0.9.0** — Local Desktop models only by default; online connectors require the unsupported `VILSEM_ENABLE_ONLINE=1` escape hatch. Network-path rejection, schema sample opt-out, read-only DAX comment handling, optional lazy Playwright, locked dependencies, CI scanners and CI-built releases with provenance/checksums. Tool results nudge agents to fetch the playbook; recipes use model-neutral placeholders; guidance reinforces exact reload steps, readable sizing and compact units applied once. Core 0.8.0 / renderer 4.43 unchanged; Part 2 hardening remains separate. See [verification and owner steps](docs/qa/security-local-090.md).
 
-**0.8.2** ? Adds `get_playbook` so clients without MCP resource support (e.g. GitHub Copilot) receive the playbook; compact core + on-demand sections. Explicit commit/reload and visual-scoped-measure guidance, validation counts, Copilot setup, and Contoso cookbook/data-art lessons. Core 0.8.0 / renderer 4.43 unchanged. See [verification and remaining manual checks](docs/qa/playbook-082.md).
+**0.8.2** — Adds `get_playbook` so clients without MCP resource support (e.g. GitHub Copilot) receive the playbook; compact core + on-demand sections. Explicit commit/reload and visual-scoped-measure guidance, validation counts, Copilot setup, and Contoso cookbook/data-art lessons. Core 0.8.0 / renderer 4.43 unchanged. See [verification and remaining manual checks](docs/qa/playbook-082.md).
 
 **0.8.1** — documentation and skill update; no runtime, renderer or spec-format changes (core 0.8.0 / renderer 4.43 unchanged). Clearer install guide, including Claude Code setup without the `claude` CLI and download checksum verification. The skill now steers shareable reports toward **model measures** instead of visual-scoped measures, which fail under Publish to web and hide fields in the Build pane (new section 9a), and bundles `scripts/promote-measures.py` to move existing visual-scoped measures into the model. 344/344 tests pass.
 
