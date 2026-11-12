@@ -330,7 +330,11 @@ In Desktop, open **File → Options and settings → Options → Preview feature
 
 The bundled renderer is at `<vilsemDir>/node_modules/@vilsem/core/assets/renderer.pbiviz`.
 
-### Model authentication
+### Experimental: online models (disabled by default)
+
+0.9.0 supports local Desktop models only. Fabric, Power BI Service, report `byConnection` and SSAS are disabled before any authentication or connector call. Open the model locally and use `kind:"report"` with a `byPath` report, or `kind:"desktop"`.
+
+For developer investigation only, `VILSEM_ENABLE_ONLINE=1` restores the existing online connector and prints a startup warning. It is **unsupported/experimental** and can authenticate, cache tokens and contact Microsoft or the report endpoint.
 
 **Desktop:** requires Windows and a running Power BI Desktop model. Core identifies the Desktop Analysis Services process and reads its workspace port file. Pass `source.port` if multiple instances are open. ADOMD/XMLA uses your Windows identity; no cloud login is needed. Ports change each time Desktop reopens; never reuse a port from another session.
 
@@ -390,6 +394,8 @@ Rendered Vilsem ECharts visuals cross-filter through Power BI selection IDs, acc
 Headless previews support the core ECharts composition types and declarative templates. DOM-adapter visual types are rejected rather than emitted as empty or substituted charts. Previews render chart marks and option; renderer-owned card chrome/title headers and existing report-level filters are not replayed. Fonts can differ between server PNGs and Desktop. Preview queries and arbitrary DAX default to 200 rows and accept `maxRows` up to 10,000. Desktop's categorical host reduction is 2,000 rows.
 
 ## Current report and visual limitations
+
+**Local Desktop models only in 0.9.** Online models are disabled by default. See the experimental section above.
 
 This table describes **MCP 0.8.2 with core 0.8.0 / renderer 4.43**. A tool PASS or saved `visual.json` is not evidence that every report, visual state or Power BI target works.
 

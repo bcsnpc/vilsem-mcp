@@ -1,7 +1,29 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { assertLocalPath, localRealpath } from './paths.js';
 import { validateInputPaths } from './paths.js';
 import crypto from 'node:crypto';
 import { createConnector } from '@vilsem/core/connect';
 import { enrichSchema, schemaDetail } from '@vilsem/core/connect/context';
+export const ONLINE_DISABLED = 'Online models (Power BI Service / Fabric) are not supported in this release. Open the model in Power BI Desktop and connect with kind:"report" or kind:"desktop".';
+async function checkConnectionSource(source) {
+    if (source.kind === 'fabric' && process.env.VILSEM_ENABLE_ONLINE !== '1')
+        throw Error(ONLINE_DISABLED);
+    if (source.kind !== 'report')
+        return;
+    const root = await localRealpath(source.reportDir, 'source.reportDir');
+    const file = await localRealpath(path.join(root, 'definition.pbir'), 'definition.pbir');
+    const definition = JSON.parse((await fs.readFile(file, 'utf8')).replace(/^\uFEFF/, '')), ref = definition.datasetReference;
+    if (ref && Object.hasOwn(ref, 'byConnection')) {
+        if (process.env.VILSEM_ENABLE_ONLINE !== '1')
+            throw Error(ONLINE_DISABLED);
+        return;
+    }
+    if (typeof ref?.byPath?.path !== 'string' || !ref.byPath.path.trim())
+        throw Error('Report must have a local byPath dataset reference');
+    assertLocalPath(ref.byPath.path, 'datasetReference.byPath.path');
+    await localRealpath(path.resolve(root, ref.byPath.path), 'datasetReference.byPath.path');
+}
 // Connections own their target IDs. No process-global dataset mutation is used.
 export class Models {
     adapter;
@@ -11,7 +33,7 @@ export class Models {
     constructor(adapter = new VilsemAdapter()) {
         this.adapter = adapter;
     }
-    async connect(source) { await validateInputPaths({ source }); const connection = await this.adapter.connect(source); const connectionId = crypto.randomUUID(); this.connections.set(connectionId, connection); return { connectionId, kind: source.kind, schemaOnly: !!connection.schemaOnly, ...(connection.discovery ? { discovery: connection.discovery, ...(connection.source.port ? { port: connection.source.port } : {}) } : {}) }; }
+    async connect(source) { await validateInputPaths({ source }); await checkConnectionSource(source); const connection = await this.adapter.connect(source); const connectionId = crypto.randomUUID(); this.connections.set(connectionId, connection); return { connectionId, kind: source.kind, schemaOnly: !!connection.schemaOnly, ...(connection.discovery ? { discovery: connection.discovery, ...(connection.source.port ? { port: connection.source.port } : {}) } : {}) }; }
     get(id) { const connection = this.connections.get(id); if (!connection)
         throw Error('Unknown connectionId; connect_model first'); return connection; }
     async query(id, dax, maxRows = 200) {
@@ -49,8 +71,9 @@ export class Models {
     }
 }
 export class VilsemAdapter {
-    connector = createConnector();
-    connect(source) { return this.connector.connect(source); }
-    query(connection, dax, maxRows) { return this.connector.query(connection, dax, maxRows); }
-    schema(connection, options) { return this.connector.schema(connection, options); }
+    connector;
+    getConnector() { return this.connector ??= createConnector(); }
+    connect(source) { return this.getConnector().connect(source); }
+    query(connection, dax, maxRows) { return this.getConnector().query(connection, dax, maxRows); }
+    schema(connection, options) { return this.getConnector().schema(connection, options); }
 }

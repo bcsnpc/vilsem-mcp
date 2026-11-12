@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 import { checkPathEnvironment } from './paths.js';
 await checkPathEnvironment();
+if (process.env.VILSEM_ENABLE_ONLINE === '1')
+    console.error('VILSEM_ENABLE_ONLINE=1 enables unsupported experimental online connections and authentication.');
 // CLI commands exit without importing the server or writing JSON-RPC to stdout.
 if (process.argv.length > 2) {
     try {
