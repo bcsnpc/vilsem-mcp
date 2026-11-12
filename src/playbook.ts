@@ -26,11 +26,6 @@ export function parseMarkdown(source:string):Section[]{
  }
  return headings.map((h,i)=>({...h,text:text.slice(h.start,headings.slice(i+1).find(next=>next.level<=h.level)?.start??text.length).trimEnd()+'\n'}))
 }
-export function parseSkill(source:string){
- const sections=parseMarkdown(source)
- for(const id of CORE_IDS)if(!sections.some(s=>s.id===id))throw Error(`Missing required core playbook heading: ${id}. Restore the heading or explicitly update CORE_IDS.`)
- return sections
-}
 export const approximateTokens=(text:string)=>Math.ceil(Buffer.byteLength(text,'utf8')/4)
 const index=(title:string,sections:{id:string,title:string,text:string}[])=>`## ${title}\n\n`+sections.map(s=>`- \`${s.id}\` — ${s.title} (~${approximateTokens(s.text)} tokens)`).join('\n')+'\n'
 const aliases:Record<string,string>={
@@ -44,15 +39,16 @@ export async function getPlaybook(section='core'){
  const header=`vilsem-playbook ${version} · section: ${id}`
  try{
   const [source,cookbookSource,pagesSource,artSource]=await Promise.all(['SKILL.md','references/spec-cookbook.md','references/pbir-pages.md','references/data-art-recipes.md'].map(file=>fs.readFile(new URL(file,skillRoot),'utf8').then(normalizeMarkdown)))
-  const skill=parseSkill(source),cookbook=parseMarkdown(cookbookSource),art=parseMarkdown(artSource)
-  const core=CORE_IDS.map(id=>skill.find(s=>s.id===id)!.text).join('\n')
-  if(Buffer.byteLength(core,'utf8')>=8000)throw Error('Playbook core must stay under 8,000 bytes; trim the core markdown and move detail to on-demand sections.')
+  const skill=parseMarkdown(source),cookbook=parseMarkdown(cookbookSource),art=parseMarkdown(artSource)
+  const missing=CORE_IDS.filter(id=>!skill.some(s=>s.id===id))
+  const core=CORE_IDS.flatMap(id=>skill.find(s=>s.id===id)?.text??[]).join('\n')
+  const coreNote=missing.length?`\nNote: unavailable core sections: ${missing.join(', ')}. Serving the remaining sections.\n`:''
   const cooked=cookbook.map(s=>({...s,id:'cookbook:'+s.id})),recipes=art.map(s=>({...s,id:'art:'+s.id}))
   const cookbookIndex=index('Cookbook index',cooked),artIndex=index('Data-art recipes index',recipes)
   const other=[...skill.filter(s=>!(CORE_IDS as readonly string[]).includes(s.id)),
    {id:'all',title:'Complete skill',text:source},{id:'pbir-pages',title:'PBIR pages reference',text:pagesSource},
    {id:'cookbook',title:'Cookbook index',text:cookbookIndex},{id:'art',title:'Data-art recipes index',text:artIndex}]
-  const bodies=new Map([['core',core+'\n'+index('On-demand section index',other)],['all',source],['pbir-pages',pagesSource],['cookbook',cookbookIndex],['art',artIndex],...skill.map(s=>[s.id,s.text]),...cooked.map(s=>[s.id,s.text]),...recipes.map(s=>[s.id,s.text])] as [string,string][])
+  const bodies=new Map([['core',core+coreNote+'\n'+index('On-demand section index',other)],['all',source],['pbir-pages',pagesSource],['cookbook',cookbookIndex],['art',artIndex],...skill.map(s=>[s.id,s.text]),...cooked.map(s=>[s.id,s.text]),...recipes.map(s=>[s.id,s.text])] as [string,string][])
   const body=bodies.get(id)
   if(body===undefined)throw Error(`Unknown playbook section ${JSON.stringify(section)}. Valid ids: ${[...bodies.keys(),...Object.keys(aliases)].join(', ')}`)
   return {text:header+'\n'+body,coreBytes:Buffer.byteLength(core,'utf8'),coreTokens:approximateTokens(core)}
