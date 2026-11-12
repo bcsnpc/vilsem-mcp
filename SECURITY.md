@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-0.9.x is the local-only evaluation line receiving this hardening work. 0.9.0 is prepared, not yet published. Earlier evaluation releases do not receive these protections automatically; upgrade when the release is published. Production certification and exhaustive host validation have not been established.
+0.9.x is the local-only evaluation line receiving this hardening work. Earlier evaluation releases do not receive these protections automatically; upgrade to the latest 0.9.x release. Production certification and exhaustive host validation have not been established.
 
 ## What Vilsem reads and writes
 
@@ -27,7 +27,7 @@ Use `get_schema` with `samples:false`, or set `VILSEM_SCHEMA_SAMPLES=0` in the M
 Install a pinned release archive. Compute its SHA-256 digest with `Get-FileHash -Algorithm SHA256` and compare it with the matching `SHA256SUMS-<version>.txt` asset. From 0.9.0, the release workflow builds the archive and generates GitHub build-provenance attestations; verify a downloaded archive with:
 
 ```powershell
-gh attestation verify ./vilsem-mcp-0.9.0.tgz --repo bcsnpc/vilsem-mcp
+gh attestation verify ./vilsem-mcp-0.9.1.tgz --repo bcsnpc/vilsem-mcp
 ```
 
 A checksum verifies matching bytes; provenance additionally identifies the repository/workflow/commit that built them. Neither proves that every dependency or behavior is safe. Installed dependency versions and integrity hashes are locked by `npm-shrinkwrap.json`.
@@ -38,4 +38,4 @@ Use [GitHub private vulnerability reporting](https://github.com/bcsnpc/vilsem-mc
 
 ## Core and renderer follow-ups
 
-This MCP release retains core 0.8.0 and renderer 4.43. Their raw-HTML fallback, PowerShell bridge package selection, online refresh-token storage and axios dependency are separate Part 2 work and are not fixed here. Use declarative Vilsem specs; this release does not certify the renderer's raw-HTML fallback.
+From 0.9.1 this MCP depends on core 0.8.1 / renderer 4.44. The renderer sanitizes its legacy raw-HTML measure fallback through DOMPurify with an explicit allowlist, and the local bridge loads ADOMD only from the official `Microsoft.MicrosoftPowerBIDesktop` package or `C:\Program Files\Microsoft Power BI Desktop\bin`. Reports keep the renderer they registered: re-import the bundled `renderer.pbiviz` (accept Update, save, close and reopen) to apply the renderer fix to an existing report. Online refresh-token storage and the axios dependency are online-only paths, disabled by default in 0.9.x, and remain open follow-ups. Prefer declarative Vilsem specs over raw-HTML measures.

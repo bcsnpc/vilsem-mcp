@@ -210,14 +210,15 @@ Tell the user:
 - **Python printing model data on Windows:** set `PYTHONIOENCODING=utf-8`, because template metadata contains emoji and the default code page will crash.
 - **The Power BI Modeling MCP can drop its connection,** especially after Desktop restarts. Reconnect with `ListLocalInstances` → `Connect`. If the server itself is down, fall back to the TMDL files and `run_dax`.
 
-## Known vilsem issues and workarounds (renderer 4.43 / core 0.8.x)
+## Known vilsem issues and workarounds (renderer 4.44 / core 0.8.x)
 
 | Symptom | Cause | Workaround |
 |---|---|---|
 | Publish to web shows an error on every Vilsem visual (`PowerBIAnonymousExtensionSchemaException`) | Visual-scoped measures are report extensions, unsupported in anonymous embed | Promote to model measures and rebind (section 9a), republish |
 | Build pane shows no fields when a Vilsem visual is selected | Same: `NativeMeasure` projections | Same fix |
 | First vilsem visual shows "To see this custom visual, add it to this report first" | Renderer registration in `report.json` isn't live-reloaded | Close the report without saving and reopen it (one time per report). After that, applying the external-changes prompt is enough. |
-| Visual looks blurry in Desktop with an older renderer | Reports retain their registered renderer | Upgrade to renderer 4.43 (import the bundled renderer.pbiviz, save, close and reopen). Canvas accounts for page zoom; use `config.renderer:"svg"` or Appearance > Render mode for text-heavy layouts. Canvas-only trail/blend effects fall back with a warning. |
+| Report still on renderer 4.43 or older | Reports keep the renderer they registered; installing a new MCP does not change them | Tell the user once: import the bundled renderer.pbiviz (Home > More visuals > From my files, accept Update, save, close and reopen) to get the 4.44 security fix. Never edit the GUID or replace registered resources yourself. |
+| Visual looks blurry in Desktop with an older renderer | Reports retain their registered renderer | Upgrade to renderer 4.43 or later (import the bundled renderer.pbiviz, save, close and reopen). Canvas accounts for page zoom; use `config.renderer:"svg"` or Appearance > Render mode for text-heavy layouts. Canvas-only trail/blend effects fall back with a warning. |
 | KPI shows `0.04` instead of `4.2%` | `lastLabel`, `sumLabel` and `deltaPctLabel` ignore the measure format | Draw the number as a hidden gauge's `detail` with `formatterTemplate:"{value:percent}"` (see the cookbook), or show it in a formatted data or axis label |
 | Previews have no data after connecting by `reportDir` | Silent fallback to `schemaOnly` | Reconnect with `kind:"desktop"` and the port |
 | "Connection cannot be made" | Desktop was reopened and its port changed | List the instances and reconnect |

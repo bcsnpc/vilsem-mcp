@@ -10,7 +10,7 @@ This is the custom-visual layer for agentic Power BI authoring. Use it alongside
 
 - [Release status](#release-status-09-evaluation)
 - [Quick start (Windows)](#quick-start-windows)
-- [Connect your agent](#connect-your-agent) — [Claude Code](#claude-code) · [Claude Desktop](#claude-desktop) · [Codex](#codex) · [GitHub Copilot](#github-copilot-vs-code-agent-mode) ? [Other clients](#other-mcp-clients)
+- [Connect your agent](#connect-your-agent) — [Claude Code](#claude-code) · [Claude Desktop](#claude-desktop) · [Codex](#codex) · [GitHub Copilot](#github-copilot-vs-code-agent-mode) · [Other clients](#other-mcp-clients)
 - [First test prompt](#first-test-generate-a-new-visual-from-scratch)
 - [Measures: prototype vs publish](#measures-prototype-vs-publish)
 - [Desktop setup and reload rules](#desktop-setup-and-reload-rules)
@@ -24,7 +24,7 @@ This is the custom-visual layer for agentic Power BI authoring. Use it alongside
 
 Read [SECURITY.md](SECURITY.md) for local-mode boundaries, AI-provider disclosure, sample opt-out and vulnerability reporting.
 
-Prepared release: **vilsem-mcp 0.9.0**, **@vilsem/core 0.8.0**, **Vilsem Renderer 4.43.0.0**. MCP 0.9.0 is pending approval and publication; the installation URLs below become available after publication. The last published MCP is 0.8.2. These are evaluation prereleases, suitable for testing on copies of your reports. **Production readiness, certification and exhaustive cross-target parity have not been established.** The previous stable release remains 0.6.
+Current release: **vilsem-mcp 0.9.1**, **@vilsem/core 0.8.1**, **Vilsem Renderer 4.44.0.0**. Releases are built and published by CI, with SHA-256 checksums and verifiable [build provenance](#3-verify-the-download-recommended). These are evaluation prereleases, suitable for testing on copies of your reports. **Production readiness, certification and exhaustive cross-target parity have not been established.** The previous stable release remains 0.6.
 
 Read [what was verified](#what-was-verified-for-08), [known failures](#known-failures-and-workarounds) and [incomplete checks](#checks-that-remain-partial-or-not-tested) before relying on a result. Passing tests do not mean every visual, property, dataset, report interaction or export works. This README on `main` includes live checks performed after the original release archive was built; existing release tags and assets are not rewritten.
 
@@ -71,22 +71,24 @@ In PowerShell (no Git or source checkout needed):
 node --version
 $vilsemDir = Join-Path $env:USERPROFILE 'vilsem-mcp'
 New-Item -ItemType Directory -Force -Path $vilsemDir | Out-Null
-npm.cmd install --prefix "$vilsemDir" "https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.9.0/vilsem-mcp-0.9.0.tgz"
+npm.cmd install --prefix "$vilsemDir" "https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.9.1/vilsem-mcp-0.9.1.tgz"
 ```
 
 - `npm.cmd` avoids PowerShell execution-policy errors. If `node` is missing, reopen the terminal after installing Node.
 - The warning `install-scripts … vilsem-mcp (prepare: npm run build)` is harmless for the release tarball: `dist/` is prebuilt.
-- Installation downloads core 0.8.0 and renderer 4.43 automatically; no application-path environment variable is needed.
+- Installation downloads core 0.8.1 and renderer 4.44 automatically; no application-path environment variable is needed.
 
 ### 3. Verify the download (recommended)
 
 Compare the archive against the published checksums for the release:
 
 ```powershell
-$tgz = Join-Path $env:TEMP 'vilsem-mcp-0.9.0.tgz'
-Invoke-WebRequest "https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.9.0/vilsem-mcp-0.9.0.tgz" -OutFile $tgz
+$tgz = Join-Path $env:TEMP 'vilsem-mcp-0.9.1.tgz'
+Invoke-WebRequest "https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.9.1/vilsem-mcp-0.9.1.tgz" -OutFile $tgz
 (Get-FileHash $tgz -Algorithm SHA256).Hash.ToLower()
-# Compare with the vilsem-mcp-0.9.0.tgz line in SHA256SUMS-0.9.0.txt on the release page
+# Compare with the vilsem-mcp-0.9.1.tgz line in SHA256SUMS-0.9.1.txt on the release page
+# Optional, with the GitHub CLI: confirm the archive was built by this repository's release workflow
+gh attestation verify $tgz --repo bcsnpc/vilsem-mcp
 ```
 
 If you verified a local copy, you can install from it instead: `npm.cmd install --prefix "$vilsemDir" "$tgz"`.
@@ -234,7 +236,7 @@ Configuration compatibility: newer Copilot harnesses also have a native `.mcp.js
 | Claude Code | Partially tested | Contoso authoring field run; exhaustive client/version coverage not established. |
 | Codex | Partially tested | Recorded Desktop/Service QA workflows; exhaustive coverage not established. |
 | Claude Desktop | Not fully tested | Setup documented; full current-version build run pending. |
-| GitHub Copilot | Partially tested | Connected, summarized the model and received instructions in 0.8.1, but could not read the resource-based playbook. Full live build run on 0.8.2 pending. |
+| GitHub Copilot | Partially tested | 0.8.2 with the auto-selected model (GPT-6 Luna): connected, retrieved the playbook through `get_playbook` (when prompted), previewed before committing and bound model measures. It repeated the close-and-reopen step for later commits; 0.9.0 makes the returned `nextStep` the explicit instruction. |
 
 ### Other MCP clients
 
@@ -258,15 +260,15 @@ node "$env:USERPROFILE/vilsem-mcp/node_modules/vilsem-mcp/dist/index.js" install
 One-shot from the pinned release without a prior install:
 
 ```powershell
-npx.cmd --yes --package=https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.9.0/vilsem-mcp-0.9.0.tgz vilsem-mcp install-skill --target claude
+npx.cmd --yes --package=https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.9.1/vilsem-mcp-0.9.1.tgz vilsem-mcp install-skill --target claude
 ```
 
 ### Alternative: global install from the Git tag
 
 ```sh
-npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.9.0
+npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.9.1
 vilsem-mcp
-# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.9.0 vilsem-mcp
+# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.9.1 vilsem-mcp
 ```
 
 The process serves stdio JSON-RPC; diagnostics go to stderr. With a global install, point your client's `command` at `vilsem-mcp` instead of `node <path>`.
@@ -338,7 +340,7 @@ The bundled renderer is at `<vilsemDir>/node_modules/@vilsem/core/assets/rendere
 
 ### Experimental: online models (disabled by default)
 
-0.9.0 supports local Desktop models only. Fabric, Power BI Service, report `byConnection` and SSAS are disabled before any authentication or connector call. Open the model locally and use `kind:"report"` with a `byPath` report, or `kind:"desktop"`.
+0.9.x supports local Desktop models only. Fabric, Power BI Service, report `byConnection` and SSAS are disabled before any authentication or connector call. Open the model locally and use `kind:"report"` with a `byPath` report, or `kind:"desktop"`.
 
 For developer investigation only, `VILSEM_ENABLE_ONLINE=1` restores the existing online connector and prints a startup warning. It is **unsupported/experimental** and can authenticate, cache tokens and contact Microsoft or the report endpoint.
 
@@ -407,7 +409,7 @@ Headless previews support the core ECharts composition types and declarative tem
 
 **Local Desktop models only in 0.9.** Online models are disabled by default. See the experimental section above.
 
-This table describes **MCP 0.9.0 with core 0.8.0 / renderer 4.43**. A tool PASS or saved `visual.json` is not evidence that every report, visual state or Power BI target works.
+This table describes **MCP 0.9.1 with core 0.8.1 / renderer 4.44**. A tool PASS or saved `visual.json` is not evidence that every report, visual state or Power BI target works.
 
 | Area | Current boundary / what to check |
 | --- | --- |
@@ -538,7 +540,7 @@ Save Desktop work first. With no pending external changes, use **Home > More vis
 | `schemaOnly:true` / previews have no data | Open the model in Desktop and reconnect with `kind:"desktop"` (and `port`). |
 | "A connection cannot be made" | Desktop was reopened and its port changed; reconnect. Old `connectionId`s are dead. |
 | "To see this custom visual, add it to this report first" | First Vilsem visual: close without saving and reopen the `.pbip`. |
-| Visual blurry in Desktop | Upgrade the report's renderer to 4.43; try SVG render mode for text-heavy visuals. |
+| Visual blurry in Desktop | Upgrade the report's renderer to 4.43 or later; try SVG render mode for text-heavy visuals. |
 | Publish to web: `PowerBIAnonymousExtensionSchemaException` | Visual-scoped measures. Promote to model measures and republish. |
 | Build pane shows no fields | Same cause and fix. |
 | Python crashes printing template metadata | Set `PYTHONIOENCODING=utf-8`. |
@@ -547,13 +549,13 @@ Save Desktop work first. With no pending external changes, use **Home > More vis
 
 ## Development and verification
 
-Use `npm ci` for the exact tested dependency tree in `npm-shrinkwrap.json`. `npm-shrinkwrap.json` ships in the tarball and includes integrity hashes for the core archive and transitive dependencies. Releases are built and attested by [.github/workflows/release.yml](.github/workflows/release.yml) from approved `v*` tags on main; do not upload laptop-built release archives. Verify provenance with `gh attestation verify ./vilsem-mcp-0.9.0.tgz --repo bcsnpc/vilsem-mcp` as well as checking SHA256SUMS.
+Use `npm ci` for the exact tested dependency tree in `npm-shrinkwrap.json`. `npm-shrinkwrap.json` ships in the tarball and includes integrity hashes for the core archive and transitive dependencies. Releases are built and attested by [.github/workflows/release.yml](.github/workflows/release.yml) from approved `v*` tags on main; do not upload laptop-built release archives. Verify provenance with `gh attestation verify ./vilsem-mcp-0.9.1.tgz --repo bcsnpc/vilsem-mcp` as well as checking SHA256SUMS.
 
 CI runs Windows/Node 24 build/tests/npm audit plus Linux OSV and Semgrep scans; the latter Docker tools require Linux runners. Actions use commit SHA pins. Browser tests run with the runner's installed Chrome/Edge, and exact skipped test names are reported when the browser or optional Playwright is unavailable.
 
 Clone the repository, run `npm install` (its `prepare` step builds the server), then `npm run build` and `npm test`. Tests cover spec resolution, deterministic SVG/PNG rendering, custom-only PBIR insertion/validation and a real stdio client/server round trip. Live Fabric credentials, Desktop query access, reload prompts and host interactions need environment-backed acceptance.
 
-The 0.8 prerelease depends on the immutable public `core-v0.8.0` release tarball. For local core development only, install a locally packed core tarball; restore the public release URL before distributing.
+This release depends on the immutable public `core-v0.8.1` release tarball. For local core development only, install a locally packed core tarball; restore the public release URL before distributing.
 
 - `npm run thumbnails` rebuilds the shipped light-theme example PNGs from synthetic fixtures; `node scripts/render-thumbnails.mjs --dark` checks the dark background. Each theme directory under `templates/thumbnails/` includes a manifest with source/PNG hashes.
 - Motion benchmark: `npm run build` then `node scripts/benchmark-motion.mjs`. It launches only an owned sandboxed headless browser, queries no model, keeps 5,000 points and animation enabled, and writes `test-results/benchmarks/motion-options.json`. Exit code 1 means the 57 fps / 20 ms p95 tolerance was not met. Not a Power BI host benchmark.
@@ -562,9 +564,11 @@ For an independent test, follow [author a visual from scratch](docs/author-from-
 
 ## Release history
 
-**0.9.0 (prepared, not published)** ? Local Desktop models only by default; online connectors require the unsupported `VILSEM_ENABLE_ONLINE=1` escape hatch. Network-path rejection, schema sample opt-out, read-only DAX comment handling, optional lazy Playwright, locked dependencies, CI scanners and CI-built releases with provenance/checksums. Tool results nudge agents to fetch the playbook; recipes use model-neutral placeholders; guidance reinforces exact reload steps, readable sizing and compact units applied once. Core 0.8.0 / renderer 4.43 unchanged; Part 2 hardening remains separate. See [verification and owner steps](docs/qa/security-local-090.md).
+**0.9.1** — Depends on **core 0.8.1 / renderer 4.44** (security Part 2): the renderer sanitizes the legacy raw-HTML measure fallback with an explicit allowlist (no scripts, event handlers, frames or navigation/resource markup), and the local Desktop bridge loads ADOMD only from the official Power BI Desktop package or its standard Program Files install. GUID, spec format and tools unchanged. Release checksum files now use LF endings so `sha256sum -c` works on Linux/macOS. **Existing reports keep their registered renderer:** to get the renderer fix, [re-import the bundled renderer](#upgrading-an-existing-report) (accept Update, save, close and reopen). New reports get 4.44 on their first `commit_visual`. Live check: all 20 visuals of a 5-page report rendered and cross-filtered on 4.44 in Desktop.
 
-**0.8.2** ? Adds `get_playbook` so clients without MCP resource support (e.g. GitHub Copilot) receive the playbook; compact core + on-demand sections. Explicit commit/reload and visual-scoped-measure guidance, validation counts, Copilot setup, and Contoso cookbook/data-art lessons. Core 0.8.0 / renderer 4.43 unchanged. See [verification and remaining manual checks](docs/qa/playbook-082.md).
+**0.9.0** — Local Desktop models only by default; online connectors require the unsupported `VILSEM_ENABLE_ONLINE=1` escape hatch. Network-path rejection, schema sample opt-out, read-only DAX comment handling, optional lazy Playwright, locked dependencies, CI scanners and CI-built releases with provenance/checksums. Tool results nudge agents to fetch the playbook; recipes use model-neutral placeholders; guidance reinforces exact reload steps, readable sizing and compact units applied once. Core 0.8.0 / renderer 4.43 unchanged; Part 2 hardening remains separate. See [verification and owner steps](docs/qa/security-local-090.md).
+
+**0.8.2** — Adds `get_playbook` so clients without MCP resource support (e.g. GitHub Copilot) receive the playbook; compact core + on-demand sections. Explicit commit/reload and visual-scoped-measure guidance, validation counts, Copilot setup, and Contoso cookbook/data-art lessons. Core 0.8.0 / renderer 4.43 unchanged. See [verification and remaining manual checks](docs/qa/playbook-082.md).
 
 **0.8.1** — documentation and skill update; no runtime, renderer or spec-format changes (core 0.8.0 / renderer 4.43 unchanged). Clearer install guide, including Claude Code setup without the `claude` CLI and download checksum verification. The skill now steers shareable reports toward **model measures** instead of visual-scoped measures, which fail under Publish to web and hide fields in the Build pane (new section 9a), and bundles `scripts/promote-measures.py` to move existing visual-scoped measures into the model. 344/344 tests pass.
 

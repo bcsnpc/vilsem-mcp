@@ -37,7 +37,7 @@ export const approximateTokens = (text) => Math.ceil(Buffer.byteLength(text, 'ut
 const index = (title, sections) => `## ${title}\n\n` + sections.map(s => `- \`${s.id}\` — ${s.title} (~${approximateTokens(s.text)} tokens)`).join('\n') + '\n';
 const aliases = {
     '9a': '9a-measures-for-shareable-reports', commit: '9-commit', edit: '10-edit-later',
-    'known-issues': 'known-vilsem-issues-and-workarounds-renderer-443-core-08x',
+    'known-issues': 'known-vilsem-issues-and-workarounds-renderer-444-core-08x',
     gotchas: 'environment-and-setup-gotchas-windows',
     'cookbook:sankey': 'cookbook:sankey-multi-level-flows',
 };

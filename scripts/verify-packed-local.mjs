@@ -10,7 +10,7 @@ import {localRealpath} from '../dist/paths.js'
 const root=await localRealpath(process.argv[2],'verification install'),pkg=await localRealpath(path.join(root,'node_modules/vilsem-mcp'),'installed package'),require=createRequire(path.join(pkg,'package.json'))
 const {Client}=await import(pathToFileURL(require.resolve('@modelcontextprotocol/sdk/client/index.js'))),{StdioClientTransport}=await import(pathToFileURL(require.resolve('@modelcontextprotocol/sdk/client/stdio.js')))
 const metadata=JSON.parse(await fs.readFile(path.join(pkg,'package.json'),'utf8')),lock=JSON.parse(await fs.readFile(path.join(pkg,'npm-shrinkwrap.json'),'utf8'))
-assert.equal(metadata.version,'0.9.0');assert.equal(lock.version,'0.9.0');assert(metadata.optionalDependencies['playwright-core']);assert(lock.packages['node_modules/@vilsem/core'].integrity)
+assert.equal(metadata.version,'0.9.1');assert.equal(lock.version,'0.9.1');assert(metadata.optionalDependencies['playwright-core']);assert(lock.packages['node_modules/@vilsem/core'].integrity)
 const without=process.argv.includes('--without-playwright')
 if(without){
  const temp=await fs.realpath(os.tmpdir()),relative=path.relative(temp,root),owner=relative.split(path.sep)[0]
@@ -30,7 +30,7 @@ const real=await session(path.join(pkg,'dist/index.js'),'0',async client=>{
  const tools=await client.listTools();assert.equal(tools.tools.length,20)
  const unc=await client.callTool({name:'list_pages',arguments:{reportDir:'\\\\evil\\share\\report'}});assert(unc.isError);assert(unc.content[0].text.includes('Network paths are not allowed'))
  const fabric=await client.callTool({name:'connect_model',arguments:{source}});assert(fabric.isError);assert(fabric.content[0].text.includes('Online models (Power BI Service / Fabric) are not supported'))
- const playbook=await client.callTool({name:'get_playbook',arguments:{}});assert(!playbook.isError);assert(playbook.content[0].text.startsWith('vilsem-playbook 0.9.0'))
+ const playbook=await client.callTool({name:'get_playbook',arguments:{}});assert(!playbook.isError);assert(playbook.content[0].text.startsWith('vilsem-playbook 0.9.1'))
  return{tools:tools.tools.length,uncRejected:true,fabricRejected:true}
 })
 const helper=path.join(root,'mock-stdio.mjs'),serverUrl=pathToFileURL(path.join(pkg,'dist/server.js')).href,modelsUrl=pathToFileURL(path.join(pkg,'dist/models.js')).href,stdioUrl=pathToFileURL(require.resolve('@modelcontextprotocol/sdk/server/stdio.js')).href
