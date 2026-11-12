@@ -1,4 +1,4 @@
-﻿export const SKILL_FILES = ['SKILL.md','references/pbir-pages.md','references/spec-cookbook.md'] as const
+﻿export const SKILL_FILES = ['SKILL.md','references/pbir-pages.md','references/spec-cookbook.md','scripts/promote-measures.py'] as const
 // Keep this short pointer in sync with the packaged playbook; do not inline it.
 export const AGENT_INSTRUCTIONS = `Before building or editing a visual, read vilsem://skill/powerbi-visuals and follow its playbook.
 Vilsem adds its own visuals only to existing PBIR pages. For page creation outside this MCP, read vilsem://skill/pbir-pages.

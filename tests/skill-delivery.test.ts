@@ -20,7 +20,8 @@ it('delivers short instructions and all packaged skill resources over actual std
  expect((await client.listTools()).tools.map(t=>t.name)).toContain('preview_visual')
  }finally{await client.close();await transport.close()}
 })
-it('copies the three skill files opt-in, refuses overwrite and allows force without deleting extra files',async()=>{
+it('copies all four skill files including the Python helper, refuses overwrite and allows force without deleting extra files',async()=>{
+ expect(SKILL_FILES).toEqual(['SKILL.md','references/pbir-pages.md','references/spec-cookbook.md','scripts/promote-measures.py'])
  const root=await folder(),destination=skillDestination(root),first=await cli('install-skill','--target',root);expect(first.stdout).toBe('');expect(first.stderr).toContain(destination)
  for(const file of SKILL_FILES)expect(await fs.readFile(path.join(destination,file))).toEqual(await fs.readFile(path.join(skillSource,file)))
  await fs.writeFile(path.join(destination,'SKILL.md'),'User modified');await fs.writeFile(path.join(destination,'keep.txt'),'Keep')
