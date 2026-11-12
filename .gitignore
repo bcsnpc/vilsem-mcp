@@ -5,3 +5,7 @@ node_modules/
 coverage/
 test-results/
 *.tgz
+
+test-results.json
+semgrep.json
+artifacts/
