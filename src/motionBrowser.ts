@@ -1,3 +1,4 @@
+import {safeEnvironmentPath,localRealpath} from './paths.js'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
@@ -5,7 +6,8 @@ import {chromium} from 'playwright-core'
 import {encodePreviewApng} from '@vilsem/core/images/decode'
 
 export function browserCandidates(env:NodeJS.ProcessEnv=process.env,platform=process.platform){
- if(env.VILSEM_PREVIEW_BROWSER_PATH)return[path.resolve(env.VILSEM_PREVIEW_BROWSER_PATH)]
+ const configured=safeEnvironmentPath(env.VILSEM_PREVIEW_BROWSER_PATH,'VILSEM_PREVIEW_BROWSER_PATH')
+ if(configured)return[path.resolve(configured)]
  if(platform==='win32')return['C:/Program Files/Google/Chrome/Application/chrome.exe','C:/Program Files (x86)/Google/Chrome/Application/chrome.exe','C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe']
  if(platform==='darwin')return['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome','/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge']
  return['/usr/bin/chromium','/usr/bin/chromium-browser','/usr/bin/google-chrome','/opt/google/chrome/chrome']
@@ -32,7 +34,7 @@ async function captureMotion(spec:any,rows:any[],option:any,width:number,height:
  if(Buffer.byteLength(JSON.stringify({spec,rows,context}))>8388608)throw Error('Browser capture payload exceeds8 MiB')
  const plan=motionCapturePlan(spec,option,width,height,count)
  let executablePath:string|undefined
- for(const candidate of browserCandidates())try{if((await fs.stat(candidate)).isFile()){executablePath=await fs.realpath(candidate);break}}catch{}
+ for(const candidate of browserCandidates())try{if((await fs.stat(candidate)).isFile()){executablePath=await localRealpath(candidate,'preview browser');break}}catch{}
  if(!executablePath)throw Error('No preview browser found; install Chrome/Edge/Chromium or configure VILSEM_PREVIEW_BROWSER_PATH')
  const runtime=await fs.readFile(fileURLToPath(new URL('../dist/motion-runtime.js',import.meta.url)),'utf8')
  const browser=await chromium.launch({executablePath,headless:true,chromiumSandbox:true,timeout:10000,env:browserEnvironment(),args:['--disable-extensions','--no-first-run','--disable-background-networking']})

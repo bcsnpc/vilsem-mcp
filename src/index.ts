@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import {checkPathEnvironment} from './paths.js'
+await checkPathEnvironment()
 // CLI commands exit without importing the server or writing JSON-RPC to stdout.
 if(process.argv.length>2){
  try{const {runCli}=await import('./skill-cli.js');await runCli(process.argv.slice(2))}

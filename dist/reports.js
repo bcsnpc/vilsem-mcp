@@ -1,3 +1,4 @@
+import { localRealpath } from './paths.js';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { execFile } from 'node:child_process';
@@ -51,7 +52,7 @@ export function validateBindings(spec, bindings) {
 }
 const read = async (file) => JSON.parse((await fs.readFile(file, 'utf8')).replace(/^\uFEFF/, ''));
 export async function listPages(reportDir) {
-    const root = await fs.realpath(reportDir);
+    const root = await localRealpath(reportDir);
     const pagesDir = path.join(root, 'definition', 'pages');
     const metadata = await read(path.join(pagesDir, 'pages.json'));
     const pages = [];
@@ -82,11 +83,11 @@ export async function pageBindings(reportDir, page) {
     const matches = pages.filter(p => p.name === page || p.displayName === page);
     if (matches.length !== 1)
         throw Error('page must identify exactly one existing page; use list_pages for internal names');
-    const selected = matches[0], root = await fs.realpath(reportDir), visuals = [];
+    const selected = matches[0], root = await localRealpath(reportDir), visuals = [];
     for (const item of selected.visuals) {
         if (!/^[\w-]+$/.test(item.name))
             throw Error('Invalid visual folder name');
-        const file = await fs.realpath(path.join(root, 'definition', 'pages', selected.name, 'visuals', item.name, 'visual.json'));
+        const file = await localRealpath(path.join(root, 'definition', 'pages', selected.name, 'visuals', item.name, 'visual.json'));
         if (!file.startsWith(root + path.sep))
             throw Error('Visual binding path resolves outside report');
         const value = await read(file), dimensions = [], measures = [], aggregations = [];
@@ -109,7 +110,7 @@ export async function pageBindings(reportDir, page) {
     return { name: selected.name, displayName: selected.displayName, scope: 'Read-only query bindings; native visuals and report objects are not validated or edited.', visuals };
 }
 export async function validateVisuals(reportDir) {
-    const root = await fs.realpath(reportDir);
+    const root = await localRealpath(reportDir);
     const pages = path.join(root, 'definition', 'pages');
     const results = [];
     for (const page of await fs.readdir(pages, { withFileTypes: true })) {
@@ -158,7 +159,7 @@ export async function validateVisuals(reportDir) {
 }
 export async function desktopWarning(reportDir) {
     const warnings = [];
-    const root = await fs.realpath(reportDir);
+    const root = await localRealpath(reportDir);
     if (await fs.stat(path.join(root, '.pbi')).then(() => true, () => false))
         warnings.push('A .pbi state folder exists; Desktop may have this report open.');
     if (process.platform === 'win32') {

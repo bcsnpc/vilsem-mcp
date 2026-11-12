@@ -1,3 +1,4 @@
+import {assertLocalPath,assertLocalLinks} from './paths.js'
 ﻿import fs from 'node:fs/promises'
 import path from 'node:path'
 import os from 'node:os'
@@ -6,6 +7,7 @@ import {SKILL_FILES} from './agent-instructions.js'
 const skillName='vilsem-powerbi-visuals'
 export const skillSource=fileURLToPath(new URL('../skills/vilsem-powerbi-visuals/',import.meta.url))
 export function skillDestination(target:string,home=os.homedir()){
+ assertLocalPath(target,'skill target')
  if(!target.trim())throw Error('--target must name claude, codex, or a skills-root directory')
  const root=target==='claude'?path.join(home,'.claude','skills'):target==='codex'?path.join(home,'.agents','skills'):target==='~'?home:/^~[\\/]/.test(target)?path.join(home,target.slice(2)):path.resolve(target)
  return path.join(root,skillName)
@@ -18,6 +20,7 @@ async function noLinks(file:string){
 }
 export async function installSkill(target:string,force=false){
  const destination=skillDestination(target)
+ await assertLocalLinks(destination,'skill target')
  await noLinks(destination)
  let exists=false
  try{const info=await fs.lstat(destination);if(!info.isDirectory())throw Error('Skill destination must be a directory');exists=true}catch(error){if((error as NodeJS.ErrnoException).code!=='ENOENT')throw error}

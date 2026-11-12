@@ -1,3 +1,4 @@
+import { assertLocalPath, localRealpath } from './paths.js';
 import fs from 'node:fs/promises';
 import { decodeDesignImage } from '@vilsem/core/images/decode';
 import { extractDesignTokens } from '@vilsem/core/images';
@@ -14,8 +15,10 @@ export async function referenceImage(image) {
         bytes = Buffer.from(encoded, 'base64');
     }
     else {
-        if (image.length > 4096 || /^https?:|^data:|^file:/i.test(image))
+        if (image.length > 4096 || /^https?:|^data:/i.test(image))
             throw Error('Use a local PNG/JPEG path or data:image/png|jpeg;base64 URI; remote resources are not fetched');
+        assertLocalPath(image, 'image');
+        image = await localRealpath(image, 'image');
         const stat = await fs.stat(image);
         if (!stat.isFile() || stat.size > MAX_BYTES)
             throw Error('Reference must be a regular PNG/JPEG file up to8 MiB');

@@ -1,3 +1,4 @@
+import { validateInputPaths } from './paths.js';
 import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { AGENT_INSTRUCTIONS } from './agent-instructions.js';
@@ -34,6 +35,7 @@ export function createServer(models = new Models()) {
     const playbookHint = 'Call get_playbook (no arguments) before designing or committing visuals; it contains the required workflow and reload rules.';
     const server = new McpServer({ name: 'vilsem-mcp', version: packageVersion }, { instructions: AGENT_INSTRUCTIONS });
     server.registerPrompt('design_visual', { description: 'Get model context and a structured brief for the CALLING AGENT to design a new Vilsem visual or edit an existing one. Optional reference_image is a local PNG/JPEG path or data URI. No LLM/model/API key inside the MCP.', argsSchema: { intent: z.string().min(1), connectionId: z.string().uuid(), page: z.string().optional(), reportDir: z.string().optional(), reference_image: z.string().optional() } }, async ({ intent, connectionId, page, reportDir, reference_image }) => {
+        await validateInputPaths({ reportDir, reference_image });
         const context = await models.schema(connectionId, { detail: 'summary' });
         let pageContext;
         if (page) {
@@ -87,6 +89,7 @@ export function createServer(models = new Models()) {
     }
     const tool = (name, description, schema, handler, annotations) => server.registerTool(name, { description, inputSchema: schema.shape, ...(annotations ? { annotations } : {}) }, async (args) => {
         try {
+            await validateInputPaths(args);
             const result = await handler(args);
             if (!playbookRead && hintTools.has(name) && !result.isError)
                 result.content = result.content.map(item => item.type === 'text' ? { ...item, text: JSON.stringify({ ...JSON.parse(item.text), playbookHint }) } : item);

@@ -1,3 +1,4 @@
+import {assertLocalPath,assertLocalLinks,safeEnvironmentPath} from './paths.js'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import os from 'node:os'
@@ -6,13 +7,14 @@ import {validateSpec} from './reports.js'
 
 const MAX_BYTES=1048576
 export function templatesDirectory(env=process.env){
- return path.resolve(env.VILSEM_TEMPLATES_DIR || path.join(process.platform==='win32'?(env.APPDATA||path.join(os.homedir(),'AppData','Roaming')):(env.XDG_DATA_HOME||path.join(os.homedir(),'.local','share')),'vilsem','templates'))
+ return assertLocalPath(path.resolve(safeEnvironmentPath(env.VILSEM_TEMPLATES_DIR,'VILSEM_TEMPLATES_DIR') || path.join(process.platform==='win32'?(env.APPDATA||path.join(os.homedir(),'AppData','Roaming')):(env.XDG_DATA_HOME||path.join(os.homedir(),'.local','share')),'vilsem','templates')),'template library')
 }
 function filename(name:string){
  if(!/^[a-z0-9][a-z0-9_-]{0,79}$/.test(name)||/^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/i.test(name))throw Error('Template name must be a safe lowercase slug, 1..80 characters (letters, digits, underscore, hyphen), not a reserved device name')
  return name+'.vilsem-visual.json'
 }
 export async function readUserTemplate(name:string,root=templatesDirectory()){
+ await assertLocalLinks(root,'template library')
  const file=path.join(root,filename(name)),stat=await fs.lstat(file,{bigint:true})
  if(!stat.isFile()||stat.isSymbolicLink()||stat.size>BigInt(MAX_BYTES))throw Error('User template must be a regular JSON file up to 1 MiB; symlinks are refused')
  const handle=await fs.open(file,constants.O_RDONLY|(constants.O_NOFOLLOW||0));let raw:string
@@ -24,6 +26,7 @@ export async function readUserTemplate(name:string,root=templatesDirectory()){
  return {...saved,source:'user' as const,uri:`vilsem://templates/user/${name}`}
 }
 export async function saveUserTemplate({name,description='',spec,tags=[]}:{name:string,description?:string,spec:any,tags?:string[]},root=templatesDirectory()){
+ await assertLocalLinks(root,'template library')
  const file=path.join(root,filename(name));validateSpec(spec)
  if(description.length>2000||tags.length>20||tags.some(t=>typeof t!=='string'||t.length>80))throw Error('Description limit is 2000 characters; tags limit is 20 strings of up to 80 characters')
  const value={version:1,name,description,tags:[...new Set(tags)],spec},raw=JSON.stringify(value,null,2)+'\n'
@@ -35,6 +38,7 @@ export async function saveUserTemplate({name,description='',spec,tags=[]}:{name:
  return {...value,source:'user' as const,uri:`vilsem://templates/user/${name}`}
 }
 export async function listUserTemplates(root=templatesDirectory()){
+ await assertLocalLinks(root,'template library')
  let files:string[];try{files=await fs.readdir(root)}catch(error){if((error as NodeJS.ErrnoException).code==='ENOENT')return [];throw error}
  const results:any[]=[]
  for(const file of files.filter(f=>f.endsWith('.vilsem-visual.json')).sort()){
@@ -44,6 +48,7 @@ export async function listUserTemplates(root=templatesDirectory()){
  return results
 }
 export async function deleteUserTemplate(name:string,root=templatesDirectory()){
+ await assertLocalLinks(root,'template library')
  const file=path.join(root,filename(name)),stat=await fs.lstat(file)
  if(!stat.isFile()||stat.isSymbolicLink())throw Error('Only regular user-template files can be deleted')
  await fs.unlink(file);return {name,deleted:true}

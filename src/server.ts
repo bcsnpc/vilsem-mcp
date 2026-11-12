@@ -1,3 +1,4 @@
+import {validateInputPaths} from './paths.js'
 import { McpServer,ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
 import {AGENT_INSTRUCTIONS} from './agent-instructions.js'
@@ -36,6 +37,7 @@ export function createServer(models=new Models()){
   const playbookHint='Call get_playbook (no arguments) before designing or committing visuals; it contains the required workflow and reload rules.'
   const server=new McpServer({name:'vilsem-mcp',version:packageVersion},{instructions:AGENT_INSTRUCTIONS})
   server.registerPrompt('design_visual',{description:'Get model context and a structured brief for the CALLING AGENT to design a new Vilsem visual or edit an existing one. Optional reference_image is a local PNG/JPEG path or data URI. No LLM/model/API key inside the MCP.',argsSchema:{intent:z.string().min(1),connectionId:z.string().uuid(),page:z.string().optional(),reportDir:z.string().optional(),reference_image:z.string().optional()}},async({intent,connectionId,page,reportDir,reference_image})=>{
+    await validateInputPaths({reportDir,reference_image})
     const context=await models.schema(connectionId,{detail:'summary'})
     let pageContext
     if(page){const root=reportDir || models.reportDir(connectionId);if(!root)throw Error('reportDir is required with page for a non-report connection');pageContext=await pageBindings(root,page)}
@@ -64,7 +66,7 @@ export function createServer(models=new Models()){
     try{await models.query(connectionId,dax,1)}catch(error){throw measureError(Error(`Visual-scoped measure validation: ${(error as Error).message}`))}
   }
   const tool=(name:string,description:string,schema:any,handler:any,annotations?:{readOnlyHint:boolean,idempotentHint:boolean,openWorldHint:boolean,destructiveHint:boolean})=>server.registerTool(name,{description,inputSchema:schema.shape,...(annotations?{annotations}:{})},async args=>{
-    try{const result=await handler(args);if(!playbookRead&&hintTools.has(name)&&!result.isError)result.content=result.content.map(item=>item.type==='text'?{...item,text:JSON.stringify({...JSON.parse(item.text),playbookHint})}:item);return result}catch(error){return {isError:true,content:[{type:'text' as const,text:(error as any).diagnostics?JSON.stringify({valid:false,errors:(error as any).diagnostics,suggestions:(error as any).suggestions}):(error as Error).message}]}}
+    try{await validateInputPaths(args);const result=await handler(args);if(!playbookRead&&hintTools.has(name)&&!result.isError)result.content=result.content.map(item=>item.type==='text'?{...item,text:JSON.stringify({...JSON.parse(item.text),playbookHint})}:item);return result}catch(error){return {isError:true,content:[{type:'text' as const,text:(error as any).diagnostics?JSON.stringify({valid:false,errors:(error as any).diagnostics,suggestions:(error as any).suggestions}):(error as Error).message}]}}
   })
   tool('get_playbook','Return the Vilsem playbook the agent must follow before building or editing visuals. Call with no arguments first (compact core + index), then request sections such as `9a` or `cookbook:sankey` when needed. Read-only.',z.object({section:z.string().optional()}),async({section})=>{const result=await getPlaybook(section);playbookRead=true;return {content:[{type:'text' as const,text:result.text}]}},{readOnlyHint:true,idempotentHint:true,openWorldHint:false,destructiveHint:false})
   async function previewData({connectionId,spec,bindings,reportDir,theme,maxRows}:any){
