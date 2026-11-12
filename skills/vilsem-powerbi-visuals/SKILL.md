@@ -227,10 +227,10 @@ Tell the user:
 | Bar-race labels are nearly invisible on a dark background | `axisLabel` colour set on the base `yAxis` is overridden per timeline frame | Set `yAxis.axisLabel.color` inside the **per-frame** options (`options[].yAxis`). Check the critique's contrast numbers. |
 | `fontStyle` in an expression text style is refused | Not an allowed style property in the expression language | Use `fontWeight`/`fontSize`/`fill` only. |
 | A `graphic` outline rectangle is cut off in Desktop | Container clipping differs from the preview | Avoid outline rects at the edges; use filled panels with an inset, or the card style. |
-| A comparison chart shows flat, near-identical bars | The data has no variance for that KPI (Contoso is synthetic: margin %, AOV, units/order and discount are almost identical across countries and stores) | Probe variance with `run_dax` **before** designing comparisons. Pick KPIs that move (growth, orders per customer, sales per customer, share). |
+| A comparison chart shows flat, near-identical bars | The data has no variance for that KPI (**synthetic or sample datasets** (e.g. Contoso) often have near-identical margin %, AOV, units/order and discount across groups) | Probe variance with `run_dax` **before** designing comparisons. Pick KPIs that move (growth, orders per customer, sales per customer, share). |
 
 ## References
 
-- `references/data-art-recipes.md`: eight Contoso-specific data-art references; fetch `get_playbook` section `art`, then `art:<slug>`. These are examples, not shipped templates.
+- `references/data-art-recipes.md`: eight model-neutral data-art recipes; fetch `get_playbook` section `art`, then `art:<slug>`. These are examples, not shipped templates.
 - `references/pbir-pages.md`: creating pages, the PBIR layout and Desktop reload rules.
 - `references/spec-cookbook.md`: proven layout patterns, each verified against a real model: KPI hero, formatted KPI numbers, sorted leaderboard, calendar heatmap, Sankey, funnel with donut, radar with company baseline, butterfly bars, date-window and top-N measures.
