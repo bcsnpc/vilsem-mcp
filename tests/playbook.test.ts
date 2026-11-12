@@ -75,3 +75,9 @@ it('delivers offline read-only results and precise unknown-id errors over MCP',a
  expect(adapter.connect).not.toHaveBeenCalled();expect(adapter.query).not.toHaveBeenCalled();expect(adapter.schema).not.toHaveBeenCalled();expect(write).not.toHaveBeenCalled();expect(network).not.toHaveBeenCalled()
  }finally{write.mockRestore();network.mockRestore();await client.close();await server.close()}
 })
+
+it('keeps art recipe fields model-neutral',async()=>{
+ const source=await fs.readFile(new URL('references/data-art-recipes.md',skill),'utf8')
+ expect(source).toMatch(/^# Data-art recipes/);expect(source).not.toMatch(/(?:Product|Store|Customer)\[/)
+ for(const placeholder of ['<category column>','<subcategory column>','<date column>','<country column>','<sales measure>','<last sale date measure>'])expect(source).toContain(placeholder)
+})

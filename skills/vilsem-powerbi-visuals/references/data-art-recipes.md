@@ -1,16 +1,18 @@
-# Contoso data-art recipes
+# Data-art recipes
 
-Field references from the Contoso 10M build (renderer 4.43 / core 0.8.0); these are not shipped templates and are not added to `list_templates`. Call `get_playbook` with section `art` for the index, then `art:<slug>`.
+Built and verified on the Contoso sample model; map placeholders to your own fields after probing them with `run_dax`.
 
-Except Isotype, these use `formatVersion:4`, a custom series and `renderItem.language:"vilsem-expression"`. Select the latest full year from the global last-sale date using `YEAR([Last Sale Date])` and `REMOVEFILTERS('Date')`; check whether the source year is complete. Discover and adapt actual fields before reuse. Example specs contain preview-only `spec.measures`; promote them with user approval before sharing (playbook section 9a).
+These recipes target renderer 4.43 / core 0.8.0; these are not shipped templates and are not added to `list_templates`. Call `get_playbook` with section `art` for the index, then `art:<slug>`.
+
+Except Isotype, these use `formatVersion:4`, a custom series and `renderItem.language:"vilsem-expression"`. Select the latest full year from the global last-sale date using `YEAR(<last sale date measure>)` and `REMOVEFILTERS(<date table>)`; check whether the source year is complete. Discover and adapt actual fields before reuse. Example specs contain preview-only `spec.measures`; promote them with user approval before sharing (playbook section 9a).
 
 Example links are relative to the MCP package tree. Native `install-skill` copies the playbook references, not the example JSON: find those under the installed MCP package's `docs/examples/contoso/`.
 
 ## Du Bois spiral
 
 - **Idea:** one bar per category. Each bar runs straight, then coils around a spiral; bigger value = longer coil. Parchment background with red, gold and green.
-- **Bindings:** category dim, plus measures `s` (value), `sh` (share of max), `r` (rank).
-- **DAX:** rank with `ROUND` (see the playbook's known-issues section); `sh = s / MAXX(ALLSELECTED(cat), s)`.
+- **Bindings:** `<category column>`, plus measures `s` (value), `sh` (share of max), `r` (rank).
+- **DAX:** rank with `ROUND` (see the playbook's known-issues section); `sh = s / MAXX(ALLSELECTED(<category column>), <sales measure>)`.
 - **Draw:** `top` transform (order), then `points`. Use a `path` per item: `M x0 y L x1 y A rx ry 0 large 1 x2 y2` built with `concat`. The ring radius shrinks by rank (`viewportHeight*k - rank*gap`); the arc sweep is ∝ `sh`. Text labels via the repeat pattern (see cookbook:literal-labels-in-expression-series).
 - **Pitfalls:**
   - The first draft crowded the rings. Widen the ring spacing and thicken the bars after checking the preview.
@@ -21,7 +23,7 @@ References: [artDuBois.json](../../../docs/examples/contoso/artDuBois.json), [de
 ## Ridgelines
 
 - **Idea:** one ridge per month of the last 3 years, daily values as peaks, stacked vertically.
-- **Bindings:** `Date[Date]` dim; measures `d` (day of month), `l` (line index = (year offset)*12 + month - 1), `v` (value rounded to 2 dp), `n` (next day's value, for the segment end).
+- **Bindings:** `<date column>` dim; measures `d` (day of month), `l` (line index = (year offset)*12 + month - 1), `v` (value rounded to 2 dp), `n` (next day's value, for the segment end).
 - **Draw:** a `polygon` per day from `coord([d, -l + v*k])` to `coord([d+1, -l + n*k])` with a base at `-l`. Fill with the background colour so ridges occlude each other; stroke in white.
 - **Pitfalls:** restrict to about 3 years (row limit). `when: value(3) >= 0` skips gaps.
 
@@ -40,7 +42,7 @@ References: [artFlowers.json](../../../docs/examples/contoso/artFlowers.json).
 
 - **Idea:** subcategories as "elements": column = category, row = rank within category; tile shows a symbol, value and growth.
 - **Bindings:** sub × category; measures `c` (category column via `SWITCH`), `r` (row = 8 - rank within category), `n` (global rank number), `s` (sales), `g` (growth).
-- **DAX:** the global rank must `REMOVEFILTERS(Product[Sub], Product[Category])`; the per-category rank only `REMOVEFILTERS(Product[Sub])`.
+- **DAX:** the global rank must `REMOVEFILTERS(<subcategory column>, <category column>)`; the per-category rank only `REMOVEFILTERS(<subcategory column>)`.
 - **Draw:** `rect` tiles at `coord([c, r])`; `text` for the abbreviation, rank and value; fill by growth via `colorScale`.
 
 References: [artPeriodic.json](../../../docs/examples/contoso/artPeriodic.json).
@@ -58,9 +60,9 @@ References: [artMinard.json](../../../docs/examples/contoso/artMinard.json).
 ## Isotype
 
 - **Idea:** rows of repeated icons, one icon = N units.
-- **Draw:** standard `pictorialBar` with `symbolRepeat:true`, `symbolSize`, `symbolClip` (no expression language needed), after a `top` transform for order. Exclude non-geographic members (e.g. "Online") in DAX.
+- **Draw:** standard `pictorialBar` with `symbolRepeat:true`, `symbolSize`, `symbolClip` (no expression language needed), after a `top` transform for order. Exclude non-geographic or non-physical members (e.g. an online channel) if present.
 
-- **Bindings / DAX:** `Store[CountryName]` and country sales for the latest full year, divided by a declared icon-unit scale. Exclude `Online`; the full example supplies the scoped DAX.
+- **Bindings / DAX:** `<country column>` and country sales for the latest full year, divided by a declared icon-unit scale. Exclude non-geographic or non-physical members (e.g. an online channel) if present; map the example DAX to the probed fields.
 - **Pitfall:** state the units per icon so repeated symbols cannot be mistaken for individual customers.
 
 References: [artIsotype.json](../../../docs/examples/contoso/artIsotype.json).
@@ -68,7 +70,7 @@ References: [artIsotype.json](../../../docs/examples/contoso/artIsotype.json).
 ## Dear Data
 
 - **Idea:** one glyph per day of the year in a month × day grid; glyph shape and size encode the value against that month's average, weekday tint.
-- **Bindings:** `Date[Date]`; measures `m` (month index), `d` (day), `r` (ratio to that month's daily average), `w` (weekday).
+- **Bindings:** `<date column>`; measures `m` (month index), `d` (day), `r` (ratio to that month's daily average), `w` (weekday).
 - **Draw:** small `circle`/`path` glyphs at grid positions from `m`/`d`; size from `r`; weekday-based colour.
 
 - **Pitfall:** label the monthly-average ratio and day grid; check missing days and leap-year handling against the chosen year.
@@ -78,9 +80,9 @@ References: [artDearData.json](../../../docs/examples/contoso/artDearData.json).
 ## Botanical garden
 
 - **Idea:** each store is a plant: stem height = years open, leaf size = latest-year sales, colour = country.
-- **Bindings:** store dim; measures `x` (rank position), `h` (age), `s` (sales), `c` (country index via `SWITCH`), `l` (lifetime sales).
+- **Bindings:** `<physical location column>`; measures `x` (rank position), `h` (age), `s` (sales), `c` (country index via `SWITCH`), `l` (lifetime sales).
 - **Draw:** stem `line` plus leaf `path`s (quadratic curves via `concat`), with leaf scale **0.12** (0.25 overlapped badly).
-- **Pitfalls:** exclude the "Online store" member in DAX.
+- **Pitfalls:** exclude non-geographic or non-physical members (e.g. an online channel) if present.
 
 References: [artBotanical.json](../../../docs/examples/contoso/artBotanical.json).
 
