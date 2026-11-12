@@ -13,12 +13,24 @@ function previewBrowserAvailable(){try{createRequire(import.meta.url).resolve('p
 it.runIf(previewBrowserAvailable())('settles the actual Sankey entry clip before a hidden first-frame canvas capture',async()=>{
  const {chromium}=await import('playwright-core'),require=createRequire(import.meta.url),browser=await chromium.launch({executablePath:browserCandidates().find(file=>existsSync(file)),headless:true,chromiumSandbox:true,env:browserEnvironment()})
  try{
-  const page=await browser.newPage();await page.route('**/*',route=>route.abort());await page.setContent('<div id="animated" style="width:600px;height:350px"></div><div id="static" style="width:600px;height:350px"></div>')
+  const page=await browser.newPage();await page.route('**/*',route=>route.abort())
+  // Install before ECharts captures its timer/RAF functions. Pause before chart
+  // creation so CPU speed cannot advance the entry animation during setup.
+  await page.clock.install({time:new Date('2020-01-01T00:00:00Z')})
+  await page.clock.pauseAt(new Date('2020-01-01T00:00:01Z'))
+  await page.setContent('<div id="animated" style="width:600px;height:350px"></div><div id="static" style="width:600px;height:350px"></div>')
   await page.addScriptTag({content:await readFile(require.resolve('echarts/dist/echarts.min.js'),'utf8')})
   const source=await readFile(path.join(path.dirname(require.resolve('@vilsem/core/templates')),'motionVisibility.js'),'utf8');await page.addScriptTag({content:source.replaceAll('export function','function')+'\nwindow.qaFinish=finishChartFrame;'})
-  const result=await page.evaluate(()=>{
+  await page.evaluate(()=>{
    const option={animation:true,animationDuration:1000,series:[{type:'sankey',left:40,right:100,top:30,bottom:30,data:[{name:'Source'},{name:'Target right'}],links:[{source:'Source',target:'Target right',value:10}],label:{show:true}}]}
-   const animated=window.echarts.init(document.getElementById('animated'));animated.setOption(option);animated.getZr().animation.pause();animated.getZr().flush()
+   const animated=window.echarts.init(document.getElementById('animated'));animated.setOption(option)
+   window.qaEntry={animated,option}
+  })
+  // Two RAF ticks initialize and paint a known early frame of the 1,000 ms
+  // entry clip; a synchronous first flush can still paint its final values.
+  await page.clock.runFor(32)
+  const result=await page.evaluate(()=>{
+   const {animated,option}=window.qaEntry;animated.getZr().animation.pause();animated.getZr().flush()
    const canvas=()=>document.querySelector('#animated canvas').toDataURL(),before=canvas(),completed=window.qaFinish(animated),after=canvas()
    const settled=window.echarts.init(document.getElementById('static'));settled.setOption({...option,animation:false});settled.getZr().flush();const expected=document.querySelector('#static canvas').toDataURL()
    const clips=[];for(const root of animated.getZr().storage.getRoots())root.traverse?.(el=>{if(el.getClipPath?.())clips.push(el.getClipPath().shape)})
