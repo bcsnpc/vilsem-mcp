@@ -117,6 +117,8 @@ A stdio server does not open a website; the MCP client starts it.
 - The report must use **enhanced PBIR** (`<name>.Report/definition/pages/`). Convert it in Desktop if needed.
 - Enable **Detect and reload external PBIP changes** (see [Desktop setup](#desktop-setup-and-reload-rules)) and restart Desktop.
 - Optionally create an empty test page in Desktop, then save.
+- **Keep only this report open in Power BI Desktop** while the agent works. With several Desktop windows open, 0.9.1 cannot always tell which model to use (see [Connecting from an existing report binding](#connecting-from-an-existing-report-binding)).
+- On large models (10M+ rows) the first `get_schema` can take one to two minutes while it profiles columns. That is expected; see [Troubleshooting](#troubleshooting) if your client times out.
 
 ### 7. Build, commit and check
 
@@ -233,7 +235,7 @@ Configuration compatibility: newer Copilot harnesses also have a native `.mcp.js
 
 | Client | Status | Coverage |
 | --- | --- | --- |
-| Claude Code | Partially tested | Contoso authoring field run; exhaustive client/version coverage not established. |
+| Claude Code | Partially tested | Contoso authoring field run. Fresh-install run of 0.9.1 on a blank 10M-row Contoso copy (2026-11-12): install, checksum, playbook, schema, previews with critique, two commits; first-visual close/reopen and later Apply both worked in Desktop. Exhaustive client/version coverage not established. |
 | Codex | Partially tested | Recorded Desktop/Service QA workflows; exhaustive coverage not established. |
 | Claude Desktop | Not fully tested | Setup documented; full current-version build run pending. |
 | GitHub Copilot | Partially tested | 0.8.2 with the auto-selected model (GPT-6 Luna): connected, retrieved the playbook through `get_playbook` (when prompted), previewed before committing and bound model measures. It repeated the close-and-reopen step for later commits; 0.9.0 makes the returned `nextStep` the explicit instruction. |
@@ -358,8 +360,20 @@ No credentials are read from another repository's `.env` or Electron workspace s
 
 `connect_model` with `source:{kind:"report",reportDir:...}` follows the report's `definition.pbir` without changing it:
 
-- `datasetReference.byPath`: core matches the local semantic-model path to an open Desktop session, even when another model is open. With Desktop closed it reads the local TMDL or BIM definitions and returns `schemaOnly:true`. Schema-only connections cannot run DAX or preview live values; open the model and reconnect.
+- `datasetReference.byPath`: core matches the local semantic-model path to an open Desktop session. With **one** Desktop model open this works automatically. With several open, 0.9.1 can fail with `Desktop must expose exactly one model` (or `Multiple Desktop models are open; specify source.port`); close the other reports, or connect with `source:{kind:"desktop",port:<port>}` using the port finder below. Automatic matching with several windows open is tracked for 0.9.2. With Desktop closed it reads the local TMDL or BIM definitions and returns `schemaOnly:true`. Schema-only connections cannot run DAX or preview live values; open the model and reconnect.
 - `datasetReference.byConnection`: **disabled by default in 0.9**. With the unsupported `VILSEM_ENABLE_ONLINE=1` override, a Power BI XMLA URL identifies the workspace and semantic model. Core resolves them through the configured Fabric credentials. It does not try to discover a local Desktop port. The identity needs access to list the workspace and model, execute queries and inspect its definition. Windows-integrated SSAS bindings use the local ADOMD bridge and Windows identity; cloud credentials are never forwarded to arbitrary servers.
+
+**Find the port of an open Desktop model** (the most recently opened report is listed first):
+
+```powershell
+Get-ChildItem "$env:LOCALAPPDATA\Microsoft\Power BI Desktop\AnalysisServicesWorkspaces","$env:USERPROFILE\Microsoft\Power BI Desktop Store App\AnalysisServicesWorkspaces" -Directory -ErrorAction SilentlyContinue |
+  Sort-Object LastWriteTime -Descending | ForEach-Object {
+    $f = Join-Path $_.FullName 'Data\msmdsrv.port.txt'
+    if (Test-Path $f) { '{0}  opened {1}' -f (Get-Content $f -Encoding Unicode -Raw).Trim(), $_.LastWriteTime }
+  }
+```
+
+Old workspace folders can remain after Desktop closes; if a port refuses the connection, try the next one. Ports change every time Desktop reopens.
 
 Quoted connection-string values are supported. Passwords and impersonation settings embedded in the report are ignored; configure authentication on the MCP server. Missing or ambiguous targets fail explicitly. `commit_visual` writes only the Vilsem visual in the selected local report; it does not change the binding, semantic model, native visuals or report policies.
 
@@ -539,6 +553,10 @@ Save Desktop work first. With no pending external changes, use **Home > More vis
 | `npm` fails in PowerShell | Use `npm.cmd`. |
 | `schemaOnly:true` / previews have no data | Open the model in Desktop and reconnect with `kind:"desktop"` (and `port`). |
 | "A connection cannot be made" | Desktop was reopened and its port changed; reconnect. Old `connectionId`s are dead. |
+| `Desktop must expose exactly one model` / `Multiple Desktop models are open; specify source.port` | Several Desktop windows are open. Close the other reports, or connect with `kind:"desktop"` and the port from the [port finder](#connecting-from-an-existing-report-binding). |
+| `get_schema` takes minutes or the client times out | Column profiling on a large model (about 110 s on 10M rows). Raise the client's tool timeout (Codex: `tool_timeout_sec`; Claude Code: `MCP_TOOL_TIMEOUT` in milliseconds) and let the agent probe with targeted `run_dax`. A faster no-profiling mode is planned for 0.9.2. |
+| Agent context fills up after `list_templates` | Its output is about 550 KB. Ask the agent to author from `get_schema` instead, or to save the output to a file and read only ids and descriptions. A compact list is planned for 0.9.2. |
+| Label on a `[value, category]` point shows the category | Use `{value.0}` (or `{value.0:percent}`) in `formatterTemplate` to pick the numeric part of the pair. |
 | "To see this custom visual, add it to this report first" | First Vilsem visual: close without saving and reopen the `.pbip`. |
 | Visual blurry in Desktop | Upgrade the report's renderer to 4.43 or later; try SVG render mode for text-heavy visuals. |
 | Publish to web: `PowerBIAnonymousExtensionSchemaException` | Visual-scoped measures. Promote to model measures and republish. |
