@@ -2,7 +2,6 @@ import {safeEnvironmentPath,localRealpath} from './paths.js'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
-import {chromium} from 'playwright-core'
 import {encodePreviewApng} from '@vilsem/core/images/decode'
 
 export function browserCandidates(env:NodeJS.ProcessEnv=process.env,platform=process.platform){
@@ -31,6 +30,8 @@ export async function captureBrowserMotion(spec:any,rows:any[],option:any,width:
  try{return await captureMotion(spec,rows,option,width,height,context,count)}finally{captureActive=false}
 }
 async function captureMotion(spec:any,rows:any[],option:any,width:number,height:number,context:any,count:number){
+ let chromium:typeof import('playwright-core').chromium
+ try{({chromium}=await import('playwright-core'))}catch{throw Error('Browser motion capture requires the optional playwright-core package. Install it or use motion:states.')}
  if(Buffer.byteLength(JSON.stringify({spec,rows,context}))>8388608)throw Error('Browser capture payload exceeds8 MiB')
  const plan=motionCapturePlan(spec,option,width,height,count)
  let executablePath:string|undefined
