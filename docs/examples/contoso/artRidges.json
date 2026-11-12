@@ -1,0 +1,644 @@
+{
+ "_note": "Working Vilsem spec from the Contoso 10M demo report (renderer 4.43). Contoso-specific fields/measures; use as a reference, not a shipped template.",
+ "visual": "artRidges",
+ "layout": {
+  "x": 0,
+  "y": 0,
+  "width": 640,
+  "height": 720,
+  "z": 0,
+  "tabOrder": 0
+ },
+ "bindings": {
+  "dimensions": [
+   {
+    "table": "Date",
+    "column": "Date"
+   }
+  ],
+  "measures": [
+   {
+    "name": "upD",
+    "scoped": true
+   },
+   {
+    "name": "upL",
+    "scoped": true
+   },
+   {
+    "name": "upV",
+    "scoped": true
+   },
+   {
+    "name": "upN",
+    "scoped": true
+   }
+  ]
+ },
+ "spec": {
+  "version": 1,
+  "type": "custom",
+  "config": {
+   "cardStyle": "plain",
+   "renderer": "svg"
+  },
+  "measures": {
+   "upD": {
+    "expression": "VAR y = YEAR([Global Last Sale Date]) VAR d = MAX('Date'[Date]) VAR s = [Net Sales] RETURN IF(YEAR(d) >= y - 2 && YEAR(d) <= y && NOT ISBLANK(s), DAY(d))",
+    "format": "0"
+   },
+   "upL": {
+    "expression": "VAR y = YEAR([Global Last Sale Date]) VAR d = MAX('Date'[Date]) VAR s = [Net Sales] RETURN IF(YEAR(d) >= y - 2 && YEAR(d) <= y && NOT ISBLANK(s), (YEAR(d) - y + 2) * 12 + MONTH(d) - 1)",
+    "format": "0"
+   },
+   "upV": {
+    "expression": "VAR y = YEAR([Global Last Sale Date]) VAR d = MAX('Date'[Date]) VAR s = [Net Sales] RETURN IF(YEAR(d) >= y - 2 && YEAR(d) <= y && NOT ISBLANK(s), ROUND(s / 1e6, 2))",
+    "format": "0.0"
+   },
+   "upN": {
+    "expression": "VAR y = YEAR([Global Last Sale Date]) VAR d = MAX('Date'[Date]) VAR s = [Net Sales] VAR nx = CALCULATE([Net Sales], 'Date'[Date] = d + 1) RETURN IF(YEAR(d) >= y - 2 && YEAR(d) <= y && NOT ISBLANK(s), IF(MONTH(d + 1) = MONTH(d), ROUND(COALESCE(nx, 0) / 1e6, 2), -1))",
+    "format": "0.0"
+   }
+  },
+  "template": {
+   "meta": {
+    "id": "art_unknown_pleasures",
+    "name": "Unknown Pleasures ridgelines",
+    "formatVersion": 4
+   },
+   "slots": {
+    "date": {
+     "kind": "dimension"
+    },
+    "d": {
+     "kind": "measure"
+    },
+    "l": {
+     "kind": "measure"
+    },
+    "v": {
+     "kind": "measure"
+    },
+    "n": {
+     "kind": "measure"
+    }
+   },
+   "params": [],
+   "transforms": [
+    {
+     "points": {
+      "fields": [
+       "d",
+       "l",
+       "v",
+       "n"
+      ],
+      "numeric": [
+       "d",
+       "l",
+       "v",
+       "n"
+      ],
+      "name": "date"
+     },
+     "as": "pts"
+    }
+   ],
+   "template": {
+    "animation": false,
+    "backgroundColor": "#000000",
+    "textStyle": {
+     "fontFamily": "Arial",
+     "color": "#FFFFFF"
+    },
+    "title": [
+     {
+      "text": "CONTOSO",
+      "left": "center",
+      "top": 30,
+      "textStyle": {
+       "fontSize": 13,
+       "fontWeight": 400,
+       "color": "#FFFFFF"
+      }
+     },
+     {
+      "text": "UNKNOWN PLEASURES",
+      "left": "center",
+      "top": 52,
+      "textStyle": {
+       "fontSize": 22,
+       "fontWeight": 300,
+       "color": "#FFFFFF"
+      }
+     },
+     {
+      "text": "After Peter Saville, 1979  ·  36 lines = 36 months, every peak = one day of sales",
+      "left": "center",
+      "bottom": 22,
+      "textStyle": {
+       "fontSize": 10,
+       "fontWeight": 400,
+       "color": "#8A8A8A"
+      }
+     }
+    ],
+    "tooltip": {
+     "trigger": "item",
+     "confine": true,
+     "backgroundColor": "#111",
+     "borderColor": "#444",
+     "textStyle": {
+      "color": "#fff"
+     },
+     "formatterTemplate": "{name}  ·  {value.2} M"
+    },
+    "grid": {
+     "left": 140,
+     "right": 140,
+     "top": 190,
+     "bottom": 70
+    },
+    "xAxis": {
+     "type": "value",
+     "min": 1,
+     "max": 31,
+     "show": false
+    },
+    "yAxis": {
+     "type": "value",
+     "min": -36,
+     "max": 0.5,
+     "show": false
+    },
+    "series": [
+     {
+      "type": "custom",
+      "name": "Daily sales",
+      "clip": false,
+      "data": "$calc.pts.data",
+      "encode": {
+       "x": 0,
+       "tooltip": [
+        2
+       ]
+      },
+      "renderItem": {
+       "language": "vilsem-expression",
+       "version": 1,
+       "root": {
+        "type": "group",
+        "when": {
+         "op": "gte",
+         "args": [
+          {
+           "op": "value",
+           "args": [
+            3
+           ]
+          },
+          0
+         ]
+        },
+        "children": [
+         {
+          "type": "polygon",
+          "shape": {
+           "points": [
+            [
+             {
+              "op": "at",
+              "args": [
+               {
+                "op": "coord",
+                "args": [
+                 [
+                  {
+                   "op": "value",
+                   "args": [
+                    0
+                   ]
+                  },
+                  0
+                 ]
+                ]
+               },
+               0
+              ]
+             },
+             {
+              "op": "at",
+              "args": [
+               {
+                "op": "coord",
+                "args": [
+                 [
+                  0,
+                  {
+                   "op": "add",
+                   "args": [
+                    {
+                     "op": "neg",
+                     "args": [
+                      {
+                       "op": "value",
+                       "args": [
+                        1
+                       ]
+                      }
+                     ]
+                    },
+                    {
+                     "op": "mul",
+                     "args": [
+                      {
+                       "op": "value",
+                       "args": [
+                        2
+                       ]
+                      },
+                      0.26
+                     ]
+                    }
+                   ]
+                  }
+                 ]
+                ]
+               },
+               1
+              ]
+             }
+            ],
+            [
+             {
+              "op": "at",
+              "args": [
+               {
+                "op": "coord",
+                "args": [
+                 [
+                  {
+                   "op": "add",
+                   "args": [
+                    {
+                     "op": "value",
+                     "args": [
+                      0
+                     ]
+                    },
+                    1
+                   ]
+                  },
+                  0
+                 ]
+                ]
+               },
+               0
+              ]
+             },
+             {
+              "op": "at",
+              "args": [
+               {
+                "op": "coord",
+                "args": [
+                 [
+                  0,
+                  {
+                   "op": "add",
+                   "args": [
+                    {
+                     "op": "neg",
+                     "args": [
+                      {
+                       "op": "value",
+                       "args": [
+                        1
+                       ]
+                      }
+                     ]
+                    },
+                    {
+                     "op": "mul",
+                     "args": [
+                      {
+                       "op": "value",
+                       "args": [
+                        3
+                       ]
+                      },
+                      0.26
+                     ]
+                    }
+                   ]
+                  }
+                 ]
+                ]
+               },
+               1
+              ]
+             }
+            ],
+            [
+             {
+              "op": "at",
+              "args": [
+               {
+                "op": "coord",
+                "args": [
+                 [
+                  {
+                   "op": "add",
+                   "args": [
+                    {
+                     "op": "value",
+                     "args": [
+                      0
+                     ]
+                    },
+                    1
+                   ]
+                  },
+                  0
+                 ]
+                ]
+               },
+               0
+              ]
+             },
+             {
+              "op": "add",
+              "args": [
+               {
+                "op": "at",
+                "args": [
+                 {
+                  "op": "coord",
+                  "args": [
+                   [
+                    0,
+                    {
+                     "op": "neg",
+                     "args": [
+                      {
+                       "op": "value",
+                       "args": [
+                        1
+                       ]
+                      }
+                     ]
+                    }
+                   ]
+                  ]
+                 },
+                 1
+                ]
+               },
+               2
+              ]
+             }
+            ],
+            [
+             {
+              "op": "at",
+              "args": [
+               {
+                "op": "coord",
+                "args": [
+                 [
+                  {
+                   "op": "value",
+                   "args": [
+                    0
+                   ]
+                  },
+                  0
+                 ]
+                ]
+               },
+               0
+              ]
+             },
+             {
+              "op": "add",
+              "args": [
+               {
+                "op": "at",
+                "args": [
+                 {
+                  "op": "coord",
+                  "args": [
+                   [
+                    0,
+                    {
+                     "op": "neg",
+                     "args": [
+                      {
+                       "op": "value",
+                       "args": [
+                        1
+                       ]
+                      }
+                     ]
+                    }
+                   ]
+                  ]
+                 },
+                 1
+                ]
+               },
+               2
+              ]
+             }
+            ]
+           ]
+          },
+          "style": {
+           "fill": "#000000",
+           "stroke": "#000000",
+           "lineWidth": 0.6
+          }
+         },
+         {
+          "type": "polyline",
+          "shape": {
+           "points": [
+            [
+             {
+              "op": "at",
+              "args": [
+               {
+                "op": "coord",
+                "args": [
+                 [
+                  {
+                   "op": "value",
+                   "args": [
+                    0
+                   ]
+                  },
+                  0
+                 ]
+                ]
+               },
+               0
+              ]
+             },
+             {
+              "op": "at",
+              "args": [
+               {
+                "op": "coord",
+                "args": [
+                 [
+                  0,
+                  {
+                   "op": "add",
+                   "args": [
+                    {
+                     "op": "neg",
+                     "args": [
+                      {
+                       "op": "value",
+                       "args": [
+                        1
+                       ]
+                      }
+                     ]
+                    },
+                    {
+                     "op": "mul",
+                     "args": [
+                      {
+                       "op": "value",
+                       "args": [
+                        2
+                       ]
+                      },
+                      0.26
+                     ]
+                    }
+                   ]
+                  }
+                 ]
+                ]
+               },
+               1
+              ]
+             }
+            ],
+            [
+             {
+              "op": "at",
+              "args": [
+               {
+                "op": "coord",
+                "args": [
+                 [
+                  {
+                   "op": "add",
+                   "args": [
+                    {
+                     "op": "value",
+                     "args": [
+                      0
+                     ]
+                    },
+                    1
+                   ]
+                  },
+                  0
+                 ]
+                ]
+               },
+               0
+              ]
+             },
+             {
+              "op": "at",
+              "args": [
+               {
+                "op": "coord",
+                "args": [
+                 [
+                  0,
+                  {
+                   "op": "add",
+                   "args": [
+                    {
+                     "op": "neg",
+                     "args": [
+                      {
+                       "op": "value",
+                       "args": [
+                        1
+                       ]
+                      }
+                     ]
+                    },
+                    {
+                     "op": "mul",
+                     "args": [
+                      {
+                       "op": "value",
+                       "args": [
+                        3
+                       ]
+                      },
+                      0.26
+                     ]
+                    }
+                   ]
+                  }
+                 ]
+                ]
+               },
+               1
+              ]
+             }
+            ]
+           ]
+          },
+          "style": {
+           "fill": "none",
+           "stroke": "#FFFFFF",
+           "lineWidth": 1.4,
+           "lineJoin": "round"
+          }
+         }
+        ]
+       }
+      }
+     }
+    ]
+   }
+  },
+  "specVersion": "0.7",
+  "bindings": {
+   "dimensions": [
+    {
+     "table": "Date",
+     "column": "Date"
+    }
+   ],
+   "measures": [
+    {
+     "table": "KPI Measures",
+     "name": "upD"
+    },
+    {
+     "table": "KPI Measures",
+     "name": "upL"
+    },
+    {
+     "table": "KPI Measures",
+     "name": "upV"
+    },
+    {
+     "table": "KPI Measures",
+     "name": "upN"
+    }
+   ]
+  }
+ }
+}

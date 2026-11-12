@@ -1,0 +1,1120 @@
+{
+ "_note": "Working Vilsem spec from the Contoso 10M demo report (renderer 4.43). Contoso-specific fields/measures; use as a reference, not a shipped template.",
+ "visual": "artPeriodic",
+ "layout": {
+  "x": 0,
+  "y": 1440,
+  "width": 640,
+  "height": 720,
+  "z": 4,
+  "tabOrder": 4
+ },
+ "bindings": {
+  "dimensions": [
+   {
+    "table": "Product",
+    "column": "SubCategoryName"
+   },
+   {
+    "table": "Product",
+    "column": "CategoryName"
+   }
+  ],
+  "measures": [
+   {
+    "name": "ptC",
+    "scoped": true
+   },
+   {
+    "name": "ptR",
+    "scoped": true
+   },
+   {
+    "name": "ptN",
+    "scoped": true
+   },
+   {
+    "name": "ptS",
+    "scoped": true
+   },
+   {
+    "name": "ptG",
+    "scoped": true
+   }
+  ]
+ },
+ "spec": {
+  "version": 1,
+  "type": "custom",
+  "config": {
+   "cardStyle": "plain",
+   "renderer": "svg"
+  },
+  "measures": {
+   "ptC": {
+    "expression": "VAR y = YEAR([Global Last Sale Date]) VAR f = CALCULATE([Net Sales], REMOVEFILTERS('Date'), 'Date'[Year] = y) RETURN IF(f > 0, SWITCH(SELECTEDVALUE(Product[CategoryName]), \"Home Appliances\", 0, \"Computers\", 1, \"Cell phones\", 2, \"Audio\", 3, \"Music, Movies and Audio Books\", 4, \"Games and Toys\", 5, \"TV and Video\", 6, \"Cameras and camcorders\", 7))",
+    "format": "0"
+   },
+   "ptR": {
+    "expression": "VAR y = YEAR([Global Last Sale Date]) VAR f = CALCULATE([Net Sales], REMOVEFILTERS('Date'), 'Date'[Year] = y) RETURN IF(f > 0, 8 - RANKX(CALCULATETABLE(VALUES(Product[SubCategoryName]), REMOVEFILTERS(Product[SubCategoryName])), ROUND(CALCULATE([Net Sales], REMOVEFILTERS('Date'), 'Date'[Year] = y), 0), ROUND(f, 0), DESC))",
+    "format": "0"
+   },
+   "ptN": {
+    "expression": "VAR y = YEAR([Global Last Sale Date]) VAR f = CALCULATE([Net Sales], REMOVEFILTERS('Date'), 'Date'[Year] = y) RETURN IF(f > 0, RANKX(CALCULATETABLE(VALUES(Product[SubCategoryName]), REMOVEFILTERS(Product[SubCategoryName], Product[CategoryName])), ROUND(CALCULATE([Net Sales], REMOVEFILTERS('Date'), REMOVEFILTERS(Product[CategoryName]), 'Date'[Year] = y), 0), ROUND(f, 0), DESC))",
+    "format": "0"
+   },
+   "ptS": {
+    "expression": "VAR y = YEAR([Global Last Sale Date]) VAR f = CALCULATE([Net Sales], REMOVEFILTERS('Date'), 'Date'[Year] = y) RETURN IF(f > 0, f / 1e6)",
+    "format": "\"$\"#,0.0\"M\""
+   },
+   "ptG": {
+    "expression": "VAR y = YEAR([Global Last Sale Date]) VAR f = CALCULATE([Net Sales], REMOVEFILTERS('Date'), 'Date'[Year] = y) VAR p = CALCULATE([Net Sales], REMOVEFILTERS('Date'), 'Date'[Year] = y - 1) RETURN IF(f > 0, DIVIDE(f, p) - 1)",
+    "format": "+0%;-0%"
+   }
+  },
+  "template": {
+   "meta": {
+    "id": "art_periodic_table",
+    "name": "Periodic table of subcategories",
+    "formatVersion": 4
+   },
+   "slots": {
+    "sub": {
+     "kind": "dimension"
+    },
+    "cat": {
+     "kind": "dimension"
+    },
+    "c": {
+     "kind": "measure"
+    },
+    "r": {
+     "kind": "measure"
+    },
+    "n": {
+     "kind": "measure"
+    },
+    "s": {
+     "kind": "measure"
+    },
+    "g": {
+     "kind": "measure"
+    }
+   },
+   "params": [],
+   "transforms": [
+    {
+     "points": {
+      "fields": [
+       "c",
+       "r",
+       "n",
+       "s",
+       "g",
+       "cat"
+      ],
+      "numeric": [
+       "c",
+       "r",
+       "n",
+       "s",
+       "g"
+      ],
+      "name": "sub"
+     },
+     "as": "pts"
+    }
+   ],
+   "template": {
+    "animation": true,
+    "animationDuration": 900,
+    "backgroundColor": "#0A0F1C",
+    "textStyle": {
+     "fontFamily": "'Segoe UI', Arial",
+     "color": "#E6EDF7"
+    },
+    "title": [
+     {
+      "text": "THE PERIODIC TABLE OF CONTOSO",
+      "left": 26,
+      "top": 26,
+      "textStyle": {
+       "fontSize": 11,
+       "fontWeight": 800,
+       "color": "#4DABF7"
+      }
+     },
+     {
+      "text": "32 subcategories, one element each",
+      "left": 26,
+      "top": 44,
+      "textStyle": {
+       "fontSize": 22,
+       "fontWeight": 800,
+       "color": "#FFFFFF"
+      }
+     },
+     {
+      "text": "No. = sales rank  ·  big figure = FY2025 sales  ·  corner = vs prior year  ·  heaviest at the bottom",
+      "left": 26,
+      "top": 78,
+      "textStyle": {
+       "fontSize": 10.5,
+       "color": "#9FB0CC"
+      }
+     }
+    ],
+    "tooltip": {
+     "trigger": "item",
+     "confine": true,
+     "formatterTemplate": "{name}"
+    },
+    "xAxis": {
+     "type": "value",
+     "show": false
+    },
+    "yAxis": {
+     "type": "value",
+     "show": false
+    },
+    "grid": {
+     "left": 0,
+     "right": 0,
+     "top": 0,
+     "bottom": 0
+    },
+    "series": [
+     {
+      "type": "custom",
+      "name": "Elements",
+      "clip": false,
+      "dimensions": [
+       "c",
+       "r",
+       "n",
+       "s",
+       "g",
+       {
+        "name": "cat",
+        "type": "ordinal"
+       },
+       {
+        "name": "sub",
+        "type": "ordinal"
+       }
+      ],
+      "encode": {
+       "tooltip": [
+        3,
+        4
+       ]
+      },
+      "data": {
+       "repeat": "$calc.pts.data",
+       "template": {
+        "name": "$item.name",
+        "value": [
+         "$item.value.0",
+         "$item.value.1",
+         "$item.value.2",
+         "$item.value.3",
+         "$item.value.4",
+         "$item.value.5",
+         "$item.name"
+        ],
+        "rowIndexes": "$item.rowIndexes"
+       }
+      },
+      "renderItem": {
+       "language": "vilsem-expression",
+       "version": 1,
+       "root": {
+        "type": "group",
+        "children": [
+         {
+          "type": "rect",
+          "shape": {
+           "x": {
+            "op": "add",
+            "args": [
+             {
+              "op": "mul",
+              "args": [
+               {
+                "op": "viewportWidth",
+                "args": []
+               },
+               0.04
+              ]
+             },
+             {
+              "op": "mul",
+              "args": [
+               {
+                "op": "value",
+                "args": [
+                 0
+                ]
+               },
+               {
+                "op": "viewportWidth",
+                "args": []
+               },
+               0.115
+              ]
+             }
+            ]
+           },
+           "y": {
+            "op": "add",
+            "args": [
+             {
+              "op": "mul",
+              "args": [
+               {
+                "op": "viewportHeight",
+                "args": []
+               },
+               0.2
+              ]
+             },
+             {
+              "op": "mul",
+              "args": [
+               {
+                "op": "value",
+                "args": [
+                 1
+                ]
+               },
+               {
+                "op": "viewportHeight",
+                "args": []
+               },
+               0.085
+              ]
+             }
+            ]
+           },
+           "width": {
+            "op": "mul",
+            "args": [
+             {
+              "op": "viewportWidth",
+              "args": []
+             },
+             0.11
+            ]
+           },
+           "height": {
+            "op": "mul",
+            "args": [
+             {
+              "op": "viewportHeight",
+              "args": []
+             },
+             0.08
+            ]
+           },
+           "r": 4
+          },
+          "style": {
+           "fill": "#121A2B",
+           "stroke": {
+            "op": "at",
+            "args": [
+             [
+              "#FF6B6B",
+              "#FFA94D",
+              "#FFD43B",
+              "#69DB7C",
+              "#38D9A9",
+              "#4DABF7",
+              "#9775FA",
+              "#F783AC"
+             ],
+             {
+              "op": "value",
+              "args": [
+               0
+              ]
+             }
+            ]
+           },
+           "lineWidth": 1.5
+          }
+         },
+         {
+          "type": "rect",
+          "shape": {
+           "x": {
+            "op": "add",
+            "args": [
+             {
+              "op": "mul",
+              "args": [
+               {
+                "op": "viewportWidth",
+                "args": []
+               },
+               0.04
+              ]
+             },
+             {
+              "op": "mul",
+              "args": [
+               {
+                "op": "value",
+                "args": [
+                 0
+                ]
+               },
+               {
+                "op": "viewportWidth",
+                "args": []
+               },
+               0.115
+              ]
+             }
+            ]
+           },
+           "y": {
+            "op": "add",
+            "args": [
+             {
+              "op": "mul",
+              "args": [
+               {
+                "op": "viewportHeight",
+                "args": []
+               },
+               0.2
+              ]
+             },
+             {
+              "op": "mul",
+              "args": [
+               {
+                "op": "value",
+                "args": [
+                 1
+                ]
+               },
+               {
+                "op": "viewportHeight",
+                "args": []
+               },
+               0.085
+              ]
+             }
+            ]
+           },
+           "width": 4,
+           "height": {
+            "op": "mul",
+            "args": [
+             {
+              "op": "viewportHeight",
+              "args": []
+             },
+             0.08
+            ]
+           }
+          },
+          "style": {
+           "fill": {
+            "op": "at",
+            "args": [
+             [
+              "#FF6B6B",
+              "#FFA94D",
+              "#FFD43B",
+              "#69DB7C",
+              "#38D9A9",
+              "#4DABF7",
+              "#9775FA",
+              "#F783AC"
+             ],
+             {
+              "op": "value",
+              "args": [
+               0
+              ]
+             }
+            ]
+           }
+          }
+         },
+         {
+          "type": "text",
+          "style": {
+           "text": {
+            "op": "formatNumber",
+            "args": [
+             {
+              "op": "value",
+              "args": [
+               2
+              ]
+             },
+             "0"
+            ]
+           },
+           "x": {
+            "op": "add",
+            "args": [
+             {
+              "op": "add",
+              "args": [
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportWidth",
+                  "args": []
+                 },
+                 0.04
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "value",
+                  "args": [
+                   0
+                  ]
+                 },
+                 {
+                  "op": "viewportWidth",
+                  "args": []
+                 },
+                 0.115
+                ]
+               }
+              ]
+             },
+             8
+            ]
+           },
+           "y": {
+            "op": "add",
+            "args": [
+             {
+              "op": "add",
+              "args": [
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.2
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "value",
+                  "args": [
+                   1
+                  ]
+                 },
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.085
+                ]
+               }
+              ]
+             },
+             5
+            ]
+           },
+           "fill": "#9FB0CC",
+           "fontSize": 9,
+           "fontWeight": 700
+          }
+         },
+         {
+          "type": "text",
+          "style": {
+           "text": {
+            "op": "formatNumber",
+            "args": [
+             {
+              "op": "value",
+              "args": [
+               4
+              ]
+             },
+             "+0%;-0%"
+            ]
+           },
+           "x": {
+            "op": "add",
+            "args": [
+             {
+              "op": "add",
+              "args": [
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportWidth",
+                  "args": []
+                 },
+                 0.04
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "value",
+                  "args": [
+                   0
+                  ]
+                 },
+                 {
+                  "op": "viewportWidth",
+                  "args": []
+                 },
+                 0.115
+                ]
+               }
+              ]
+             },
+             {
+              "op": "mul",
+              "args": [
+               {
+                "op": "viewportWidth",
+                "args": []
+               },
+               0.11
+              ]
+             },
+             -4
+            ]
+           },
+           "y": {
+            "op": "add",
+            "args": [
+             {
+              "op": "add",
+              "args": [
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.2
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "value",
+                  "args": [
+                   1
+                  ]
+                 },
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.085
+                ]
+               }
+              ]
+             },
+             5
+            ]
+           },
+           "align": "right",
+           "fill": {
+            "op": "if",
+            "args": [
+             {
+              "op": "gte",
+              "args": [
+               {
+                "op": "value",
+                "args": [
+                 4
+                ]
+               },
+               0
+              ]
+             },
+             "#69DB7C",
+             "#FF6B6B"
+            ]
+           },
+           "fontSize": 8,
+           "fontWeight": 700
+          }
+         },
+         {
+          "type": "text",
+          "style": {
+           "text": {
+            "op": "formatNumber",
+            "args": [
+             {
+              "op": "value",
+              "args": [
+               3
+              ]
+             },
+             {
+              "op": "literal",
+              "args": [
+               "$#,0M"
+              ]
+             }
+            ]
+           },
+           "x": {
+            "op": "add",
+            "args": [
+             {
+              "op": "add",
+              "args": [
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportWidth",
+                  "args": []
+                 },
+                 0.04
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "value",
+                  "args": [
+                   0
+                  ]
+                 },
+                 {
+                  "op": "viewportWidth",
+                  "args": []
+                 },
+                 0.115
+                ]
+               }
+              ]
+             },
+             8
+            ]
+           },
+           "y": {
+            "op": "add",
+            "args": [
+             {
+              "op": "add",
+              "args": [
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.2
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "value",
+                  "args": [
+                   1
+                  ]
+                 },
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.085
+                ]
+               }
+              ]
+             },
+             {
+              "op": "mul",
+              "args": [
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.08
+                ]
+               },
+               0.3
+              ]
+             }
+            ]
+           },
+           "fill": {
+            "op": "at",
+            "args": [
+             [
+              "#FF6B6B",
+              "#FFA94D",
+              "#FFD43B",
+              "#69DB7C",
+              "#38D9A9",
+              "#4DABF7",
+              "#9775FA",
+              "#F783AC"
+             ],
+             {
+              "op": "value",
+              "args": [
+               0
+              ]
+             }
+            ]
+           },
+           "fontSize": 15,
+           "fontWeight": 900
+          }
+         },
+         {
+          "type": "text",
+          "style": {
+           "text": {
+            "op": "value",
+            "args": [
+             6
+            ]
+           },
+           "x": {
+            "op": "add",
+            "args": [
+             {
+              "op": "add",
+              "args": [
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportWidth",
+                  "args": []
+                 },
+                 0.04
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "value",
+                  "args": [
+                   0
+                  ]
+                 },
+                 {
+                  "op": "viewportWidth",
+                  "args": []
+                 },
+                 0.115
+                ]
+               }
+              ]
+             },
+             8
+            ]
+           },
+           "y": {
+            "op": "add",
+            "args": [
+             {
+              "op": "add",
+              "args": [
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.2
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "value",
+                  "args": [
+                   1
+                  ]
+                 },
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.085
+                ]
+               }
+              ]
+             },
+             {
+              "op": "mul",
+              "args": [
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.08
+                ]
+               },
+               0.6
+              ]
+             }
+            ]
+           },
+           "width": {
+            "op": "sub",
+            "args": [
+             {
+              "op": "mul",
+              "args": [
+               {
+                "op": "viewportWidth",
+                "args": []
+               },
+               0.11
+              ]
+             },
+             10
+            ]
+           },
+           "overflow": "break",
+           "lineHeight": 9,
+           "fill": "#E6EDF7",
+           "fontSize": 7.5,
+           "fontWeight": 600
+          }
+         },
+         {
+          "type": "text",
+          "when": {
+           "op": "eq",
+           "args": [
+            {
+             "op": "value",
+             "args": [
+              1
+             ]
+            },
+            7
+           ]
+          },
+          "style": {
+           "text": {
+            "op": "value",
+            "args": [
+             5
+            ]
+           },
+           "x": {
+            "op": "add",
+            "args": [
+             {
+              "op": "add",
+              "args": [
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportWidth",
+                  "args": []
+                 },
+                 0.04
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "value",
+                  "args": [
+                   0
+                  ]
+                 },
+                 {
+                  "op": "viewportWidth",
+                  "args": []
+                 },
+                 0.115
+                ]
+               }
+              ]
+             },
+             {
+              "op": "mul",
+              "args": [
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportWidth",
+                  "args": []
+                 },
+                 0.11
+                ]
+               },
+               0.5
+              ]
+             }
+            ]
+           },
+           "y": {
+            "op": "add",
+            "args": [
+             {
+              "op": "add",
+              "args": [
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.2
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "value",
+                  "args": [
+                   1
+                  ]
+                 },
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.085
+                ]
+               }
+              ]
+             },
+             {
+              "op": "mul",
+              "args": [
+               {
+                "op": "viewportHeight",
+                "args": []
+               },
+               0.08
+              ]
+             },
+             6
+            ]
+           },
+           "align": "center",
+           "width": {
+            "op": "mul",
+            "args": [
+             {
+              "op": "viewportWidth",
+              "args": []
+             },
+             0.11
+            ]
+           },
+           "overflow": "break",
+           "fill": {
+            "op": "at",
+            "args": [
+             [
+              "#FF6B6B",
+              "#FFA94D",
+              "#FFD43B",
+              "#69DB7C",
+              "#38D9A9",
+              "#4DABF7",
+              "#9775FA",
+              "#F783AC"
+             ],
+             {
+              "op": "value",
+              "args": [
+               0
+              ]
+             }
+            ]
+           },
+           "fontSize": 8,
+           "fontWeight": 800
+          }
+         }
+        ]
+       }
+      }
+     }
+    ]
+   }
+  },
+  "specVersion": "0.7",
+  "bindings": {
+   "dimensions": [
+    {
+     "table": "Product",
+     "column": "SubCategoryName"
+    },
+    {
+     "table": "Product",
+     "column": "CategoryName"
+    }
+   ],
+   "measures": [
+    {
+     "table": "KPI Measures",
+     "name": "ptC"
+    },
+    {
+     "table": "KPI Measures",
+     "name": "ptR"
+    },
+    {
+     "table": "KPI Measures",
+     "name": "ptN"
+    },
+    {
+     "table": "KPI Measures",
+     "name": "ptS"
+    },
+    {
+     "table": "KPI Measures",
+     "name": "ptG"
+    }
+   ]
+  }
+ }
+}

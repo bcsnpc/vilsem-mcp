@@ -5,6 +5,8 @@ description: Build, preview and add custom Power BI visuals with the vilsem MCP 
 
 # Building Power BI visuals with vilsem
 
+Call `get_playbook` without arguments before authoring; request sections as needed. Clients supporting resources may instead read `vilsem://skill/powerbi-visuals`.
+
 vilsem is the **custom-visual layer** for agentic Power BI authoring. It reads the model, runs read-only DAX, renders previews of a declarative ECharts-based spec, and writes **its own visuals** into PBIR pages.
 
 It does **not** create pages, native visuals, slicers, bookmarks, filters or themes, and it never changes the semantic model. Do those yourself by editing the PBIR files (see `references/pbir-pages.md`) or with other tools, such as the Power BI Modeling MCP for model changes.
@@ -106,6 +108,10 @@ Wrap `SUMMARIZECOLUMNS` in `FILTER(..., [m] > 0)` when measures return 0, or you
   - Contrast warnings for white text on dark fills are usually false positives.
   - `all-zero` warnings usually mean a grain or filter problem.
 - Iterate until the numbers in the image match your DAX probes.
+
+- **Iterate cheaply:** use `preview_variants` (one spec) while iterating, `preview_visual` only when you need the option JSON, and the no-op `update_visual` dry run to view committed visuals.
+- **Reconcile before committing:** check the preview's numbers against a `run_dax` total. For example, the top-N bars plus the excluded remainder should equal the grand total; say so in the report-back.
+- **Test one filtered state** for layouts that depend on index or rank (Sankey node lists, grids), so an empty slot doesn't break the visual.
 
 ### 8. Make sure the page exists
 
@@ -212,8 +218,19 @@ Tell the user:
 | "Connection cannot be made" | Desktop was reopened and its port changed | List the instances and reconnect |
 | `list_templates` overflows the context | Huge output | Parse it from a file with a script |
 | `get_schema` takes minutes | Profiles every column | Use TMDL, the Modeling MCP or targeted DAX instead |
+| Years/months render in the wrong order in races, timelines and custom series | Rows arrive in **query order**; plain `dimension` slots aren't sorted chronologically | Bind the year/month field to a slot with `"kind":"time"`. For text periods ("Q1-2017", "Sep 2025") bind a numeric sort column (e.g. `YearMonthNumber`, `MonthNumber`) and supply labels separately. |
+| Two items drawn on top of each other in rank-based layouts | `RANKX` ties caused by floating-point noise in the value | Wrap **both** the expression and the explicit value argument in `ROUND(…, 0)`: `RANKX(ALLSELECTED(T[c]), ROUND(CALCULATE(…),0), ROUND(CALCULATE(…),0))` |
+| A rank meant to be global restarts within each category | The category is still in filter context inside `RANKX` | Remove it inside the ranked table, e.g. `CALCULATETABLE(VALUES(Product[Sub]), REMOVEFILTERS(Product[Sub], Product[Category]))` |
+| A literal string such as `"$1,834M"` disappears or errors | Strings **starting with `$`** are parsed as tokens | Don't author `$`-prefixed literals. Put the number in a slot and format it (`formatterTemplate`, or the hidden-gauge pattern in the cookbook). |
+| Preview is fine but the visual **hangs Desktop** | Heavy per-row DAX, e.g. `AVERAGEX`/`STDEVX` over all dates evaluated for every row | Keep DAX to one cheap value per row; compute statistics with `stat`/`calculate` transforms instead. |
+| Preview or query fails after about 30 s | Set-heavy DAX (`INTERSECT`/`EXCEPT` over large customer sets) across several measures | Keep at most 2–3 such measures per visual. Derive the rest with transforms (e.g. `window` `lag`) instead of more DAX. |
+| Bar-race labels are nearly invisible on a dark background | `axisLabel` colour set on the base `yAxis` is overridden per timeline frame | Set `yAxis.axisLabel.color` inside the **per-frame** options (`options[].yAxis`). Check the critique's contrast numbers. |
+| `fontStyle` in an expression text style is refused | Not an allowed style property in the expression language | Use `fontWeight`/`fontSize`/`fill` only. |
+| A `graphic` outline rectangle is cut off in Desktop | Container clipping differs from the preview | Avoid outline rects at the edges; use filled panels with an inset, or the card style. |
+| A comparison chart shows flat, near-identical bars | The data has no variance for that KPI (Contoso is synthetic: margin %, AOV, units/order and discount are almost identical across countries and stores) | Probe variance with `run_dax` **before** designing comparisons. Pick KPIs that move (growth, orders per customer, sales per customer, share). |
 
 ## References
 
+- `references/data-art-recipes.md`: eight Contoso-specific data-art references; fetch `get_playbook` section `art`, then `art:<slug>`. These are examples, not shipped templates.
 - `references/pbir-pages.md`: creating pages, the PBIR layout and Desktop reload rules.
 - `references/spec-cookbook.md`: proven layout patterns, each verified against a real model: KPI hero, formatted KPI numbers, sorted leaderboard, calendar heatmap, Sankey, funnel with donut, radar with company baseline, butterfly bars, date-window and top-N measures.

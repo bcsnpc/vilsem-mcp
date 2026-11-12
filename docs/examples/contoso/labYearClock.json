@@ -1,0 +1,267 @@
+{
+ "_note": "Working Vilsem spec from the Contoso 10M demo report (renderer 4.43). Contoso-specific fields/measures; use as a reference, not a shipped template.",
+ "visual": "labYearClock",
+ "layout": {
+  "x": 640,
+  "y": 0,
+  "width": 640,
+  "height": 720,
+  "z": 1,
+  "tabOrder": 1
+ },
+ "bindings": {
+  "dimensions": [
+   {
+    "table": "Date",
+    "column": "Date"
+   },
+   {
+    "table": "Date",
+    "column": "MonthShort"
+   }
+  ],
+  "measures": [
+   {
+    "name": "xclD",
+    "scoped": true
+   },
+   {
+    "name": "xclFY",
+    "scoped": true
+   }
+  ]
+ },
+ "spec": {
+  "version": 1,
+  "type": "custom",
+  "config": {
+   "cardStyle": "plain",
+   "renderer": "svg"
+  },
+  "measures": {
+   "xclD": {
+    "expression": "VAR y = YEAR([Global Last Sale Date]) RETURN IF(YEAR(MAX('Date'[Date])) = y, COALESCE([Net Sales], 0) / 1e6)",
+    "format": "$#,0.0\"M\""
+   },
+   "xclFY": {
+    "expression": "VAR y = YEAR([Global Last Sale Date]) RETURN IF(YEAR(MAX('Date'[Date])) = y, CALCULATE([Net Sales], REMOVEFILTERS('Date'), 'Date'[Year] = y) / 1e9)",
+    "format": "$#,0.00\"B\""
+   }
+  },
+  "template": {
+   "meta": {
+    "id": "lab_year_clock",
+    "name": "Clock of the year",
+    "formatVersion": 2
+   },
+   "slots": {
+    "d": {
+     "kind": "time"
+    },
+    "mo": {
+     "kind": "dimension"
+    },
+    "v": {
+     "kind": "measure"
+    },
+    "fy": {
+     "kind": "measure"
+    }
+   },
+   "params": [],
+   "template": {
+    "animation": true,
+    "animationDuration": 2400,
+    "backgroundColor": {
+     "type": "radial",
+     "x": 0.5,
+     "y": 0.56,
+     "r": 0.8,
+     "colorStops": [
+      {
+       "offset": 0,
+       "color": "#160F33"
+      },
+      {
+       "offset": 1,
+       "color": "#05070F"
+      }
+     ]
+    },
+    "textStyle": {
+     "fontFamily": "$theme.font",
+     "color": "#E6EDF7"
+    },
+    "title": [
+     {
+      "text": "LAB 02 · CLOCK OF THE YEAR",
+      "left": 32,
+      "top": 28,
+      "textStyle": {
+       "fontSize": 11,
+       "fontWeight": 800,
+       "color": "#C084FC"
+      }
+     },
+     {
+      "text": "365 days around the dial",
+      "left": 32,
+      "top": 46,
+      "textStyle": {
+       "fontSize": 24,
+       "fontWeight": 900,
+       "color": "#FFFFFF"
+      }
+     },
+     {
+      "text": "Each spoke is one day of 2025, length = daily net sales. Jan 1 at 12 o'clock.",
+      "left": 32,
+      "top": 82,
+      "textStyle": {
+       "fontSize": 12,
+       "color": "#8FA3C7"
+      }
+     },
+     {
+      "text": "NET SALES 2025",
+      "left": "center",
+      "top": "62%",
+      "textStyle": {
+       "fontSize": 10,
+       "fontWeight": 800,
+       "color": "#8FA3C7"
+      }
+     }
+    ],
+    "tooltip": {
+     "trigger": "item",
+     "confine": true
+    },
+    "polar": {
+     "center": [
+      "50%",
+      "58%"
+     ],
+     "radius": [
+      "24%",
+      "72%"
+     ]
+    },
+    "angleAxis": {
+     "type": "category",
+     "data": "$slot.mo.values",
+     "startAngle": 90,
+     "clockwise": true,
+     "boundaryGap": false,
+     "axisLine": {
+      "show": false
+     },
+     "axisTick": {
+      "show": false
+     },
+     "splitLine": {
+      "show": false
+     },
+     "axisLabel": {
+      "color": "#C4B5FD",
+      "fontSize": 11,
+      "fontWeight": 700,
+      "interval": 30,
+      "margin": -4
+     }
+    },
+    "radiusAxis": {
+     "type": "value",
+     "show": false,
+     "min": 0
+    },
+    "series": [
+     {
+      "type": "bar",
+      "coordinateSystem": "polar",
+      "data": "$slot.v.values",
+      "barCategoryGap": "8%",
+      "itemStyle": {
+       "color": "#C084FC",
+       "shadowColor": "rgba(192,132,252,0.75)",
+       "shadowBlur": 6
+      }
+     },
+     {
+      "type": "gauge",
+      "silent": true,
+      "center": [
+       "50%",
+       "56%"
+      ],
+      "radius": 1,
+      "min": 0,
+      "max": 1,
+      "axisLine": {
+       "show": false
+      },
+      "axisTick": {
+       "show": false
+      },
+      "splitLine": {
+       "show": false
+      },
+      "axisLabel": {
+       "show": false
+      },
+      "pointer": {
+       "show": false
+      },
+      "anchor": {
+       "show": false
+      },
+      "title": {
+       "show": false
+      },
+      "progress": {
+       "show": false
+      },
+      "detail": {
+       "offsetCenter": [
+        0,
+        0
+       ],
+       "fontSize": 30,
+       "fontWeight": 900,
+       "color": "#FFFFFF",
+       "formatterTemplate": "{value:thousands}"
+      },
+      "data": [
+       {
+        "value": "$slot.fy.last"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "specVersion": "0.7",
+  "bindings": {
+   "dimensions": [
+    {
+     "table": "Date",
+     "column": "Date"
+    },
+    {
+     "table": "Date",
+     "column": "MonthShort"
+    }
+   ],
+   "measures": [
+    {
+     "table": "KPI Measures",
+     "name": "xclD"
+    },
+    {
+     "table": "KPI Measures",
+     "name": "xclFY"
+    }
+   ]
+  }
+ }
+}

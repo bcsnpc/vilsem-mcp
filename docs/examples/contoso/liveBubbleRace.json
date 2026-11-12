@@ -1,0 +1,312 @@
+{
+ "_note": "Working Vilsem spec from the Contoso 10M demo report (renderer 4.43). Contoso-specific fields/measures; use as a reference, not a shipped template.",
+ "visual": "liveBubbleRace",
+ "layout": {
+  "x": 640,
+  "y": 0,
+  "width": 640,
+  "height": 630,
+  "z": 1,
+  "tabOrder": 1
+ },
+ "bindings": {
+  "dimensions": [
+   {
+    "table": "Date",
+    "column": "Year"
+   },
+   {
+    "table": "Customer",
+    "column": "CountryFull"
+   }
+  ],
+  "measures": [
+   {
+    "name": "lvS",
+    "scoped": true
+   },
+   {
+    "name": "lvC",
+    "scoped": true
+   },
+   {
+    "name": "lvR",
+    "scoped": true
+   }
+  ]
+ },
+ "spec": {
+  "version": 1,
+  "type": "custom",
+  "config": {
+   "cardStyle": "plain",
+   "renderer": "svg"
+  },
+  "measures": {
+   "lvS": {
+    "expression": "IF(MAX('Date'[Year]) <= YEAR([Global Last Sale Date]), [Net Sales] / 1e6)",
+    "format": "\"$\"#,0\"M\""
+   },
+   "lvC": {
+    "expression": "IF(MAX('Date'[Year]) <= YEAR([Global Last Sale Date]) && [Net Sales] > 0, [Customers Served] / 1e3)",
+    "format": "#,0\"K\""
+   },
+   "lvR": {
+    "expression": "IF(MAX('Date'[Year]) <= YEAR([Global Last Sale Date]) && [Net Sales] > 0, [Revenue per Customer])",
+    "format": "\"$\"#,0"
+   }
+  },
+  "template": {
+   "meta": {
+    "id": "live_country_bubble_race",
+    "name": "Country bubble race",
+    "formatVersion": 4
+   },
+   "slots": {
+    "year": {
+     "kind": "dimension"
+    },
+    "country": {
+     "kind": "dimension"
+    },
+    "s": {
+     "kind": "measure"
+    },
+    "c": {
+     "kind": "measure"
+    },
+    "r": {
+     "kind": "measure"
+    }
+   },
+   "params": [],
+   "transforms": [
+    {
+     "as": "race",
+     "race": {
+      "time": "year",
+      "category": "country",
+      "value": "s",
+      "topN": 8,
+      "x": "c",
+      "y": "r",
+      "size": "s"
+     }
+    }
+   ],
+   "animation": {
+    "enter": {
+     "duration": 300
+    },
+    "update": {
+     "duration": 900,
+     "easing": "cubicInOut"
+    }
+   },
+   "template": {
+    "baseOption": {
+     "backgroundColor": "#0B1220",
+     "textStyle": {
+      "fontFamily": "$theme.font",
+      "color": "#E6EDF7"
+     },
+     "color": [
+      "#F472B6"
+     ],
+     "timeline": {
+      "axisType": "category",
+      "autoPlay": true,
+      "playInterval": 1100,
+      "loop": true,
+      "bottom": 14,
+      "left": 40,
+      "right": 40,
+      "data": "$calc.race.labels",
+      "label": {
+       "color": "#8FA3C7"
+      },
+      "lineStyle": {
+       "color": "#26324A"
+      },
+      "itemStyle": {
+       "color": "#F472B6"
+      },
+      "checkpointStyle": {
+       "color": "#FBBF24",
+       "borderColor": "#FBBF24"
+      },
+      "controlStyle": {
+       "color": "#8FA3C7",
+       "borderColor": "#8FA3C7"
+      },
+      "progress": {
+       "lineStyle": {
+        "color": "#F472B6"
+       },
+       "itemStyle": {
+        "color": "#F472B6"
+       }
+      }
+     },
+     "grid": {
+      "left": 80,
+      "right": 50,
+      "top": 120,
+      "bottom": 100
+     },
+     "tooltip": {
+      "trigger": "item",
+      "confine": true
+     },
+     "xAxis": {
+      "type": "log",
+      "min": 5,
+      "max": 500,
+      "name": "Customers (K, log)",
+      "nameLocation": "middle",
+      "nameGap": 28,
+      "nameTextStyle": {
+       "color": "#8FA3C7"
+      },
+      "axisLabel": {
+       "color": "#8FA3C7"
+      },
+      "splitLine": {
+       "lineStyle": {
+        "color": "#1B2538"
+       }
+      }
+     },
+     "yAxis": {
+      "type": "value",
+      "min": 2500,
+      "max": 5200,
+      "name": "Revenue per customer",
+      "nameTextStyle": {
+       "color": "#8FA3C7"
+      },
+      "axisLabel": {
+       "color": "#8FA3C7",
+       "formatterTemplate": "{value:thousands}"
+      },
+      "splitLine": {
+       "lineStyle": {
+        "color": "#1B2538"
+       }
+      }
+     },
+     "visualMap": {
+      "show": false,
+      "type": "continuous",
+      "dimension": 2,
+      "min": 0,
+      "max": "$slot.s.max",
+      "inRange": {
+       "symbolSize": [
+        10,
+        70
+       ]
+      }
+     }
+    },
+    "options": {
+     "repeat": "$calc.race.frames",
+     "template": {
+      "title": [
+       {
+        "text": "MARKET BUBBLES",
+        "left": 28,
+        "top": 22,
+        "textStyle": {
+         "fontSize": 11,
+         "fontWeight": 800,
+         "color": "#F472B6"
+        }
+       },
+       {
+        "text": "Reach vs value per customer",
+        "left": 28,
+        "top": 40,
+        "textStyle": {
+         "fontSize": 22,
+         "fontWeight": 800,
+         "color": "#FFFFFF"
+        }
+       },
+       {
+        "text": "$item.label",
+        "right": 50,
+        "bottom": 110,
+        "textStyle": {
+         "fontSize": 64,
+         "fontWeight": 900,
+         "color": "rgba(255,255,255,0.12)"
+        }
+       }
+      ],
+      "series": [
+       {
+        "id": "country-bubbles",
+        "type": "scatter",
+        "data": "$item.data",
+        "itemStyle": {
+         "color": "#F472B6",
+         "opacity": 0.85,
+         "borderColor": "#0B1220",
+         "borderWidth": 1
+        },
+        "labelLayout": {
+         "moveOverlap": "shiftY",
+         "hideOverlap": true
+        },
+        "label": {
+         "show": true,
+         "position": "top",
+         "color": "#E6EDF7",
+         "fontWeight": 700,
+         "formatterTemplate": "{name}"
+        },
+        "encode": {
+         "x": 0,
+         "y": 1,
+         "tooltip": [
+          0,
+          1,
+          2
+         ]
+        }
+       }
+      ]
+     }
+    }
+   }
+  },
+  "specVersion": "0.7",
+  "bindings": {
+   "dimensions": [
+    {
+     "table": "Date",
+     "column": "Year"
+    },
+    {
+     "table": "Customer",
+     "column": "CountryFull"
+    }
+   ],
+   "measures": [
+    {
+     "table": "KPI Measures",
+     "name": "lvS"
+    },
+    {
+     "table": "KPI Measures",
+     "name": "lvC"
+    },
+    {
+     "table": "KPI Measures",
+     "name": "lvR"
+    }
+   ]
+  }
+ }
+}

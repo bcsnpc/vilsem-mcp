@@ -1,0 +1,222 @@
+{
+ "_note": "Working Vilsem spec from the Contoso 10M demo report (renderer 4.43). Contoso-specific fields/measures; use as a reference, not a shipped template.",
+ "visual": "liveRadialYear",
+ "layout": {
+  "x": 0,
+  "y": 630,
+  "width": 1280,
+  "height": 630,
+  "z": 2,
+  "tabOrder": 2
+ },
+ "bindings": {
+  "dimensions": [
+   {
+    "table": "Date",
+    "column": "MonthNumber"
+   },
+   {
+    "table": "Product",
+    "column": "CategoryName"
+   }
+  ],
+  "measures": [
+   {
+    "name": "lvM",
+    "scoped": true
+   }
+  ]
+ },
+ "spec": {
+  "version": 1,
+  "type": "custom",
+  "config": {
+   "cardStyle": "plain",
+   "renderer": "svg"
+  },
+  "measures": {
+   "lvM": {
+    "expression": "VAR y = YEAR([Global Last Sale Date]) RETURN CALCULATE([Net Sales], 'Date'[Year] = y) / 1e6",
+    "format": "\"$\"#,0.0\"M\""
+   }
+  },
+  "template": {
+   "meta": {
+    "id": "live_radial_year",
+    "name": "Radial year by category",
+    "formatVersion": 4
+   },
+   "slots": {
+    "month": {
+     "kind": "dimension"
+    },
+    "cat": {
+     "kind": "dimension"
+    },
+    "s": {
+     "kind": "measure"
+    }
+   },
+   "params": [],
+   "transforms": [
+    {
+     "facet": {
+      "by": "cat",
+      "category": "month",
+      "value": "s",
+      "columns": 1,
+      "maxPanels": 12
+     },
+     "as": "f"
+    }
+   ],
+   "template": {
+    "animation": true,
+    "animationDuration": 1600,
+    "animationEasing": "cubicOut",
+    "backgroundColor": "#0B1220",
+    "textStyle": {
+     "fontFamily": "$theme.font",
+     "color": "#E6EDF7"
+    },
+    "color": [
+     "#38BDF8",
+     "#F472B6",
+     "#FBBF24",
+     "#34D399",
+     "#A78BFA",
+     "#FB7185",
+     "#22D3EE",
+     "#F97316"
+    ],
+    "title": [
+     {
+      "text": "THE YEAR IN A CIRCLE",
+      "left": 40,
+      "top": 40,
+      "textStyle": {
+       "fontSize": 11,
+       "fontWeight": 800,
+       "color": "#FBBF24"
+      }
+     },
+     {
+      "text": "FY2025, month by month",
+      "left": 40,
+      "top": 58,
+      "textStyle": {
+       "fontSize": 26,
+       "fontWeight": 800,
+       "color": "#FFFFFF"
+      }
+     },
+     {
+      "text": "Each spoke is a month, clockwise from January;\nthe stack shows which categories drove it.",
+      "left": 40,
+      "top": 100,
+      "textStyle": {
+       "fontSize": 13,
+       "lineHeight": 20,
+       "color": "#8FA3C7"
+      }
+     }
+    ],
+    "legend": {
+     "orient": "vertical",
+     "left": 40,
+     "top": 170,
+     "itemGap": 12,
+     "textStyle": {
+      "color": "#CBD5E1",
+      "fontSize": 12
+     }
+    },
+    "tooltip": {
+     "trigger": "item",
+     "confine": true
+    },
+    "polar": {
+     "center": [
+      "62%",
+      "52%"
+     ],
+     "radius": [
+      "16%",
+      "88%"
+     ]
+    },
+    "angleAxis": {
+     "type": "category",
+     "data": [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+     ],
+     "startAngle": 90,
+     "axisLabel": {
+      "color": "#CBD5E1",
+      "fontSize": 12,
+      "fontWeight": 700
+     },
+     "axisLine": {
+      "lineStyle": {
+       "color": "#26324A"
+      }
+     },
+     "axisTick": {
+      "show": false
+     }
+    },
+    "radiusAxis": {
+     "show": false
+    },
+    "series": {
+     "repeat": "$calc.f.panels",
+     "template": {
+      "type": "bar",
+      "coordinateSystem": "polar",
+      "stack": "total",
+      "name": "$item.name",
+      "data": "$item.data",
+      "barCategoryGap": "18%",
+      "itemStyle": {
+       "borderColor": "#0B1220",
+       "borderWidth": 1
+      },
+      "emphasis": {
+       "focus": "series"
+      }
+     }
+    }
+   }
+  },
+  "specVersion": "0.7",
+  "bindings": {
+   "dimensions": [
+    {
+     "table": "Date",
+     "column": "MonthNumber"
+    },
+    {
+     "table": "Product",
+     "column": "CategoryName"
+    }
+   ],
+   "measures": [
+    {
+     "table": "KPI Measures",
+     "name": "lvM"
+    }
+   ]
+  }
+ }
+}

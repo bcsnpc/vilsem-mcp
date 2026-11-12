@@ -1,0 +1,1656 @@
+{
+ "_note": "Working Vilsem spec from the Contoso 10M demo report (renderer 4.43). Contoso-specific fields/measures; use as a reference, not a shipped template.",
+ "visual": "artBotanical",
+ "layout": {
+  "x": 640,
+  "y": 2160,
+  "width": 640,
+  "height": 720,
+  "z": 7,
+  "tabOrder": 7
+ },
+ "bindings": {
+  "dimensions": [
+   {
+    "table": "Store",
+    "column": "Description"
+   }
+  ],
+  "measures": [
+   {
+    "name": "bsX",
+    "scoped": true
+   },
+   {
+    "name": "bsH",
+    "scoped": true
+   },
+   {
+    "name": "bsS",
+    "scoped": true
+   },
+   {
+    "name": "bsC",
+    "scoped": true
+   },
+   {
+    "name": "bsL",
+    "scoped": true
+   }
+  ]
+ },
+ "spec": {
+  "version": 1,
+  "type": "custom",
+  "config": {
+   "cardStyle": "plain",
+   "renderer": "svg"
+  },
+  "measures": {
+   "bsX": {
+    "expression": "VAR y = YEAR([Global Last Sale Date]) VAR d = SELECTEDVALUE(Store[Description]) VAR life = [Net Sales] VAR ok = d <> \"Online store\" && life > 0 RETURN IF(ok, RANKX(FILTER(ALLSELECTED(Store[Description]), Store[Description] <> \"Online store\" && CALCULATE([Net Sales]) > 0), CALCULATE(INT(MIN(Store[OpenDate])) * 1000 + MOD(MIN(Store[StoreKey]), 1000)), , ASC, Dense))",
+    "format": "0"
+   },
+   "bsH": {
+    "expression": "VAR y = YEAR([Global Last Sale Date]) VAR d = SELECTEDVALUE(Store[Description]) VAR life = [Net Sales] VAR ok = d <> \"Online store\" && life > 0 VAR o = CALCULATE(MIN(Store[OpenDate])) VAR e = CALCULATE(MAX(Sales[OrderDate]), REMOVEFILTERS('Date')) RETURN IF(ok, DIVIDE(INT(e - o), 365.25))",
+    "format": "0.0\" yrs\""
+   },
+   "bsS": {
+    "expression": "VAR y = YEAR([Global Last Sale Date]) VAR d = SELECTEDVALUE(Store[Description]) VAR life = [Net Sales] VAR ok = d <> \"Online store\" && life > 0 RETURN IF(ok, COALESCE(CALCULATE([Net Sales], REMOVEFILTERS('Date'), 'Date'[Year] = y) / 1e6, 0))",
+    "format": "\"$\"#,0.0\"M\""
+   },
+   "bsC": {
+    "expression": "VAR y = YEAR([Global Last Sale Date]) VAR d = SELECTEDVALUE(Store[Description]) VAR life = [Net Sales] VAR ok = d <> \"Online store\" && life > 0 RETURN IF(ok, SWITCH(SELECTEDVALUE(Store[CountryName]), \"Australia\", 0, \"Canada\", 1, \"France\", 2, \"Germany\", 3, \"Italy\", 4, \"Netherlands\", 5, \"United Kingdom\", 6, \"United States\", 7, 0))",
+    "format": "0"
+   },
+   "bsL": {
+    "expression": "VAR y = YEAR([Global Last Sale Date]) VAR d = SELECTEDVALUE(Store[Description]) VAR life = [Net Sales] VAR ok = d <> \"Online store\" && life > 0 RETURN IF(ok, CALCULATE([Net Sales], REMOVEFILTERS('Date')) / 1e6)",
+    "format": "\"$\"#,0\"M\""
+   }
+  },
+  "template": {
+   "meta": {
+    "id": "art_botanical_stores",
+    "name": "Botanical store garden",
+    "formatVersion": 4
+   },
+   "slots": {
+    "store": {
+     "kind": "dimension"
+    },
+    "x": {
+     "kind": "measure"
+    },
+    "h": {
+     "kind": "measure"
+    },
+    "s": {
+     "kind": "measure"
+    },
+    "c": {
+     "kind": "measure"
+    },
+    "l": {
+     "kind": "measure"
+    }
+   },
+   "params": [],
+   "transforms": [
+    {
+     "points": {
+      "fields": [
+       "x",
+       "h",
+       "s",
+       "c",
+       "l"
+      ],
+      "numeric": [
+       "x",
+       "h",
+       "s",
+       "c",
+       "l"
+      ],
+      "name": "store"
+     },
+     "as": "pts"
+    }
+   ],
+   "template": {
+    "animation": true,
+    "animationDuration": 1800,
+    "backgroundColor": "#0E1712",
+    "textStyle": {
+     "fontFamily": "'Segoe UI', Arial",
+     "color": "#E6F0E8"
+    },
+    "title": [
+     {
+      "text": "THE STORE GARDEN",
+      "left": 30,
+      "top": 26,
+      "textStyle": {
+       "fontSize": 11,
+       "fontWeight": 800,
+       "color": "#06D6A0"
+      }
+     },
+     {
+      "text": "Every store is a plant",
+      "left": 30,
+      "top": 44,
+      "textStyle": {
+       "fontSize": 22,
+       "fontWeight": 800,
+       "color": "#FFFFFF"
+      }
+     },
+     {
+      "text": "Planted in order of opening  ·  height = years open  ·  leaves = lifetime sales  ·  bloom = FY2025 sales  ·  grey bud = closed",
+      "left": 30,
+      "top": 78,
+      "textStyle": {
+       "fontSize": 10,
+       "color": "#9DB5A5"
+      }
+     },
+     {
+      "text": "{a|●} Australia  {b|●} Canada  {c|●} France  {d|●} Germany  {e|●} Italy  {f|●} Netherlands  {g|●} UK  {h|●} US",
+      "left": "center",
+      "bottom": 44,
+      "textStyle": {
+       "fontSize": 10,
+       "color": "#C9D8CD",
+       "rich": {
+        "a": {
+         "color": "#FFB4A2"
+        },
+        "b": {
+         "color": "#FF6B6B"
+        },
+        "c": {
+         "color": "#C77DFF"
+        },
+        "d": {
+         "color": "#4CC9F0"
+        },
+        "e": {
+         "color": "#FFD166"
+        },
+        "f": {
+         "color": "#F78C6B"
+        },
+        "g": {
+         "color": "#90E0EF"
+        },
+        "h": {
+         "color": "#06D6A0"
+        }
+       }
+      }
+     },
+     {
+      "text": "In the botanical style of Federica Fragapane",
+      "left": "center",
+      "bottom": 18,
+      "textStyle": {
+       "fontSize": 9,
+       "color": "#6E8576"
+      }
+     }
+    ],
+    "tooltip": {
+     "trigger": "item",
+     "confine": true,
+     "formatterTemplate": "{name}  ·  open {value.1} yrs  ·  FY sales {value.2}M"
+    },
+    "xAxis": {
+     "type": "value",
+     "show": false
+    },
+    "yAxis": {
+     "type": "value",
+     "show": false
+    },
+    "grid": {
+     "left": 0,
+     "right": 0,
+     "top": 0,
+     "bottom": 0
+    },
+    "series": [
+     {
+      "type": "custom",
+      "name": "Stores",
+      "clip": false,
+      "data": "$calc.pts.data",
+      "encode": {
+       "tooltip": [
+        1,
+        2
+       ]
+      },
+      "renderItem": {
+       "language": "vilsem-expression",
+       "version": 1,
+       "root": {
+        "type": "group",
+        "children": [
+         {
+          "type": "rect",
+          "shape": {
+           "x": {
+            "op": "sub",
+            "args": [
+             {
+              "op": "add",
+              "args": [
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportWidth",
+                  "args": []
+                 },
+                 0.06
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "sub",
+                  "args": [
+                   {
+                    "op": "value",
+                    "args": [
+                     0
+                    ]
+                   },
+                   1
+                  ]
+                 },
+                 {
+                  "op": "viewportWidth",
+                  "args": []
+                 },
+                 0.013968253968253968
+                ]
+               }
+              ]
+             },
+             {
+              "op": "mul",
+              "args": [
+               {
+                "op": "viewportWidth",
+                "args": []
+               },
+               0.008
+              ]
+             }
+            ]
+           },
+           "y": {
+            "op": "mul",
+            "args": [
+             {
+              "op": "viewportHeight",
+              "args": []
+             },
+             0.84
+            ]
+           },
+           "width": {
+            "op": "mul",
+            "args": [
+             {
+              "op": "viewportWidth",
+              "args": []
+             },
+             0.016
+            ]
+           },
+           "height": 2
+          },
+          "style": {
+           "fill": "#3A4A3F"
+          }
+         },
+         {
+          "type": "path",
+          "shape": {
+           "pathData": {
+            "op": "concat",
+            "args": [
+             "M ",
+             {
+              "op": "add",
+              "args": [
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportWidth",
+                  "args": []
+                 },
+                 0.06
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "sub",
+                  "args": [
+                   {
+                    "op": "value",
+                    "args": [
+                     0
+                    ]
+                   },
+                   1
+                  ]
+                 },
+                 {
+                  "op": "viewportWidth",
+                  "args": []
+                 },
+                 0.013968253968253968
+                ]
+               }
+              ]
+             },
+             " ",
+             {
+              "op": "mul",
+              "args": [
+               {
+                "op": "viewportHeight",
+                "args": []
+               },
+               0.84
+              ]
+             },
+             " Q ",
+             {
+              "op": "add",
+              "args": [
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportWidth",
+                  "args": []
+                 },
+                 0.06
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "sub",
+                  "args": [
+                   {
+                    "op": "value",
+                    "args": [
+                     0
+                    ]
+                   },
+                   1
+                  ]
+                 },
+                 {
+                  "op": "viewportWidth",
+                  "args": []
+                 },
+                 0.013968253968253968
+                ]
+               }
+              ]
+             },
+             " ",
+             {
+              "op": "div",
+              "args": [
+               {
+                "op": "add",
+                "args": [
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "viewportHeight",
+                    "args": []
+                   },
+                   0.84
+                  ]
+                 },
+                 {
+                  "op": "sub",
+                  "args": [
+                   {
+                    "op": "mul",
+                    "args": [
+                     {
+                      "op": "viewportHeight",
+                      "args": []
+                     },
+                     0.84
+                    ]
+                   },
+                   {
+                    "op": "add",
+                    "args": [
+                     {
+                      "op": "mul",
+                      "args": [
+                       {
+                        "op": "viewportHeight",
+                        "args": []
+                       },
+                       0.05
+                      ]
+                     },
+                     {
+                      "op": "mul",
+                      "args": [
+                       {
+                        "op": "div",
+                        "args": [
+                         {
+                          "op": "value",
+                          "args": [
+                           1
+                          ]
+                         },
+                         21
+                        ]
+                       },
+                       {
+                        "op": "viewportHeight",
+                        "args": []
+                       },
+                       0.5
+                      ]
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               },
+               2
+              ]
+             },
+             " ",
+             {
+              "op": "add",
+              "args": [
+               {
+                "op": "add",
+                "args": [
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "viewportWidth",
+                    "args": []
+                   },
+                   0.06
+                  ]
+                 },
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "sub",
+                    "args": [
+                     {
+                      "op": "value",
+                      "args": [
+                       0
+                      ]
+                     },
+                     1
+                    ]
+                   },
+                   {
+                    "op": "viewportWidth",
+                    "args": []
+                   },
+                   0.013968253968253968
+                  ]
+                 }
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "sin",
+                  "args": [
+                   {
+                    "op": "mul",
+                    "args": [
+                     {
+                      "op": "value",
+                      "args": [
+                       0
+                      ]
+                     },
+                     2.3
+                    ]
+                   }
+                  ]
+                 },
+                 {
+                  "op": "viewportWidth",
+                  "args": []
+                 },
+                 0.022
+                ]
+               }
+              ]
+             },
+             " ",
+             {
+              "op": "sub",
+              "args": [
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.84
+                ]
+               },
+               {
+                "op": "add",
+                "args": [
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "viewportHeight",
+                    "args": []
+                   },
+                   0.05
+                  ]
+                 },
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "div",
+                    "args": [
+                     {
+                      "op": "value",
+                      "args": [
+                       1
+                      ]
+                     },
+                     21
+                    ]
+                   },
+                   {
+                    "op": "viewportHeight",
+                    "args": []
+                   },
+                   0.5
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          },
+          "style": {
+           "fill": "none",
+           "stroke": {
+            "op": "if",
+            "args": [
+             {
+              "op": "gt",
+              "args": [
+               {
+                "op": "value",
+                "args": [
+                 2
+                ]
+               },
+               0
+              ]
+             },
+             "#6FAF7F",
+             "#55625A"
+            ]
+           },
+           "lineWidth": 1.3
+          }
+         },
+         {
+          "type": "path",
+          "shape": {
+           "pathData": "M0,0 C0.35,-0.32 0.85,-0.25 1,0 C0.85,0.25 0.35,0.32 0,0 Z"
+          },
+          "x": {
+           "op": "add",
+           "args": [
+            {
+             "op": "add",
+             "args": [
+              {
+               "op": "mul",
+               "args": [
+                {
+                 "op": "viewportWidth",
+                 "args": []
+                },
+                0.06
+               ]
+              },
+              {
+               "op": "mul",
+               "args": [
+                {
+                 "op": "sub",
+                 "args": [
+                  {
+                   "op": "value",
+                   "args": [
+                    0
+                   ]
+                  },
+                  1
+                 ]
+                },
+                {
+                 "op": "viewportWidth",
+                 "args": []
+                },
+                0.013968253968253968
+               ]
+              }
+             ]
+            },
+            {
+             "op": "mul",
+             "args": [
+              {
+               "op": "mul",
+               "args": [
+                {
+                 "op": "sin",
+                 "args": [
+                  {
+                   "op": "mul",
+                   "args": [
+                    {
+                     "op": "value",
+                     "args": [
+                      0
+                     ]
+                    },
+                    2.3
+                   ]
+                  }
+                 ]
+                },
+                {
+                 "op": "viewportWidth",
+                 "args": []
+                },
+                0.022
+               ]
+              },
+              0.35,
+              0.35
+             ]
+            }
+           ]
+          },
+          "y": {
+           "op": "sub",
+           "args": [
+            {
+             "op": "mul",
+             "args": [
+              {
+               "op": "viewportHeight",
+               "args": []
+              },
+              0.84
+             ]
+            },
+            {
+             "op": "mul",
+             "args": [
+              {
+               "op": "sub",
+               "args": [
+                {
+                 "op": "mul",
+                 "args": [
+                  {
+                   "op": "viewportHeight",
+                   "args": []
+                  },
+                  0.84
+                 ]
+                },
+                {
+                 "op": "sub",
+                 "args": [
+                  {
+                   "op": "mul",
+                   "args": [
+                    {
+                     "op": "viewportHeight",
+                     "args": []
+                    },
+                    0.84
+                   ]
+                  },
+                  {
+                   "op": "add",
+                   "args": [
+                    {
+                     "op": "mul",
+                     "args": [
+                      {
+                       "op": "viewportHeight",
+                       "args": []
+                      },
+                      0.05
+                     ]
+                    },
+                    {
+                     "op": "mul",
+                     "args": [
+                      {
+                       "op": "div",
+                       "args": [
+                        {
+                         "op": "value",
+                         "args": [
+                          1
+                         ]
+                        },
+                        21
+                       ]
+                      },
+                      {
+                       "op": "viewportHeight",
+                       "args": []
+                      },
+                      0.5
+                     ]
+                    }
+                   ]
+                  }
+                 ]
+                }
+               ]
+              },
+              0.35
+             ]
+            }
+           ]
+          },
+          "scaleX": {
+           "op": "mul",
+           "args": [
+            {
+             "op": "viewportHeight",
+             "args": []
+            },
+            0.012,
+            {
+             "op": "sqrt",
+             "args": [
+              {
+               "op": "value",
+               "args": [
+                4
+               ]
+              }
+             ]
+            },
+            0.12
+           ]
+          },
+          "scaleY": {
+           "op": "mul",
+           "args": [
+            {
+             "op": "viewportHeight",
+             "args": []
+            },
+            0.012,
+            {
+             "op": "sqrt",
+             "args": [
+              {
+               "op": "value",
+               "args": [
+                4
+               ]
+              }
+             ]
+            },
+            0.12
+           ]
+          },
+          "rotation": 0.6,
+          "style": {
+           "fill": "#3E7C59",
+           "opacity": 0.85,
+           "stroke": "#9BD1A8",
+           "lineWidth": 0.4
+          }
+         },
+         {
+          "type": "path",
+          "shape": {
+           "pathData": "M0,0 C0.35,-0.32 0.85,-0.25 1,0 C0.85,0.25 0.35,0.32 0,0 Z"
+          },
+          "x": {
+           "op": "add",
+           "args": [
+            {
+             "op": "add",
+             "args": [
+              {
+               "op": "mul",
+               "args": [
+                {
+                 "op": "viewportWidth",
+                 "args": []
+                },
+                0.06
+               ]
+              },
+              {
+               "op": "mul",
+               "args": [
+                {
+                 "op": "sub",
+                 "args": [
+                  {
+                   "op": "value",
+                   "args": [
+                    0
+                   ]
+                  },
+                  1
+                 ]
+                },
+                {
+                 "op": "viewportWidth",
+                 "args": []
+                },
+                0.013968253968253968
+               ]
+              }
+             ]
+            },
+            {
+             "op": "mul",
+             "args": [
+              {
+               "op": "mul",
+               "args": [
+                {
+                 "op": "sin",
+                 "args": [
+                  {
+                   "op": "mul",
+                   "args": [
+                    {
+                     "op": "value",
+                     "args": [
+                      0
+                     ]
+                    },
+                    2.3
+                   ]
+                  }
+                 ]
+                },
+                {
+                 "op": "viewportWidth",
+                 "args": []
+                },
+                0.022
+               ]
+              },
+              0.6,
+              0.6
+             ]
+            }
+           ]
+          },
+          "y": {
+           "op": "sub",
+           "args": [
+            {
+             "op": "mul",
+             "args": [
+              {
+               "op": "viewportHeight",
+               "args": []
+              },
+              0.84
+             ]
+            },
+            {
+             "op": "mul",
+             "args": [
+              {
+               "op": "sub",
+               "args": [
+                {
+                 "op": "mul",
+                 "args": [
+                  {
+                   "op": "viewportHeight",
+                   "args": []
+                  },
+                  0.84
+                 ]
+                },
+                {
+                 "op": "sub",
+                 "args": [
+                  {
+                   "op": "mul",
+                   "args": [
+                    {
+                     "op": "viewportHeight",
+                     "args": []
+                    },
+                    0.84
+                   ]
+                  },
+                  {
+                   "op": "add",
+                   "args": [
+                    {
+                     "op": "mul",
+                     "args": [
+                      {
+                       "op": "viewportHeight",
+                       "args": []
+                      },
+                      0.05
+                     ]
+                    },
+                    {
+                     "op": "mul",
+                     "args": [
+                      {
+                       "op": "div",
+                       "args": [
+                        {
+                         "op": "value",
+                         "args": [
+                          1
+                         ]
+                        },
+                        21
+                       ]
+                      },
+                      {
+                       "op": "viewportHeight",
+                       "args": []
+                      },
+                      0.5
+                     ]
+                    }
+                   ]
+                  }
+                 ]
+                }
+               ]
+              },
+              0.6
+             ]
+            }
+           ]
+          },
+          "scaleX": {
+           "op": "mul",
+           "args": [
+            {
+             "op": "viewportHeight",
+             "args": []
+            },
+            0.012,
+            {
+             "op": "sqrt",
+             "args": [
+              {
+               "op": "value",
+               "args": [
+                4
+               ]
+              }
+             ]
+            },
+            0.12
+           ]
+          },
+          "scaleY": {
+           "op": "mul",
+           "args": [
+            {
+             "op": "viewportHeight",
+             "args": []
+            },
+            0.012,
+            {
+             "op": "sqrt",
+             "args": [
+              {
+               "op": "value",
+               "args": [
+                4
+               ]
+              }
+             ]
+            },
+            0.12
+           ]
+          },
+          "rotation": 2.55,
+          "style": {
+           "fill": "#3E7C59",
+           "opacity": 0.85,
+           "stroke": "#9BD1A8",
+           "lineWidth": 0.4
+          }
+         },
+         {
+          "type": "circle",
+          "when": {
+           "op": "gt",
+           "args": [
+            {
+             "op": "value",
+             "args": [
+              2
+             ]
+            },
+            0
+           ]
+          },
+          "shape": {
+           "cx": {
+            "op": "add",
+            "args": [
+             {
+              "op": "add",
+              "args": [
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportWidth",
+                  "args": []
+                 },
+                 0.06
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "sub",
+                  "args": [
+                   {
+                    "op": "value",
+                    "args": [
+                     0
+                    ]
+                   },
+                   1
+                  ]
+                 },
+                 {
+                  "op": "viewportWidth",
+                  "args": []
+                 },
+                 0.013968253968253968
+                ]
+               }
+              ]
+             },
+             {
+              "op": "mul",
+              "args": [
+               {
+                "op": "sin",
+                "args": [
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "value",
+                    "args": [
+                     0
+                    ]
+                   },
+                   2.3
+                  ]
+                 }
+                ]
+               },
+               {
+                "op": "viewportWidth",
+                "args": []
+               },
+               0.022
+              ]
+             }
+            ]
+           },
+           "cy": {
+            "op": "sub",
+            "args": [
+             {
+              "op": "mul",
+              "args": [
+               {
+                "op": "viewportHeight",
+                "args": []
+               },
+               0.84
+              ]
+             },
+             {
+              "op": "add",
+              "args": [
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.05
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "div",
+                  "args": [
+                   {
+                    "op": "value",
+                    "args": [
+                     1
+                    ]
+                   },
+                   21
+                  ]
+                 },
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.5
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           "r": {
+            "op": "add",
+            "args": [
+             {
+              "op": "mul",
+              "args": [
+               {
+                "op": "sqrt",
+                "args": [
+                 {
+                  "op": "value",
+                  "args": [
+                   2
+                  ]
+                 }
+                ]
+               },
+               {
+                "op": "viewportHeight",
+                "args": []
+               },
+               0.0028
+              ]
+             },
+             2.5
+            ]
+           }
+          },
+          "style": {
+           "fill": {
+            "op": "at",
+            "args": [
+             [
+              "#FFB4A2",
+              "#FF6B6B",
+              "#C77DFF",
+              "#4CC9F0",
+              "#FFD166",
+              "#F78C6B",
+              "#90E0EF",
+              "#06D6A0"
+             ],
+             {
+              "op": "value",
+              "args": [
+               3
+              ]
+             }
+            ]
+           },
+           "opacity": 0.35
+          }
+         },
+         {
+          "type": "circle",
+          "when": {
+           "op": "gt",
+           "args": [
+            {
+             "op": "value",
+             "args": [
+              2
+             ]
+            },
+            0
+           ]
+          },
+          "shape": {
+           "cx": {
+            "op": "add",
+            "args": [
+             {
+              "op": "add",
+              "args": [
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportWidth",
+                  "args": []
+                 },
+                 0.06
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "sub",
+                  "args": [
+                   {
+                    "op": "value",
+                    "args": [
+                     0
+                    ]
+                   },
+                   1
+                  ]
+                 },
+                 {
+                  "op": "viewportWidth",
+                  "args": []
+                 },
+                 0.013968253968253968
+                ]
+               }
+              ]
+             },
+             {
+              "op": "mul",
+              "args": [
+               {
+                "op": "sin",
+                "args": [
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "value",
+                    "args": [
+                     0
+                    ]
+                   },
+                   2.3
+                  ]
+                 }
+                ]
+               },
+               {
+                "op": "viewportWidth",
+                "args": []
+               },
+               0.022
+              ]
+             }
+            ]
+           },
+           "cy": {
+            "op": "sub",
+            "args": [
+             {
+              "op": "mul",
+              "args": [
+               {
+                "op": "viewportHeight",
+                "args": []
+               },
+               0.84
+              ]
+             },
+             {
+              "op": "add",
+              "args": [
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.05
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "div",
+                  "args": [
+                   {
+                    "op": "value",
+                    "args": [
+                     1
+                    ]
+                   },
+                   21
+                  ]
+                 },
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.5
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           "r": {
+            "op": "add",
+            "args": [
+             {
+              "op": "mul",
+              "args": [
+               {
+                "op": "sqrt",
+                "args": [
+                 {
+                  "op": "value",
+                  "args": [
+                   2
+                  ]
+                 }
+                ]
+               },
+               {
+                "op": "viewportHeight",
+                "args": []
+               },
+               0.0016
+              ]
+             },
+             1.5
+            ]
+           }
+          },
+          "style": {
+           "fill": {
+            "op": "at",
+            "args": [
+             [
+              "#FFB4A2",
+              "#FF6B6B",
+              "#C77DFF",
+              "#4CC9F0",
+              "#FFD166",
+              "#F78C6B",
+              "#90E0EF",
+              "#06D6A0"
+             ],
+             {
+              "op": "value",
+              "args": [
+               3
+              ]
+             }
+            ]
+           },
+           "opacity": 0.95
+          }
+         },
+         {
+          "type": "circle",
+          "when": {
+           "op": "not",
+           "args": [
+            {
+             "op": "gt",
+             "args": [
+              {
+               "op": "value",
+               "args": [
+                2
+               ]
+              },
+              0
+             ]
+            }
+           ]
+          },
+          "shape": {
+           "cx": {
+            "op": "add",
+            "args": [
+             {
+              "op": "add",
+              "args": [
+               {
+                "op": "add",
+                "args": [
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "viewportWidth",
+                    "args": []
+                   },
+                   0.06
+                  ]
+                 },
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "sub",
+                    "args": [
+                     {
+                      "op": "value",
+                      "args": [
+                       0
+                      ]
+                     },
+                     1
+                    ]
+                   },
+                   {
+                    "op": "viewportWidth",
+                    "args": []
+                   },
+                   0.013968253968253968
+                  ]
+                 }
+                ]
+               },
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "sin",
+                  "args": [
+                   {
+                    "op": "mul",
+                    "args": [
+                     {
+                      "op": "value",
+                      "args": [
+                       0
+                      ]
+                     },
+                     2.3
+                    ]
+                   }
+                  ]
+                 },
+                 {
+                  "op": "viewportWidth",
+                  "args": []
+                 },
+                 0.022
+                ]
+               }
+              ]
+             },
+             3
+            ]
+           },
+           "cy": {
+            "op": "add",
+            "args": [
+             {
+              "op": "sub",
+              "args": [
+               {
+                "op": "mul",
+                "args": [
+                 {
+                  "op": "viewportHeight",
+                  "args": []
+                 },
+                 0.84
+                ]
+               },
+               {
+                "op": "add",
+                "args": [
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "viewportHeight",
+                    "args": []
+                   },
+                   0.05
+                  ]
+                 },
+                 {
+                  "op": "mul",
+                  "args": [
+                   {
+                    "op": "div",
+                    "args": [
+                     {
+                      "op": "value",
+                      "args": [
+                       1
+                      ]
+                     },
+                     21
+                    ]
+                   },
+                   {
+                    "op": "viewportHeight",
+                    "args": []
+                   },
+                   0.5
+                  ]
+                 }
+                ]
+               }
+              ]
+             },
+             4
+            ]
+           },
+           "r": 2.5
+          },
+          "style": {
+           "fill": "#55625A"
+          }
+         }
+        ]
+       }
+      }
+     }
+    ]
+   }
+  },
+  "specVersion": "0.7",
+  "bindings": {
+   "dimensions": [
+    {
+     "table": "Store",
+     "column": "Description"
+    }
+   ],
+   "measures": [
+    {
+     "table": "KPI Measures",
+     "name": "bsX"
+    },
+    {
+     "table": "KPI Measures",
+     "name": "bsH"
+    },
+    {
+     "table": "KPI Measures",
+     "name": "bsS"
+    },
+    {
+     "table": "KPI Measures",
+     "name": "bsC"
+    },
+    {
+     "table": "KPI Measures",
+     "name": "bsL"
+    }
+   ]
+  }
+ }
+}
