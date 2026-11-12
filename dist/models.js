@@ -45,7 +45,7 @@ export class Models {
         return rows.slice(0, maxRows);
     }
     reportDir(id) { return this.get(id).reportDir; }
-    async schema(id, { detail = 'summary', refresh = false } = {}) {
+    async schema(id, { detail = 'summary', refresh = false, samples = process.env.VILSEM_SCHEMA_SAMPLES !== '0' } = {}) {
         const connection = this.get(id);
         if (refresh) {
             this.metadata.delete(id);
@@ -59,7 +59,12 @@ export class Models {
             this.profiles.set(id, next);
             entry = next;
         }
-        return schemaDetail(structuredClone(await entry.promise), detail);
+        const result = schemaDetail(structuredClone(await entry.promise), detail);
+        if (!samples)
+            for (const table of result.tables)
+                for (const column of table.columns)
+                    delete column.sampleValues;
+        return result;
     }
     async fields(id, refresh = false) {
         if (!refresh && this.metadata.has(id))

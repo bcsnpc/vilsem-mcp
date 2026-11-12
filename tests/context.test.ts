@@ -59,3 +59,17 @@ describe('agent schema context through MCP',()=>{
   expect(result.pageBindings.visuals[0]).toMatchObject({name:'native-card',measures:[{table:'Sales',name:'Revenue'}]});expect(result.pageBindings.visuals[0].aggregations).toEqual([{table:'Sales',column:'Amount',function:0,queryRef:'Sum(Sales.Amount)'}]);expect(result.pageBindings.visuals[0].dimensions).toEqual([]);expect(await fs.readFile(file,'utf8')).toBe(bytes)
  })
 })
+
+it('omits all column samples on request/environment without changing counts, ranges or cached profiles',async()=>{
+ const {client,connectionId}=await clientFor(adapter())
+ try{
+  for(const detail of ['summary','full']){
+   const result=unpack(await client.callTool({name:'get_schema',arguments:{connectionId,detail,samples:false}}))
+   for(const table of result.tables)for(const column of table.columns)expect(column).not.toHaveProperty('sampleValues')
+   expect(result.tables[0].columns[0]).toMatchObject({cardinality:4,nullShare:.2,min:10,max:90})
+  }
+  vi.stubEnv('VILSEM_SCHEMA_SAMPLES','0')
+  expect(unpack(await client.callTool({name:'get_schema',arguments:{connectionId}})).tables[0].columns[0]).not.toHaveProperty('sampleValues')
+  expect(unpack(await client.callTool({name:'get_schema',arguments:{connectionId,samples:true}})).tables[0].columns[0].sampleValues).toEqual([10,90])
+ }finally{vi.unstubAllEnvs()}
+})

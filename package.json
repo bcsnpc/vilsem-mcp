@@ -14,7 +14,8 @@
     "dist",
     "docs",
     "templates",
-    "skills"
+    "skills",
+    "SECURITY.md"
   ],
   "scripts": {
     "build": "tsc && node -e \"require('fs').copyFileSync('src/rasterize.cjs','dist/rasterize.cjs')\" && node scripts/build-motion-runtime.mjs",

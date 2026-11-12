@@ -42,7 +42,7 @@ export class Models {
     return rows.slice(0,maxRows)
   }
   reportDir(id:string){return this.get(id).reportDir as string|undefined}
-  async schema(id:string,{detail='summary',refresh=false}:{detail?:'summary'|'full',refresh?:boolean}={}){
+  async schema(id:string,{detail='summary',refresh=false,samples=process.env.VILSEM_SCHEMA_SAMPLES!=='0'}:{detail?:'summary'|'full',refresh?:boolean,samples?:boolean}={}){
     const connection=this.get(id)
     if(refresh){this.metadata.delete(id);this.profiles.delete(id)}
     let entry=this.profiles.get(id)
@@ -51,7 +51,9 @@ export class Models {
       next.promise=this.fields(id,refresh).then(schema=>enrichSchema(schema,(dax,maxRows)=>this.query(id,dax,maxRows),{schemaOnly:!!connection.schemaOnly})).then(value=>{next.expires=Date.now()+60000;return value}).catch(error=>{if(this.profiles.get(id)===next)this.profiles.delete(id);throw error})
       this.profiles.set(id,next);entry=next
     }
-    return schemaDetail(structuredClone(await entry.promise),detail)
+    const result=schemaDetail(structuredClone(await entry.promise),detail)
+    if(!samples)for(const table of result.tables)for(const column of table.columns)delete column.sampleValues
+    return result
   }
   async fields(id:string,refresh=false){
     if(!refresh&&this.metadata.has(id))return this.metadata.get(id)
