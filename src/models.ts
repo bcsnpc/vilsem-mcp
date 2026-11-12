@@ -26,6 +26,24 @@ export interface ModelAdapter {
   schema(connection:any,options?:any): Promise<any>
 }
 
+// Preserve quoted DAX strings, table names and bracketed identifiers while
+// removing comments. Cleaned queries also pass core 0.8.0's older prefix guard.
+export function stripDaxComments(source:string){
+ let result='',quote='',i=0
+ while(i<source.length){
+  const c=source[i],next=source[i+1]
+  if(quote){result+=c;i++;if(c===quote){if(source[i]===quote){result+=source[i++]}else quote=''};continue}
+  if(c==='"'||c==="'"||c==='['){quote=c==='['?']':c;result+=c;i++;continue}
+  if((c==='-'&&next==='-')||(c==='/'&&next==='/')){while(i<source.length&&!/[\r\n]/.test(source[i])){result+=' ';i++}continue}
+  if(c==='/'&&next==='*'){
+   const end=source.indexOf('*/',i+2);if(end<0)throw Error('Unterminated DAX block comment')
+   result+=source.slice(i,end+2).replace(/[^\r\n]/g,' ');i=end+2;continue
+  }
+  result+=c;i++
+ }
+ return result.trim()
+}
+
 // Connections own their target IDs. No process-global dataset mutation is used.
 export class Models {
   private connections=new Map<string,any>()
@@ -35,10 +53,11 @@ export class Models {
   async connect(source:Source){await validateInputPaths({source});await checkConnectionSource(source);const connection=await this.adapter.connect(source);const connectionId=crypto.randomUUID();this.connections.set(connectionId,connection);return {connectionId,kind:source.kind,schemaOnly:!!connection.schemaOnly,...(connection.discovery?{discovery:connection.discovery,...(connection.source.port?{port:connection.source.port}:{})}:{})}}
   private get(id:string){const connection=this.connections.get(id);if(!connection)throw Error('Unknown connectionId; connect_model first');return connection}
   async query(id:string,dax:string,maxRows=200){
-    // This endpoint is for DAX table queries, not XMLA/model commands.
-    const code=dax.replace(/\/\*[\s\S]*?\*\//g,'').replace(/\/\/[^\n]*/g,'').trim()
+    // run_dax only accepts EVALUATE/DEFINE DAX queries, which cannot modify
+    // the model. XMLA/TMSL commands are rejected; the engine validates syntax.
+    const code=stripDaxComments(dax)
     if(!/^(EVALUATE\b|DEFINE\b[\s\S]*?\bEVALUATE\b)/i.test(code))throw Error('Only DAX EVALUATE queries are supported')
-    const rows=await this.adapter.query(this.get(id),dax,maxRows)
+    const rows=await this.adapter.query(this.get(id),code,maxRows)
     return rows.slice(0,maxRows)
   }
   reportDir(id:string){return this.get(id).reportDir as string|undefined}

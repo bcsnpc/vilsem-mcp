@@ -359,6 +359,8 @@ Quoted connection-string values are supported. Passwords and impersonation setti
 
 ## Agent workflow
 
+`run_dax` only accepts DAX queries starting with EVALUATE/DEFINE; DAX queries cannot modify the model. XMLA/TMSL commands are rejected. Leading `--`, `//` and block comments are supported without altering quoted strings.
+
 `connect_model` → `get_schema` → `design_visual` prompt → `validate_spec` → `explain_visual` → `preview_visual` with critique → compare variants/iterate → `list_pages` → `commit_visual` → Desktop reload and native checks. **Never commit without a preview.** Read `vilsem://docs/design-guide` and `vilsem://docs/workflow`.
 
 For edits: `list_visuals` → `read_visual` → `update_visual(dryRun:true)` → inspect before/after and confirm when not already authorized → `update_visual(dryRun:false, etag)` → reload and verify. The report folder is the source of truth. Manual format-pane values win over authored formatting and survive updates unless `resetFormatting:true` is explicit.
