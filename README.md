@@ -22,7 +22,7 @@ This is the custom-visual layer for agentic Power BI authoring. Use it alongside
 
 ## Release status: 0.8 evaluation
 
-Current packages: **vilsem-mcp 0.8.0**, **@vilsem/core 0.8.0**, **Vilsem Renderer 4.43.0.0**. They are published evaluation prereleases, suitable for testing on copies of your reports. **Production readiness, certification and exhaustive cross-target parity have not been established.** The previous stable release remains 0.6.
+Current packages: **vilsem-mcp 0.8.1**, **@vilsem/core 0.8.0**, **Vilsem Renderer 4.43.0.0**. They are published evaluation prereleases, suitable for testing on copies of your reports. **Production readiness, certification and exhaustive cross-target parity have not been established.** The previous stable release remains 0.6.
 
 Read [what was verified](#what-was-verified-for-08), [known failures](#known-failures-and-workarounds) and [incomplete checks](#checks-that-remain-partial-or-not-tested) before relying on a result. Passing tests do not mean every visual, property, dataset, report interaction or export works. This README on `main` includes live checks performed after the original release archive was built; existing release tags and assets are not rewritten.
 
@@ -69,7 +69,7 @@ In PowerShell (no Git or source checkout needed):
 node --version
 $vilsemDir = Join-Path $env:USERPROFILE 'vilsem-mcp'
 New-Item -ItemType Directory -Force -Path $vilsemDir | Out-Null
-npm.cmd install --prefix "$vilsemDir" "https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.8.0/vilsem-mcp-0.8.0.tgz"
+npm.cmd install --prefix "$vilsemDir" "https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.8.1/vilsem-mcp-0.8.1.tgz"
 ```
 
 - `npm.cmd` avoids PowerShell execution-policy errors. If `node` is missing, reopen the terminal after installing Node.
@@ -81,10 +81,10 @@ npm.cmd install --prefix "$vilsemDir" "https://github.com/bcsnpc/vilsem-mcp/rele
 Compare the archive against the published checksums for the release:
 
 ```powershell
-$tgz = Join-Path $env:TEMP 'vilsem-mcp-0.8.0.tgz'
-Invoke-WebRequest "https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.8.0/vilsem-mcp-0.8.0.tgz" -OutFile $tgz
+$tgz = Join-Path $env:TEMP 'vilsem-mcp-0.8.1.tgz'
+Invoke-WebRequest "https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.8.1/vilsem-mcp-0.8.1.tgz" -OutFile $tgz
 (Get-FileHash $tgz -Algorithm SHA256).Hash.ToLower()
-# Compare with the vilsem-mcp-0.8.0.tgz line in SHA256SUMS-0.8.0.txt on the release page
+# Compare with the vilsem-mcp-0.8.1.tgz line in SHA256SUMS-0.8.1.txt on the release page
 ```
 
 If you verified a local copy, you can install from it instead: `npm.cmd install --prefix "$vilsemDir" "$tgz"`.
@@ -225,15 +225,15 @@ node "$env:USERPROFILE/vilsem-mcp/node_modules/vilsem-mcp/dist/index.js" install
 One-shot from the pinned release without a prior install:
 
 ```powershell
-npx.cmd --yes --package=https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.8.0/vilsem-mcp-0.8.0.tgz vilsem-mcp install-skill --target claude
+npx.cmd --yes --package=https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.8.1/vilsem-mcp-0.8.1.tgz vilsem-mcp install-skill --target claude
 ```
 
 ### Alternative: global install from the Git tag
 
 ```sh
-npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.8.0
+npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.8.1
 vilsem-mcp
-# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.8.0 vilsem-mcp
+# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.8.1 vilsem-mcp
 ```
 
 The process serves stdio JSON-RPC; diagnostics go to stderr. With a global install, point your client's `command` at `vilsem-mcp` instead of `node <path>`.
@@ -359,7 +359,7 @@ Headless previews support the core ECharts composition types and declarative tem
 
 ## Current report and visual limitations
 
-This table describes **MCP 0.8.0 with core 0.8.0 / renderer 4.43**. A tool PASS or saved `visual.json` is not evidence that every report, visual state or Power BI target works.
+This table describes **MCP 0.8.1 with core 0.8.0 / renderer 4.43**. A tool PASS or saved `visual.json` is not evidence that every report, visual state or Power BI target works.
 
 | Area | Current boundary / what to check |
 | --- | --- |
@@ -508,6 +508,8 @@ The 0.8 prerelease depends on the immutable public `core-v0.8.0` release tarball
 For an independent test, follow [author a visual from scratch](docs/author-from-scratch.md).
 
 ## Release history
+
+**0.8.1** — documentation and skill update; no runtime, renderer or spec-format changes (core 0.8.0 / renderer 4.43 unchanged). Clearer install guide, including Claude Code setup without the `claude` CLI and download checksum verification. The skill now steers shareable reports toward **model measures** instead of visual-scoped measures, which fail under Publish to web and hide fields in the Build pane (new section 9a), and bundles `scripts/promote-measures.py` to move existing visual-scoped measures into the model. 344/344 tests pass.
 
 <details>
 <summary>0.7.x — expression language, motion, templates, viewport panels, container declarations</summary>
