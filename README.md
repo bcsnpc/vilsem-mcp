@@ -2,30 +2,29 @@
 
 Author Vilsem custom visuals from chat into an existing Power BI report, using real model data and declarative specifications.
 
-vilsem-mcp doesn't make charts - Claude Code and Codex make charts; vilsem-mcp gives them your model, real data, eyes, and a safe pen. The MCP contains no model and needs no LLM API key. The calling agent's own service/account may have its own costs.
+vilsem-mcp doesn't make charts. Claude Code and Codex make charts; vilsem-mcp gives them your model, real data, eyes, and a safe pen. The MCP contains no model and needs no LLM API key. The calling agent's own service or account may have its own costs.
 
 This is the custom-visual layer for agentic Power BI authoring. Use it alongside Microsoft's Power BI Report skill for native visuals and the Power BI Modeling MCP for model changes. The shared, installed renderer executes trusted application code; the authored spec is declarative JSON, not executable source.
 
+**Contents**
+
+- [Release status](#release-status-08-evaluation)
+- [Quick start (Windows)](#quick-start-windows)
+- [Connect your agent](#connect-your-agent) — [Claude Code](#claude-code) · [Claude Desktop](#claude-desktop) · [Codex](#codex) · [Other clients](#other-mcp-clients)
+- [First test prompt](#first-test-generate-a-new-visual-from-scratch)
+- [Measures: prototype vs publish](#measures-prototype-vs-publish)
+- [Desktop setup and reload rules](#desktop-setup-and-reload-rules)
+- [Agent workflow](#agent-workflow)
+- [Tools and resources](#tools-and-resources)
+- [Limitations](#current-report-and-visual-limitations) · [Known failures](#known-failures-and-workarounds) · [Open checks](#checks-that-remain-partial-or-not-tested)
+- [Troubleshooting](#troubleshooting)
+- [Release history](#release-history)
+
 ## Release status: 0.8 evaluation
 
-Current packages: **vilsem-mcp 0.8.0**, **@vilsem/core 0.8.0**, **vilsem Renderer 4.43.0.0**. They are published evaluation prereleases. They are suitable for testing on copies of your reports; **production readiness, certification and exhaustive cross-target parity have not been established**.
+Current packages: **vilsem-mcp 0.8.0**, **@vilsem/core 0.8.0**, **Vilsem Renderer 4.43.0.0**. They are published evaluation prereleases, suitable for testing on copies of your reports. **Production readiness, certification and exhaustive cross-target parity have not been established.** The previous stable release remains 0.6.
 
-Read [what was verified](#what-was-verified-for-08), [known failures](#known-failures-and-workarounds), and [incomplete checks](#checks-that-remain-partial-or-not-tested) before relying on a result. Passing tests do not mean every visual, property, dataset, report interaction or export works. This README on `main` includes live checks performed after the original release archive was built; existing release tags/assets are not rewritten.
-
-## Claude, Codex and other clients
-
-Vilsem is **not Codex-only**. The same installed MCP server and the same example prompts can be used with Claude Code, Claude Desktop or Codex. The calling agent designs the visual; Vilsem supplies model access, validation, previews and scoped report edits.
-
-| Client | Connection | Setup |
-| --- | --- | --- |
-| Claude Code | Local stdio server | [Claude Code configuration](#claude-code) |
-| Claude Desktop | Local stdio server through its developer configuration | [Claude Desktop configuration](#claude-desktop) |
-| Codex | Local stdio server through `config.toml` | [Codex configuration](#codex) |
-| Other MCP clients | Must support local stdio tools, resources and image results | Use the same Node command/server path; individual clients are not certified here |
-
-The current distribution is a local stdio server, not a hosted HTTP connector or a Claude `.mcpb` desktop extension. Pasting a local path into a browser-only chat does not connect it. For Desktop mode the server must run on the Windows machine containing the open Power BI model; a cloud/remote agent needs a local execution connection. Your agent account, tool permissions and organization policy still apply. Client setup follows official documentation; package/SDK tests do not mean every Claude/Codex UI version has been tested end to end.
-
-Start with [installation](#fresh-windows-machine-recommended-installation), review [current limitations](#current-report-and-visual-limitations), then use the [generic prompt cookbook](docs/author-from-scratch.md).
+Read [what was verified](#what-was-verified-for-08), [known failures](#known-failures-and-workarounds) and [incomplete checks](#checks-that-remain-partial-or-not-tested) before relying on a result. Passing tests do not mean every visual, property, dataset, report interaction or export works. This README on `main` includes live checks performed after the original release archive was built; existing release tags and assets are not rewritten.
 
 ## Why not just ask Claude Code / Codex directly?
 
@@ -33,40 +32,184 @@ For a custom visual outside Power BI's native catalog:
 
 | Work | Agent without this custom-visual layer | With vilsem-mcp |
 | --- | --- | --- |
-| Understand the model | Find a connector, inspect fields and recover calculation context | get_schema summary/full with calculations, statistics and relationship context |
-| Choose an analytical design | Work out question, grain, units and alternatives | Still the agent's decision; design_visual and design-guide supply a structured brief |
+| Understand the model | Find a connector, inspect fields and recover calculation context | `get_schema` summary/full with calculations, statistics and relationship context |
+| Choose an analytical design | Work out question, grain, units and alternatives | Still the agent's decision; `design_visual` and the design guide supply a structured brief |
 | Use real numbers | Implement a query bridge and field normalization | Read-only Desktop/Fabric DAX and actual field bindings |
-| See and improve a draft | Build a renderer and screenshot pipeline | preview_visual, critique and shared-data preview_variants |
-| Put it in a report | Implement/package/import a custom visual and configure queries | commit_visual writes one supported custom visual and missing renderer registration |
+| See and improve a draft | Build a renderer and screenshot pipeline | `preview_visual`, critique and shared-data `preview_variants` |
+| Put it in a report | Implement, package and import a custom visual and configure queries | `commit_visual` writes one supported custom visual and any missing renderer registration |
 | Edit the visual a month later, in a new chat | Find the old source/chat, re-explain, rebuild, repackage, re-import and rebind | Read the report's spec: "make the Sankey labels bigger"; preview a small patch |
 | What runs inside the report | Each separately authored compiled visual's implementation | One shared renderer plus plain declarative specifications |
 | Security review | Review each executable implementation and its dependencies | Review the shared renderer/dependencies and the bounded format; report policies still apply |
 
-The comparison does not imply native Power BI visuals require custom coding. Microsoft's companion Report skill handles those.
+This does not imply native Power BI visuals require custom coding. Microsoft's companion Report skill handles those.
 
-## Three authoring layers
+### Three authoring layers
 
 1. **Composition:** a supported chart type and configuration; the smallest spec and maintenance cost.
 2. **Template:** ECharts structure, declared slots, parameters and bounded transforms; more control, with explicit layout and unit responsibilities.
-3. **Expression series (0.7 prerelease):** a closed JSON AST describes bounded custom geometry. One trusted interpreter runs it in previews and the renderer; arbitrary renderItem/JavaScript remains refused. See `vilsem://docs/expression-language` for operations, limits and security boundaries.
+3. **Expression series:** a closed JSON AST describes bounded custom geometry. One trusted interpreter runs it in previews and the renderer; arbitrary `renderItem`/JavaScript is refused. See `vilsem://docs/expression-language`.
 
-## Agent workflow
+## Quick start (Windows)
 
-connect_model -> get_schema -> design_visual prompt -> validate_spec -> explain_visual -> preview_visual with critique -> compare variants/iterate -> list_pages -> commit_visual -> Desktop reload and native checks. **Never commit without a preview.** Read vilsem://docs/design-guide and vilsem://docs/workflow.
+You can use this with any report; the shipped examples are not tied to the QA model. Use your own fields discovered by `get_schema`.
 
-For edits: list_visuals -> read_visual -> update_visual(dryRun:true) -> inspect before/after and confirm when not already authorized -> update_visual(dryRun:false, etag) -> reload and verify. The report folder is the source of truth. Manual format-pane values win over authored formatting and survive updates unless resetFormatting:true is explicit.
+### 1. Prerequisites
 
-## Install
+- Node.js **22.12+, 24, or 26+**
+- Power BI Desktop (August 2026 or later recommended for live external reload)
+- A local MCP-capable agent: Claude Code, Claude Desktop or Codex
 
-Requires Node.js 22.12+, 24, or 26+. Install from GitHub or clone this repository and run `npm install`, then `npm test`. Its `prepare` step builds the server. All model connections run through `@vilsem/core/connect`; no Vilsem app checkout, Electron installation or application path configuration is needed.
+The MCP server and Desktop must run on the **same Windows machine** for Desktop mode. The Vilsem Electron app is not required. There is no npm-registry publication; always install a pinned GitHub release.
 
-The 0.8 prerelease depends on the immutable public `core-v0.8.0` release tarball. For local core development only, install a locally packed core tarball; restore the public release URL before distributing. Native physical interaction/export acceptance is incomplete and the5000-point60fps target is not met; this release is for evaluation, not a production-readiness claim. The previous stable release remains0.6.
+### 2. Install the pinned release
 
-Agents get the Vilsem playbook automatically through MCP server instructions and `vilsem://skill/*` resources. A client must read the linked resources to load the full playbook; the server does not force client behavior. Optional native installation: `vilsem-mcp install-skill --target claude` (use your installed CLI, not an unversioned npm-registry package).
+In PowerShell (no Git or source checkout needed):
 
-### Optional native skill installation
+```powershell
+node --version
+$vilsemDir = Join-Path $env:USERPROFILE 'vilsem-mcp'
+New-Item -ItemType Directory -Force -Path $vilsemDir | Out-Null
+npm.cmd install --prefix "$vilsemDir" "https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.8.0/vilsem-mcp-0.8.0.tgz"
+```
 
-The MCP delivery works without copying anything into your agent configuration. To also make it a native skill, explicitly run one of:
+- `npm.cmd` avoids PowerShell execution-policy errors. If `node` is missing, reopen the terminal after installing Node.
+- The warning `install-scripts … vilsem-mcp (prepare: npm run build)` is harmless for the release tarball: `dist/` is prebuilt.
+- Installation downloads core 0.8.0 and renderer 4.43 automatically; no application-path environment variable is needed.
+
+### 3. Verify the download (recommended)
+
+Compare the archive against the published checksums for the release:
+
+```powershell
+$tgz = Join-Path $env:TEMP 'vilsem-mcp-0.8.0.tgz'
+Invoke-WebRequest "https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.8.0/vilsem-mcp-0.8.0.tgz" -OutFile $tgz
+(Get-FileHash $tgz -Algorithm SHA256).Hash.ToLower()
+# Compare with the vilsem-mcp-0.8.0.tgz line in SHA256SUMS-0.8.0.txt on the release page
+```
+
+If you verified a local copy, you can install from it instead: `npm.cmd install --prefix "$vilsemDir" "$tgz"`.
+
+### 4. Record the two paths your agent needs
+
+```powershell
+$server = (Join-Path $vilsemDir 'node_modules/vilsem-mcp/dist/index.js') -replace '\\','/'
+$node   = (Get-Command node).Source -replace '\\','/'
+Test-Path $server   # must be True
+$server; $node
+```
+
+Use `$server` in the client configuration below. If the client cannot find `node`, use the full `$node` path as `command`.
+
+### 5. Connect your agent
+
+Pick your client in [Connect your agent](#connect-your-agent), then **restart the client** and confirm the Vilsem tools appear. A stdio server does not open a website; the MCP client starts it.
+
+### 6. Prepare a test report
+
+- Save a **test copy of the complete report project**, preserving the relative report/model folder structure.
+- A `.pbix` must first be saved as a **PBIP project** in Desktop. MCP does not patch a PBIX binary.
+- The report must use **enhanced PBIR** (`<name>.Report/definition/pages/`). Convert it in Desktop if needed.
+- Enable **Detect and reload external PBIP changes** (see [Desktop setup](#desktop-setup-and-reload-rules)) and restart Desktop.
+- Optionally create an empty test page in Desktop, then save.
+
+### 7. Build, commit and check
+
+1. Give the agent the absolute **`.Report` folder** path (not the `.pbip` or `.pbix`) and use the [first test prompt](#first-test-generate-a-new-visual-from-scratch).
+2. Inspect the real-data preview, then let the agent commit to an existing page.
+3. Follow the [reload rules](#reload-rules): the **first** Vilsem visual in a report needs a close-and-reopen without saving; later commits only need the external-changes prompt.
+4. Confirm real numbers, selection, slicers, hover/context menus, resize and save/reopen yourself. Existing native visuals should remain intact. `validate_visuals` checks Vilsem objects only.
+5. **Before publishing or sharing**, make sure the report has no visual-scoped measures. See [Measures: prototype vs publish](#measures-prototype-vs-publish).
+
+For animated browser previews, install Chrome/Edge/Chromium or set `VILSEM_PREVIEW_BROWSER_PATH` in the MCP server environment. Static previews do not need a browser.
+
+## Connect your agent
+
+Vilsem is **not tied to one client**. The same installed server and prompts work with Claude Code, Claude Desktop and Codex. The agent designs the visual; Vilsem supplies model access, validation, previews and scoped report edits.
+
+The current distribution is a **local stdio server**, not a hosted HTTP connector or a Claude `.mcpb` desktop extension. Pasting a local path into a browser-only chat does not connect it. For Desktop mode the server must run on the Windows machine containing the open Power BI model; a cloud/remote agent needs a local execution connection. Client setup follows official documentation; not every client UI version has been tested end to end.
+
+All examples use `C:/Users/YOUR_NAME/...`. Replace it with your profile path, or paste the `$server` value printed in step 4. Use forward slashes.
+
+### Claude Code
+
+**Option A — with the `claude` CLI:**
+
+```sh
+claude mcp add --scope user --transport stdio vilsem -- node "C:/Users/YOUR_NAME/vilsem-mcp/node_modules/vilsem-mcp/dist/index.js"
+claude mcp list
+```
+
+`--scope user` makes it available in every project on this machine. Omit it to use the default local (current project) scope.
+
+**`claude` not on PATH?** This is common when Claude Code is used only through the VS Code extension or desktop app. Either run the bundled binary directly:
+
+```powershell
+$claude = Get-ChildItem "$env:USERPROFILE\.vscode\extensions\anthropic.claude-code-*\resources\native-binary\claude.exe" | Select-Object -Last 1
+& $claude.FullName mcp add --scope user --transport stdio vilsem -- node "C:/Users/YOUR_NAME/vilsem-mcp/node_modules/vilsem-mcp/dist/index.js"
+```
+
+or use Option B.
+
+**Option B — without the CLI (edit JSON):**
+
+- *All projects (user scope):* add a **top-level** `mcpServers` key to `%USERPROFILE%\.claude.json`. The file already contains other settings; merge this key in and keep everything else. Close Claude Code before editing so it does not overwrite the file.
+- *One project (shared):* create `.mcp.json` in the project root. Claude Code asks you to approve project servers the first time.
+
+The entry is the same in both files:
+
+```json
+{
+  "mcpServers": {
+    "vilsem": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["C:/Users/YOUR_NAME/vilsem-mcp/node_modules/vilsem-mcp/dist/index.js"]
+    }
+  }
+}
+```
+
+If `mcpServers` already exists, add only the `"vilsem": {...}` entry inside it. Validate the file afterwards:
+
+```powershell
+Get-Content "$env:USERPROFILE\.claude.json" -Raw | ConvertFrom-Json | Select-Object -ExpandProperty mcpServers
+```
+
+> **Agents installing this for a user:** prefer Option A. If the CLI is unavailable, do a JSON parse → set `mcpServers.vilsem` → write, with a backup of the original file. Do not hand-build the file with string concatenation or escaped one-liners.
+
+Restart Claude Code (VS Code: **Developer: Reload Window**), then run `/mcp` to confirm `vilsem` is connected. Run the server in Windows for Desktop model discovery; a WSL/container-only server is not the tested Windows ADOMD setup. See [Claude Code's MCP documentation](https://code.claude.com/docs/en/mcp).
+
+### Claude Desktop
+
+Use Claude Desktop's developer **Edit Config** control to open the actual `claude_desktop_config.json`, then merge this entry into `mcpServers`, keeping other servers:
+
+```json
+{"mcpServers":{"vilsem":{"command":"node","args":["C:/Users/YOUR_NAME/vilsem-mcp/node_modules/vilsem-mcp/dist/index.js"]}}}
+```
+
+Fully quit and reopen Claude, then check that the Vilsem tools appear. This is manual local-server configuration, not a remote connector or an extension. See the [local-server walkthrough](https://modelcontextprotocol.io/docs/develop/connect-local-servers) and [Claude's local MCP overview](https://support.claude.com/en/articles/10949351-getting-started-with-local-mcp-servers-on-claude-desktop).
+
+### Codex
+
+Add to `~/.codex/config.toml` or a trusted project's `.codex/config.toml`:
+
+```toml
+[mcp_servers.vilsem]
+command = "node"
+args = ["C:/Users/YOUR_NAME/vilsem-mcp/node_modules/vilsem-mcp/dist/index.js"]
+startup_timeout_sec = 60
+tool_timeout_sec = 600
+```
+
+The longer tool timeout accommodates schema profiling and real-data previews on larger models. See the [Codex MCP configuration documentation](https://learn.chatgpt.com/docs/extend/mcp).
+
+### Other MCP clients
+
+The client must support local stdio tools, resources and image results. Use the same `node <server path>` command. Individual clients are not certified here.
+
+### Optional: install the playbook as a native skill
+
+Agents receive the Vilsem playbook automatically through MCP server instructions and `vilsem://skill/*` resources; a client must read the linked resources to load the full playbook. To also install it as a native skill:
 
 ```powershell
 node "$env:USERPROFILE/vilsem-mcp/node_modules/vilsem-mcp/dist/index.js" install-skill --target claude
@@ -74,35 +217,28 @@ node "$env:USERPROFILE/vilsem-mcp/node_modules/vilsem-mcp/dist/index.js" install
 node "$env:USERPROFILE/vilsem-mcp/node_modules/vilsem-mcp/dist/index.js" install-skill --target "C:/Team/agent-skills"
 ```
 
-`claude` installs to `~/.claude/skills/vilsem-powerbi-visuals`; `codex` uses the current documented `~/.agents/skills/vilsem-powerbi-visuals` ([OpenAI documentation](https://learn.chatgpt.com/docs/build-skills)). For older clients or a custom location, pass the skills-root directory explicitly. With no target, the installer defaults to `claude`; with no subcommand, the CLI still starts the MCP server. Existing skill folders are refused unless `--force` is supplied. Force replaces only packaged files and retains unrelated files. Linked/non-regular destinations are refused. No install hook writes a skill into your home directory: only this explicit subcommand does so. Skill installation does not configure the MCP server connection.
+- `claude` → `~/.claude/skills/vilsem-powerbi-visuals`; `codex` → `~/.agents/skills/vilsem-powerbi-visuals` ([OpenAI documentation](https://learn.chatgpt.com/docs/build-skills)). Pass an explicit skills-root directory for older clients or custom locations.
+- No target defaults to `claude`. With no subcommand, the CLI starts the MCP server.
+- Existing skill folders are refused unless `--force` is supplied; force replaces only packaged files and keeps unrelated files. Linked/non-regular destinations are refused.
+- No install hook writes into your home directory; only this explicit subcommand does. Skill installation does not configure the MCP connection.
 
-### Fresh Windows machine: recommended installation
+One-shot from the pinned release without a prior install:
 
-You can use this with another report; the shipped examples are not tied to the QA model. Use your own model fields discovered by `get_schema`.
+```powershell
+npx.cmd --yes --package=https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.8.0/vilsem-mcp-0.8.0.tgz vilsem-mcp install-skill --target claude
+```
 
-1. Install a supported Node.js version (for example, Node.js 24), Power BI Desktop, and a local MCP-capable agent such as Codex or Claude Code. The MCP and Desktop must run on the **same Windows machine** for Desktop mode. The Vilsem Electron app is not required.
-2. In PowerShell, install the pinned, prebuilt public release (no Git/source checkout required):
+### Alternative: global install from the Git tag
 
-   ```powershell
-   node --version
-   $vilsemDir = Join-Path $env:USERPROFILE 'vilsem-mcp'
-   New-Item -ItemType Directory -Force -Path $vilsemDir | Out-Null
-   npm.cmd install --prefix "$vilsemDir" "https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.8.0/vilsem-mcp-0.8.0.tgz"
-   Join-Path $vilsemDir 'node_modules/vilsem-mcp/dist/index.js'
-   (Get-Command node).Source
-   ```
+```sh
+npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.8.0
+vilsem-mcp
+# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.8.0 vilsem-mcp
+```
 
-   Keep the printed server and Node paths. If Node is missing, reopen the terminal after installing it. `npm.cmd` avoids PowerShell script execution-policy issues. Installation downloads core 0.8.0 and renderer 4.43 automatically; no application-path environment variable is needed.
-3. Configure your agent using one client example below. Replace `YOUR_NAME` with your actual Windows profile path, or use the printed server path with forward slashes. If the client cannot find `node`, use the printed full Node executable path as `command`. Restart/reconnect the client and confirm that the Vilsem tools are available. A stdio server does not open a website; the MCP client starts it.
-4. Save a **test copy of the complete report project**, preserving the relative report/model folder structure. Open it in Desktop. A `.pbix` must first be saved as a PBIP project using Desktop; MCP does not patch a PBIX binary. The target must use enhanced PBIR with `<name>.Report/definition/pages/`. If needed, convert the report using Desktop first. Create an empty page in Desktop if you want a dedicated test page, then save.
-5. For live external reload, use Desktop August 2026 or later, enable **Detect and reload external PBIP changes** under Preview features and restart Desktop. Earlier versions require a close/reopen workflow. See [Microsoft's prerequisites and reload limits](https://learn.microsoft.com/en-us/power-bi/developer/projects/projects-external-editing). Save Desktop changes before external edits.
-6. Give the agent the absolute **`.Report` folder** path, not the `.pbip` or `.pbix` file, and use the starter prompt below. Prefer `source:{kind:"report",reportDir:"C:/Reports/MyTest/MyTest.Report"}` to follow that report's binding. For a local model it must be open in Desktop for real-data previews. If discovery is ambiguous, open only the intended model or supply its port. Never reuse port 62071 from this repository's QA session; ports are machine/session-specific.
-7. Inspect the real-data preview, then commit to an existing page. Accept Desktop's external-change prompt. First-time renderer registration can require closing/reopening the project because `report.json` does not support live external reload. Alternatively import the bundled renderer in Desktop and save before committing; its installed path is `<vilsemDir>/node_modules/@vilsem/core/assets/renderer.pbiviz`.
-8. Confirm real numbers, selection, slicers, hover/context menus, resize and save/reopen yourself. Existing native visuals should remain intact. `validate_visuals` checks Vilsem objects only; it does not certify native behavior or model semantics.
+The process serves stdio JSON-RPC; diagnostics go to stderr. With a global install, point your client's `command` at `vilsem-mcp` instead of `node <path>`.
 
-For animated browser previews, install Chrome/Edge/Chromium or set `VILSEM_PREVIEW_BROWSER_PATH` in the MCP server environment. Static previews do not require that browser. Model connection/preview permissions still apply; see Fabric authentication below for remote models. Moving to a different machine does not transfer Fabric credentials.
-
-### First test: generate a new visual from scratch
+## First test: generate a new visual from scratch
 
 Replace the path and analytical request, then send this to your agent:
 
@@ -121,422 +257,280 @@ and run validate_visuals. Preserve the model, native visuals and manual format
 settings. Tell me when to accept reload/reopen and what to check in Desktop.
 ```
 
-If `schemaOnly:true`, open the model in Desktop and reconnect before requesting real values. If tools are missing, check the client configuration/server path and restart it. For a renderer-version refusal, review and upgrade the registered renderer rather than changing its GUID. An administrator's custom-visual restrictions can prevent rendering; use the report's approved policy rather than bypassing it. A successful preview is not proof of native rendering. This is an evaluation release: native acceptance remains incomplete and the 5,000-point animated frame-rate target is not met.
+More prompts — trends with prior periods, dual-axis visuals, full pages, formatting edits, hierarchies, Sankey and custom geometry — are in the [prompt cookbook](docs/author-from-scratch.md). Replace only the marked placeholders and use fields from `get_schema`; no prompt relies on QA table names, a fixed Desktop port or embedded business values.
+
+## Measures: prototype vs publish
+
+A Vilsem spec can declare **visual-scoped measures** (`spec.measures`). They are ideal for iterating, because they need no model change and no Desktop reload. But once committed, Power BI stores them as report-level extensions on the visual, and that has consequences:
+
+| Where the report is used | Visual-scoped measures | Model measures |
+| --- | --- | --- |
+| Desktop and Power BI Service (signed in) | Works | Works |
+| Build pane field wells | **Empty** for those fields | Shown normally |
+| **Publish to web (public embed)** | **Fails** with `PowerBIAnonymousExtensionSchemaException` on every affected visual | Works |
+| Reuse in other visuals / by other authors | Not reusable | Reusable |
+
+**Recommended practice:**
+
+1. **Prototype** with `spec.measures` while designing and previewing.
+2. **At commit time** (or before publishing), write each measure into a model measures table and bind the visual to the model measure (`Measure` field, not `NativeMeasure`). Do this in the same step, so nothing has to be reworked later.
+3. Vilsem itself never writes the model. The agent adds the measures to the model's TMDL (with the user's agreement) or uses the Power BI Modeling MCP. Model changes need a Desktop **close and reopen** to load, so batch them: one reopen per batch of visuals, not per visual.
+
+See `vilsem://skill/powerbi-visuals` (section "Measures for shareable reports") for the exact agent procedure.
+
+## Desktop setup and reload rules
+
+In Desktop, open **File → Options and settings → Options → Preview features**, enable **Detect and reload external PBIP changes**, and restart Desktop. Microsoft documents this preview feature and its limits in [external project editing](https://learn.microsoft.com/en-us/power-bi/developer/projects/projects-external-editing). Earlier Desktop versions require a close/reopen after every external change.
+
+### Walkthrough
+
+1. Open your semantic model in Desktop. Prefer `connect_model` with `source:{kind:"report",reportDir:"C:/Reports/MyTest/MyTest.Report"}` to follow the report's binding; otherwise use `source:{kind:"desktop"}` (pass a `port` if more than one model is open). For Fabric, provide `workspaceId` and `datasetId`.
+2. Call `get_schema` and choose existing dimensions/measures, or declare query-only `spec.measures` for prototyping. With scoped measures, pass `connectionId` to validation, explanation and commit as well as preview. Use `run_dax` to verify the data.
+3. Call `list_templates`, read `vilsem://docs/spec-format`, then `validate_spec`, `explain_visual` and `preview_visual`. Check the PNG and option before writing.
+4. Call `list_pages`, choose a position without overlap, then `commit_visual` with the report folder, page folder name, a new `visualName`, spec, bindings and layout.
+5. Reload Desktop (rules below), inspect the rendered result and call `validate_visuals`. Save from Desktop when satisfied.
+
+### Reload rules
+
+| Situation | What to do in Desktop |
+| --- | --- |
+| Before any external write | **Save** your Desktop work first. |
+| First Vilsem visual in a report (`rendererRegistered:true`) | **Close without saving and reopen** the `.pbip`. Renderer registration lives in `report.json`, which Desktop does not live-reload. Alternative: import the bundled renderer in Desktop and save *before* the first commit. |
+| New pages added outside Desktop | Try **Apply external changes** first; if the page does not appear, close without saving and reopen. |
+| New or changed **model** measures (TMDL) | **Close without saving and reopen.** External-change reload covers report files, not the semantic model. |
+| Later visual commits/updates | Accept the **external changes** prompt. |
+| Always | Never save stale Desktop state over external changes. |
+
+The bundled renderer is at `<vilsemDir>/node_modules/@vilsem/core/assets/renderer.pbiviz`.
 
 ### Model authentication
 
-Desktop requires Windows and a running Power BI Desktop model. Core identifies the Desktop Analysis Services process and reads its workspace port file. Pass `source.port` if multiple instances are open. ADOMD/XMLA uses your Windows identity; no cloud login is needed.
+**Desktop:** requires Windows and a running Power BI Desktop model. Core identifies the Desktop Analysis Services process and reads its workspace port file. Pass `source.port` if multiple instances are open. ADOMD/XMLA uses your Windows identity; no cloud login is needed. Ports change each time Desktop reopens; never reuse a port from another session.
 
-For Fabric, configure these environment variables on the MCP server process:
+**Fabric:** configure these environment variables on the MCP server process:
 
 - Service principal: `AUTH_MODE=service_principal`, `FABRIC_TENANT_ID`, `FABRIC_CLIENT_ID`, `FABRIC_CLIENT_SECRET`.
 - User login: `AUTH_MODE=device_code` (default). Login instructions go to stderr; complete Microsoft's device-code login in your browser. Only the refresh token is cached under `~/.vilsem/auth/`, scoped to tenant/client/resource, in a 0700 directory and atomic 0600 file. Windows uses the user-profile ACLs; POSIX modes are not Windows ACLs.
 - Optional `FABRIC_ACCESS_TOKEN` for an externally supplied short-lived token. Refresh requires another configured credential flow.
 
-No credentials are read from another repository's `.env` or Electron workspace store. Set credentials in your MCP client's server environment. Core also preserves `setInteractiveTokens` for Electron PKCE login.
+No credentials are read from another repository's `.env` or Electron workspace store. Set credentials in your MCP client's server environment. Core also preserves `setInteractiveTokens` for Electron PKCE login. Fabric credentials do not transfer to a new machine.
 
-### Connect from an existing report binding
+### Connecting from an existing report binding
 
-Call `connect_model` with `source:{kind:"report",reportDir:"/path/to/Example.Report"}` to follow that report's `definition.pbir` without changing it:
+`connect_model` with `source:{kind:"report",reportDir:...}` follows the report's `definition.pbir` without changing it:
 
-- `datasetReference.byPath`: core matches the local semantic-model path to an open Desktop session, even when another model is open. With Desktop closed it reads the local TMDL or BIM definitions and returns `schemaOnly:true`. Schema-only connections cannot run DAX or preview live values; open the model and reconnect first.
-- `datasetReference.byConnection`: a Power BI XMLA URL identifies the workspace and semantic model. Core resolves them through the configured Fabric credentials and uses the existing Fabric query/introspection adapter. It does not try to discover a local Desktop port. The connecting identity needs access to list the workspace and model, execute queries and inspect its definition. Windows-integrated SSAS server bindings use the local ADOMD bridge and Windows identity; cloud credentials are never forwarded to arbitrary servers.
+- `datasetReference.byPath`: core matches the local semantic-model path to an open Desktop session, even when another model is open. With Desktop closed it reads the local TMDL or BIM definitions and returns `schemaOnly:true`. Schema-only connections cannot run DAX or preview live values; open the model and reconnect.
+- `datasetReference.byConnection`: a Power BI XMLA URL identifies the workspace and semantic model. Core resolves them through the configured Fabric credentials. It does not try to discover a local Desktop port. The identity needs access to list the workspace and model, execute queries and inspect its definition. Windows-integrated SSAS bindings use the local ADOMD bridge and Windows identity; cloud credentials are never forwarded to arbitrary servers.
 
-Quoted connection-string values are supported. Passwords and impersonation settings embedded in the report are ignored; configure authentication on the MCP server. Missing or ambiguous targets fail explicitly. `commit_visual` still writes only the Vilsem visual in the selected local report; it does not change the binding, semantic model, native visuals or report policies.
+Quoted connection-string values are supported. Passwords and impersonation settings embedded in the report are ignored; configure authentication on the MCP server. Missing or ambiguous targets fail explicitly. `commit_visual` writes only the Vilsem visual in the selected local report; it does not change the binding, semantic model, native visuals or report policies.
 
-There is no npm-registry publication. Install the tagged GitHub release:
+## Agent workflow
 
-```sh
-npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.8.0
-vilsem-mcp
-# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.8.0 vilsem-mcp
-```
+`connect_model` → `get_schema` → `design_visual` prompt → `validate_spec` → `explain_visual` → `preview_visual` with critique → compare variants/iterate → `list_pages` → `commit_visual` → Desktop reload and native checks. **Never commit without a preview.** Read `vilsem://docs/design-guide` and `vilsem://docs/workflow`.
 
-The process serves stdio JSON-RPC; diagnostics go to stderr.
-
-### Claude Desktop
-
-Add to `claude_desktop_config.json`. These examples use the recommended local release installation above; replace the profile path:
-
-```json
-{"mcpServers":{"vilsem":{"command":"node","args":["C:/Users/YOUR_NAME/vilsem-mcp/node_modules/vilsem-mcp/dist/index.js"]}}}
-```
-
-Use Claude Desktop's developer **Edit Config** control to open the actual configuration file for your installation. Merge this entry into `mcpServers`, keeping other servers. Fully quit and reopen Claude, then check that Vilsem tools appear. If `node` cannot be found, use the full executable path printed during installation. This is manual local-server configuration, not adding a remote connector or installing an extension. See the [official local-server walkthrough](https://modelcontextprotocol.io/docs/develop/connect-local-servers) and [Claude's local MCP overview](https://support.claude.com/en/articles/10949351-getting-started-with-local-mcp-servers-on-claude-desktop).
-
-### Claude Code
-
-```sh
-claude mcp add --transport stdio vilsem -- node "C:/Users/YOUR_NAME/vilsem-mcp/node_modules/vilsem-mcp/dist/index.js"
-claude mcp list
-```
-
-This uses Claude Code's default local configuration scope. Add `--scope user` before `vilsem` if you want it available across projects on this machine. In a Claude Code session, `/mcp` shows connection status. Run the local server in Windows for Desktop model discovery; a WSL/container-only server is not the tested Windows ADOMD setup. See [Claude Code's official MCP instructions](https://code.claude.com/docs/en/mcp).
-
-### Codex
-
-Add to `~/.codex/config.toml` or a trusted project's `.codex/config.toml`:
-
-```toml
-[mcp_servers.vilsem]
-command = "node"
-args = ["C:/Users/YOUR_NAME/vilsem-mcp/node_modules/vilsem-mcp/dist/index.js"]
-startup_timeout_sec = 60
-tool_timeout_sec = 600
-
-```
-
-The longer tool timeout accommodates schema profiling and real-data previews on larger models. See the [official MCP configuration documentation](https://learn.chatgpt.com/docs/extend/mcp).
-
-## Desktop setup and walkthrough
-
-In Desktop, open File → Options and settings → Options → Preview features. Enable **“Detect and reload external PBIP changes”** and restart Desktop. Microsoft documents this exact preview feature in [external project editing](https://learn.microsoft.com/en-us/power-bi/developer/projects/projects-external-editing).
-
-1. Open your semantic model in Desktop, then call `connect_model` with `source:{kind:"desktop"}`; provide a port if more than one engine is open. For Fabric, provide workspaceId and datasetId.
-2. Call `get_schema` and choose existing dimensions/measures, or declare query-only `spec.measures`. With scoped measures pass `connectionId` to validation, explanation and commit as well as preview. Use `run_dax` to verify the data.
-3. Call `list_templates`, read `vilsem://docs/spec-format`, then `validate_spec`, `explain_visual` and `preview_visual`. Check the PNG and option before writing.
-4. Call `list_pages`, choose a position without overlap, then `commit_visual` with the report folder, page folder name, a new visualName, spec, bindings and layout.
-5. First renderer registration (`rendererRegistered:true`) or newly authored pages: close the report **without saving stale Desktop state** and reopen the project. Later commits/updates: accept Desktop's external-change apply/reload prompt. Avoid saving stale Desktop state over external changes. Microsoft excludes report-level `report.json` changes from live reload: first-time custom-visual registration can require reopening the project. For visual-only reload, first import the renderer package in Desktop and save the project, then commit a visual.
-6. Inspect the rendered result and call `validate_visuals`. Save the report from Desktop when satisfied.
+For edits: `list_visuals` → `read_visual` → `update_visual(dryRun:true)` → inspect before/after and confirm when not already authorized → `update_visual(dryRun:false, etag)` → reload and verify. The report folder is the source of truth. Manual format-pane values win over authored formatting and survive updates unless `resetFormatting:true` is explicit.
 
 ## Tools and resources
 
-Tools: connect_model, get_schema, run_dax, list_templates, save_template, delete_template, validate_spec, explain_visual, preview_visual, preview_variants, list_pages, list_visuals, read_visual, diff_visual, update_visual, commit_visual, validate_visuals, extract_design_tokens, compare_preview. Prompt: design_visual. Resources: vilsem://templates/<template-id>, vilsem://docs/spec-format, vilsem://docs/design-guide and vilsem://docs/workflow.
+**Tools:** `connect_model`, `get_schema`, `run_dax`, `list_templates`, `save_template`, `delete_template`, `validate_spec`, `explain_visual`, `preview_visual`, `preview_variants`, `list_pages`, `list_visuals`, `read_visual`, `diff_visual`, `update_visual`, `commit_visual`, `validate_visuals`, `extract_design_tokens`, `compare_preview`.
+**Prompt:** `design_visual`.
+**Resources:** `vilsem://skill/*`, `vilsem://templates/<template-id>`, `vilsem://docs/spec-format`, `vilsem://docs/design-guide`, `vilsem://docs/workflow`, `vilsem://docs/expression-language`.
 
-get_schema defaults to summary (no expressions or relationship graph); use full for business calculation and join semantics. Exact cardinality/BLANK share/ranges are cached60seconds with at most10samples. Permission/provider failures are explicit; internal engine row identities are skipped. page/reportDir adds read-only page query bindings without editing or validating native visuals.
+- **get_schema** defaults to summary (no expressions or relationship graph); use `full` for business calculation and join semantics. Exact cardinality/BLANK share/ranges are cached for 60 seconds with at most 10 samples. Full profiling of large models can take minutes; prefer targeted `run_dax`. Permission/provider failures are explicit; internal engine row identities are skipped. `page`/`reportDir` adds read-only page query bindings without editing or validating native visuals.
+- **Preview critique** checks measured SVG text bounds, ellipses, axis rotation, categorical palette size, null/zero series, empty required slots, missing formats, page-background text contrast, legend/plot intersections, pie slice count and dual-axis review, with actionable paths/fixes and explicit coverage limits. It is not analytical correctness, accessibility or host-interaction certification.
+- **preview_variants** makes one identical data query for up to 4 candidate specs and returns compact results; scoped definitions must match. Prefer it to `preview_visual` when you don't need the full option JSON, which can be very large.
+- **read_visual** returns the migrated spec, bindings, pane objects, layout, source-version provenance, etag and live PNG. **diff_visual** is read-only.
+- **update_visual** accepts RFC 6902 operations, defaults to dry run, protects identity/prototype/version paths and checks intervening file changes. It preserves field queries for styling-only edits and refuses implicit rebinding. A legacy inline measure with no stored owning-table metadata returns `table:null`.
+- **list_pages** reads all visual positions to help avoid overlap. **validate_visuals** examines only the stable Vilsem Renderer GUID. **commit_visual** adds one new visual, rejects collisions and updates only missing renderer resources/registration; it does not rebuild or serialize other report content.
+- **list_templates** output is very large; save it to a file and extract `meta.id`, `meta.description` and `slots` with a script.
 
-Preview critique checks measured SVG text bounds, ellipses, axis rotation, categorical palette size, null/zero series, empty required slots, missing formats, page-background text contrast, legend/plot intersections, pie slice count and dual-axis review. It includes actionable paths/fixes and explicit coverage limits. It is not analytical correctness, accessibility or host-interaction certification. preview_variants makes one identical data query for up to4candidate specs; scoped definitions must match.
+### Interactions
 
-read_visual returns the migrated spec, bindings, pane objects, layout, source-version provenance, etag and live PNG. diff_visual is read-only. update_visual accepts RFC6902operations, defaults to dry run, protects identity/prototype/version paths and checks intervening file changes. It preserves field queries for styling-only edits and refuses implicit rebinding. A legacy inline measure with no stored owning-table metadata returns table:null; the temporary preview namespace is disclosed, not invented as original provenance.
+Rendered Vilsem ECharts visuals cross-filter through Power BI selection IDs, accept cross-highlights, support drill-through/context-menu requests, native tooltips and bookmark selection restoration. Those host contracts have automated harness tests. Availability depends on bound field identities and report configuration; report-page tooltips, drill-through destinations and bookmarks need testing in the actual report. A PNG preview does not verify interactions. DOM-adapter visuals and every template transform have not been certified for interaction parity.
 
-`list_pages` reads all visual positions to help avoid overlap. `validate_visuals` examines only the stable Vilsem Renderer GUID; it does not report native visual validation results. `commit_visual` adds one new visual, rejects collisions and updates only missing renderer resources/registration. It does not rebuild or serialize other report content.
-
-## Interactions
-
-Rendered Vilsem ECharts visuals cross-filter through Power BI selection IDs, accept cross-highlights, support drill-through/context menu requests, native tooltips and bookmark selection restoration. Those host interaction contracts have automated harness tests in Vilsem. Availability depends on bound field identities and report configuration; report-page tooltip resolution, drill-through destinations and bookmarks require testing in the actual report. A PNG preview is static and does not verify these interactions. DOM-adapter visuals and every possible template transform have not been certified for interaction parity.
-
-## What this does NOT do
+### What this does NOT do
 
 - Create, edit or validate native Power BI visuals.
-- Create or edit slicers, filters, bookmarks or themes.
-- Change semantic models or model metadata.
-- Persist measures to the model; declare a visual-scoped measure instead, or use Microsoft's Power BI Modeling MCP to add one to the model.
+- Create pages, slicers, filters, bookmarks or themes (the agent can create pages by editing PBIR; see `vilsem://skill/pbir-pages`).
+- Change semantic models or model metadata. To persist measures, the agent edits TMDL with the user's agreement or uses Microsoft's Power BI Modeling MCP — see [Measures: prototype vs publish](#measures-prototype-vs-publish).
 - Read or write PBIX files. Existing enhanced PBIR report folders are required.
 
-Desktop connections require Windows and Power BI Desktop. Column sampling can be expensive on large models and permission failures are returned per column.
-
-Headless previews support the core ECharts composition types and declarative templates. DOM-adapter visual types are rejected by this resolver rather than emitted as empty or substituted charts. Previews render the chart marks and option; renderer-owned card chrome/title headers and existing report-level filters are not replayed. Fonts can differ between server PNGs and Desktop if the machines have different installed fonts. Preview queries and arbitrary DAX default to200 rows and accept `maxRows` up to10000. Choose a complete bounded window for population statistics; Desktop's categorical host reduction is2000 rows.
+Headless previews support the core ECharts composition types and declarative templates. DOM-adapter visual types are rejected rather than emitted as empty or substituted charts. Previews render chart marks and option; renderer-owned card chrome/title headers and existing report-level filters are not replayed. Fonts can differ between server PNGs and Desktop. Preview queries and arbitrary DAX default to 200 rows and accept `maxRows` up to 10,000. Desktop's categorical host reduction is 2,000 rows.
 
 ## Current report and visual limitations
 
-This table describes **MCP 0.8.0 with core 0.8.0 / renderer 4.43**. Earlier version-specific audit sections below are historical. A tool PASS or saved `visual.json` is not evidence that every report, visual state or Power BI target works.
+This table describes **MCP 0.8.0 with core 0.8.0 / renderer 4.43**. A tool PASS or saved `visual.json` is not evidence that every report, visual state or Power BI target works.
 
 | Area | Current boundary / what to check |
 | --- | --- |
-| Report files | Requires an existing enhanced PBIR `.Report` folder with `definition/pages/`. It does not read/write PBIX binaries, create reports/pages, or directly edit a report in Power BI Service. Save/convert/create the test page in Desktop or use the companion report tools. |
-| Scope | Authors/edits Vilsem Renderer visuals only. It does not create/edit native charts, slicers, report filters, bookmarks, report themes or model objects. `list_pages` is read-only; `validate_visuals` leaves native objects unreported. |
-| Model access | Desktop mode requires Windows, an accessible open model and local ADOMD. Offline local bindings can return `schemaOnly:true`, which cannot supply live previews. Remote models need configured authentication and permissions; credentials are not bundled or transferred to a new machine. |
-| Preview data coverage | Query/preview defaults are 200 rows, configurable to 10,000; existing-visual edit previews use 1,000. Reaching a cap is not proof of complete data. Desktop's categorical reduction is 2,000 rows; preview/host populations can differ. Never infer population totals/statistics from an incomplete window. |
-| Filter context | A standalone preview does not replay the report's current slicers, page/report filters or selections. Compare numbers only at matching grain and filter context. The model/identity still determines query permissions. |
-| Calculations | Ratios, distinct counts, time intelligence and totals must be evaluated at the intended grain. Summing displayed ratios/distinct counts is generally incorrect. Use existing model measures or validated query-only `spec.measures`; no persistent measures/model changes are made. |
-| Formatting and fonts | Supported model-format conversion is bounded, not every dynamic/conditional/scientific format. Manual format-pane values override authored defaults and survive edits unless explicitly reset. Fonts depend on installed fonts; arbitrary report-font inheritance in Desktop remains unverified. DOM-adapter visuals are outside the headless resolver. |
-| Expressiveness | Closed JSON templates/expression AST only; no arbitrary JavaScript or callback source. Unshipped map/geo assets, 3D and arbitrary exact area-proportional Euler fitting remain unsupported. Venn circles are schematic. Some earlier Marimekko/Voronoi refusals were addressed by the later bounded expression layer; do not treat historical refusal logs as the current capability list. |
-| Interactions | Native selection/highlight/tooltips/context-menu/bookmark routes exist and have harness coverage, but depend on report configuration and source identities. Aggregated/transformed marks need correct provenance. End-to-end native gestures, bookmarks and all transform combinations are not signed off. A PNG cannot test them. |
-| Cross-target fidelity | Current commits/previews do not certify Desktop, Service, embedded/Fabric, PDF or subscriptions. Final native resize/clipping, Sankey/currency and export checks remain unverified. There is no guarantee every state is pixel-identical across hosts. |
-| Performance | The 5,000-point animated frame-rate target **FAILS**: canvas measurements were roughly 9-12 fps in the recorded actual-bundle run, not 57+ fps; SVG was roughly 4 fps. This is not a Power BI host benchmark. No point dropping or hidden animation disabling is used to claim a pass. Test realistic sizes on your machine. |
-| Existing renderer/schema | A spec can require a newer renderer; older registered resources are refused rather than silently replaced. Some newer official 2.x container declarations pass the complete known 2.7 field contract with an explicit compatibility warning; full validation against the declared schema is not claimed. Unknown/malformed fields still fail. Do not change GUID/schema tags to bypass guards. |
-| Reload and recovery | Save Desktop changes before external edits. Accept the external-change prompt; first-time renderer registration can require reopening. Stale Desktop saves can overwrite external work. Existing edits use ETags/locks, but Desktop does not honor MCP's lock. Test on a copy with a recoverable baseline. |
-| Distribution and acceptance | Evaluation prereleases, not production/certification sign-off. Desktop 4.43 manual upgrade and three real-data layouts were checked, including the SVG calendar mode/context menu. Live Edge checks cover all six Service comparison pages at browser 100%/150%, with leaderboard selection/clear/native tooltip/context menus; full native interactions and Windows scaling remain incomplete. No new signed/branded app installer is included in these MCP/core releases. |
+| Report files | Requires an existing enhanced PBIR `.Report` folder with `definition/pages/`. Does not read/write PBIX, create reports/pages, or edit a report directly in Power BI Service. |
+| Scope | Authors/edits Vilsem Renderer visuals only. `list_pages` is read-only; `validate_visuals` leaves native objects unreported. |
+| Model access | Desktop mode requires Windows, an accessible open model and local ADOMD. Offline local bindings can return `schemaOnly:true`, which cannot supply live previews. Remote models need configured authentication and permissions. |
+| Preview data coverage | Query/preview defaults are 200 rows, configurable to 10,000; existing-visual edit previews use 1,000. Reaching a cap is not proof of complete data. Desktop's categorical reduction is 2,000 rows. Never infer population totals/statistics from an incomplete window. |
+| Filter context | A standalone preview does not replay the report's slicers, page/report filters or selections. Compare numbers only at matching grain and filter context. |
+| Calculations | Ratios, distinct counts, time intelligence and totals must be evaluated at the intended grain. Summing displayed ratios/distinct counts is generally incorrect. Use model measures or validated `spec.measures`. |
+| Visual-scoped measures | Not shown in the Build pane field wells and **fail under Publish to web**. Promote to model measures before publishing (see [Measures](#measures-prototype-vs-publish)). |
+| Formatting and fonts | Model-format conversion is a bounded subset. Manual format-pane values override authored defaults and survive edits unless explicitly reset. Arbitrary report-font inheritance in Desktop is unverified. |
+| Expressiveness | Closed JSON templates/expression AST only; no arbitrary JavaScript or callbacks. Unshipped map/geo assets, 3D and exact area-proportional Euler fitting are unsupported. Venn circles are schematic. |
+| Interactions | Native selection/highlight/tooltip/context-menu/bookmark routes exist with harness coverage but depend on report configuration and source identities. End-to-end native gestures, bookmarks and all transform combinations are not signed off. |
+| Cross-target fidelity | Current commits/previews do not certify Desktop, Service, embedded/Fabric, PDF or subscriptions. No guarantee every state is pixel-identical across hosts. |
+| Performance | The 5,000-point animated frame-rate target **FAILS**: canvas measured roughly 9–12 fps in the recorded actual-bundle run (not 57+ fps); SVG roughly 4 fps. This is not a Power BI host benchmark. Test realistic sizes on your machine. |
+| Existing renderer/schema | A spec can require a newer renderer; older registered resources are refused rather than silently replaced. Some newer 2.x container declarations pass the known 2.7 field contract with a compatibility warning. Do not change GUID/schema tags to bypass guards. |
+| Reload and recovery | Save Desktop changes before external edits; follow the [reload rules](#reload-rules). Stale Desktop saves can overwrite external work. Edits use ETags/locks, but Desktop does not honor MCP's lock. Test on a copy. |
+| Distribution and acceptance | Evaluation prereleases. Desktop 4.43 manual upgrade and three real-data layouts were checked; Service comparison pages at browser 100%/150% were checked. Full native interactions and Windows scaling remain incomplete. No signed app installer is included. |
 
-For this release, see [skill and renderer verification](docs/qa/skill-renderer-080.md). For earlier evidence, open the [Round 3 QA follow-up](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/stress3/round3-follow-up.md) and [native interaction checklist](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/stress3/native-interaction-checklist.md). When a test cannot run, record **Not tested / Blocked**, not PASS.
-
+For this release, see [skill and renderer verification](docs/qa/skill-renderer-080.md). For earlier evidence, see the [Round 3 QA follow-up](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/stress3/round3-follow-up.md) and [native interaction checklist](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/stress3/native-interaction-checklist.md). When a test cannot run, record **Not tested / Blocked**, not PASS.
 
 ### What was verified for 0.8
 
-Evidence below is scoped to the tested builds and QA reports on one Windows laptop, as of **November 6, 2026**. A browser fixture is not Power BI; browser zoom is not Windows display scaling.
+Evidence is scoped to the tested builds and QA reports on one Windows laptop, as of **November 6, 2026**. A browser fixture is not Power BI; browser zoom is not Windows display scaling.
 
 | Check | Status | What the evidence establishes |
 | --- | --- | --- |
-| App/core regression suites | Tested | 1,367 tests passed in each private/public app-core checkout, across 118 files. These suites are not an exhaustive visual/host acceptance matrix. |
-| MCP regression suite | Tested | 338 tests passed across 17 files against the public core 0.8 archive. The 20 packaged-renderer browser tests are a subset, not an additional 20 on top. |
-| Native renderer builds | Tested | Both native builds succeeded; their packaged JavaScript/CSS hashes match. The existing GUID and semantica.primitiveSpec property are preserved. |
-| Fresh public package | Tested | Public archive SHA matched; installation, stdio, three skill resources, opt-in skill CLI, overwrite refusal/force and unrelated-file retention passed. Existing home skill folders were unchanged by npm install; the isolated installed dependency set reported npm audit 0. |
-| Actual agent client | Tested, limited | A fresh Claude Code session received initialization instructions and read all three skill resources. This does not certify every Claude Desktop/Codex/other-client UI version, operating system or permission setup. |
-| Desktop renderer upgrade | Tested, limited | Imported 4.43 over 4.42, saved, closed and reopened an owned QA report. Hero, leaderboard and calendar rendered real values. SVG calendar mode/zoom/context menu and a canvas native tooltip were observed. |
-| Service layouts and browser zoom | Tested, limited | Hero, leaderboard and calendar in both canvas/SVG rendered at Edge browser zoom 100% and 150%: 12 inspections. No blank/error visual or obvious plot/title/legend escape was seen in those layouts. |
-| Numeric reconciliation | Tested, limited | Hero total and all four leaderboard values matched a separate live DAX query. Calendar displayed 45 values; its cells were not individually reconciled. |
-| Service interactions | Partially tested | Both leaderboard painters visibly selected/dimmed marks, cleared on blank-area click, showed native tooltips and opened Include/Exclude menus. Applying those menu actions, drill-through and cross-filtering to a native visual were not verified by that check. |
-| Ordinary chart animation | Tested, limited | Standard bar, yearly line, donut and scatter had browser motion previews. Service page re-entry captured a partially drawn line/entering scatter followed by settled marks. No race or timeline was present. This is not all-series/all-state motion certification. |
-| Timeline animation | Tested, limited | A separate annual bar/donut/line QA page advanced through real 2020-2026 values with playback controls; 2026 was marked partial. This does not certify long-running playback, every race transform or bookmark/recovery state. |
-| Model preservation | Tested, limited | No model-write operations were used; all 21 baseline files of the owned Desktop QA model remained byte-identical. That is evidence for this workflow/model, not every possible PBIP project. |
+| App/core regression suites | Tested | 1,367 tests passed in each private/public app-core checkout, across 118 files. Not an exhaustive visual/host acceptance matrix. |
+| MCP regression suite | Tested | 338 tests passed across 17 files against the public core 0.8 archive. The 20 packaged-renderer browser tests are a subset. |
+| Native renderer builds | Tested | Both native builds succeeded; packaged JavaScript/CSS hashes match. GUID and `semantica.primitiveSpec` preserved. |
+| Fresh public package | Tested | Public archive SHA matched; installation, stdio, three skill resources, opt-in skill CLI, overwrite refusal/force and unrelated-file retention passed. npm install left home skill folders unchanged; the isolated dependency set reported npm audit 0. |
+| Actual agent client | Tested, limited | A fresh Claude Code session received initialization instructions and read all three skill resources. Not every client UI version, OS or permission setup. |
+| Desktop renderer upgrade | Tested, limited | Imported 4.43 over 4.42, saved, closed and reopened an owned QA report. Hero, leaderboard and calendar rendered real values; SVG calendar mode/zoom/context menu and a canvas native tooltip were observed. |
+| Service layouts and browser zoom | Tested, limited | Hero, leaderboard and calendar in canvas and SVG at Edge zoom 100% and 150%: 12 inspections, no blank/error visual or obvious escape. |
+| Numeric reconciliation | Tested, limited | Hero total and all four leaderboard values matched a separate live DAX query. Calendar's 45 cells were not individually reconciled. |
+| Service interactions | Partially tested | Leaderboard painters selected/dimmed marks, cleared on blank click, showed native tooltips and opened Include/Exclude menus. Menu actions, drill-through and cross-filtering to native visuals not verified. |
+| Ordinary chart animation | Tested, limited | Bar, yearly line, donut and scatter had browser motion previews; Service page re-entry replayed entrances. Not all-series/all-state certification. |
+| Timeline animation | Tested, limited | An annual bar/donut/line QA page advanced through real 2020–2026 values with playback controls. Long playback, every race transform and bookmark state not certified. |
+| Model preservation | Tested, limited | No model-write operations were used; all 21 baseline model files remained byte-identical. |
+| Publish to web | Field report | Reports whose Vilsem visuals bind **model** measures rendered in a public embed; visual-scoped measures failed with `PowerBIAnonymousExtensionSchemaException`. |
 
-See [release evidence and live follow-up](docs/qa/skill-renderer-080.md) and [the core QA record](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/skill-sharpness-080.md). Historical logs retain earlier failures and blockers; later verification only closes the checks it explicitly names.
+See [release evidence and live follow-up](docs/qa/skill-renderer-080.md) and [the core QA record](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/skill-sharpness-080.md).
 
 ### Known failures and workarounds
 
 | Issue | Current result | Practical guidance |
 | --- | --- | --- |
-| Dense animated charts | **FAIL:** the 5,000-point smooth-animation target was not met. In one actual-bundle browser run, 4.42 canvas measured 11.84 RAF fps, 4.43 canvas 9.07, and 4.43 SVG 4.11. These are machine/run-specific measurements, not Service frame rates. | Test realistic data sizes and motion on the deployment machine. Use meaningful aggregation or a smaller explicitly disclosed data window when appropriate. Do not silently drop points, disable requested motion or claim 60 fps. |
-| Canvas text at small Fit-to-page sizes | **Partially improved:** zoom-aware density is implemented, but tiny canvas labels still looked soft in the Service comparison. Equal-to-native sharpness is not signed off. | For text-heavy layouts, try SVG or increase chart/text size. Browser 150% made the report's Fit-to-page scale smaller (31% in that window), so browser zoom alone does not make chart labels larger. |
-| Summary Label formatting | **Open:** reported `lastLabel`, `sumLabel`, `deltaPctLabel` measure-format mismatch remains outside this fix. | Use an explicit supported formatter, a formatted data/axis label, or the hidden-gauge detail workaround in [the cookbook](skills/vilsem-powerbi-visuals/references/spec-cookbook.md). Check displayed units against DAX. |
-| Existing report keeps old renderer | Intentional compatibility behavior; installing MCP/core does not upgrade registered report resources. | Import bundled renderer.pbiviz in Desktop, accept Update, save, close and reopen. See [native rendering and upgrade steps](#native-canvas-and-svg-rendering-08). |
-| Canvas-only effects requested under SVG | Explicit fallback to canvas with a critique/native warning. | Review the warning; remove unsupported blending/trail effects if SVG is essential. Every effect combination has not been manually checked in every host. |
+| Dense animated charts | **FAIL:** 5,000-point smooth animation not met. One run: 4.42 canvas 11.84 fps, 4.43 canvas 9.07, 4.43 SVG 4.11 (browser RAF, not Service). | Test realistic sizes. Aggregate or use a smaller disclosed window. Do not silently drop points or disable requested motion. |
+| Canvas text at small Fit-to-page sizes | **Partially improved:** zoom-aware density implemented, but tiny canvas labels still looked soft in Service. | For text-heavy layouts, try SVG or larger chart/text sizes. Browser zoom alone does not enlarge chart labels. |
+| Summary Label formatting | **Open:** `lastLabel`, `sumLabel`, `deltaPctLabel` ignore measure formats. | Use an explicit formatter, a formatted data/axis label, or the hidden-gauge workaround in [the cookbook](skills/vilsem-powerbi-visuals/references/spec-cookbook.md). |
+| Publish to web shows errors on every Vilsem visual | Visual-scoped measures are report extensions, unsupported for anonymous embed. | Promote measures to the model and rebind; republish. See [Measures](#measures-prototype-vs-publish). |
+| Build pane shows no fields for a Vilsem visual | Same cause: visual-scoped measures. | Same fix. |
+| Existing report keeps old renderer | Intentional; installing MCP/core does not upgrade registered report resources. | Import bundled `renderer.pbiviz`, accept Update, save, close and reopen. See [upgrade steps](#upgrading-an-existing-report). |
+| Canvas-only effects under SVG | Explicit fallback to canvas with a warning. | Remove unsupported blending/trail effects if SVG is essential. |
 
 ### Checks that remain partial or not tested
 
-These are **open acceptance items**, not implied passes from the test counts above:
+These are **open acceptance items**, not implied passes:
 
 | Area | What still needs checking |
 | --- | --- |
-| Complete visual inventory | Every supported composition, template and expression visual in every state, on every target. The six sharpness pages and four ordinary charts are samples, not full catalog coverage. |
-| Formatting controls | Every exposed property on every visual: font family/size/weight, title, axes including secondary-axis colors/units, legends, labels, mark colors, backgrounds, borders and manual-pane precedence/reset. |
-| Data and clipping | Exhaustive empty/null/zero/negative/extreme/duplicate/Unicode/long-label/high-cardinality combinations, very small containers, extreme aspect ratios, large fonts and tooltip screen-edge placement. |
-| Native/report interactions | Full custom-to-native and native-to-custom filter/highlight matrix, native slicers, physical Ctrl-click multi-selection, deselection/reset and transformed/aggregated mark provenance. Pure-function/browser tests do not close native acceptance. |
-| Context menus and drill-through | The native menus appeared, but Include/Exclude results and configured drill-through/report-page tooltip destinations were not fully exercised. |
-| Bookmarks and recovery | Selection restoration exists and has harness coverage; full bookmark data-state behavior, save/reopen, active timeline/pause state, undo/recovery and concurrent Desktop/external editing remain incomplete. |
-| Scaling and timing | Windows display scaling 100%/150% beside native cards/tables, multiple monitor sizes/DPIs, measured native sub-300 ms zoom recovery and long resize/zoom/no-flicker sessions. Edge browser zoom checks are a separate test. |
-| Animation | Every series/effect in both painters, reduced-motion/accessibility paths in the actual hosts, hidden-tab pause/resume, long sessions and reliable frame-rate budgets. Ordinary entrance animation settles; it is not continuous autoplay. |
-| Other output targets | Full embedded/Fabric app runtime, standalone web, PDF/PowerPoint/image export, subscriptions and printing fidelity. Creating a report through the Fabric API is not testing a separately deployed Fabric app. Animations are not promised in static outputs. |
-| Clients and environments | Fresh end-to-end authoring in every supported Claude/Codex client, another physical laptop/OS, all tenant/authentication policies, proxies and locked-down installations. Agent design quality also varies; validate its fields, calculations and output. |
-| Distribution/security | Full app dependency remediation, signed/branded Electron installer readiness, Power BI certification/store acceptance and a complete security/accessibility review. The isolated MCP audit result is not a clean bill for the entire application. |
+| Complete visual inventory | Every composition, template and expression visual in every state, on every target. |
+| Formatting controls | Every exposed property on every visual, including manual-pane precedence/reset. |
+| Data and clipping | Empty/null/zero/negative/extreme/duplicate/Unicode/long-label/high-cardinality data, tiny containers, extreme aspect ratios, large fonts, tooltip edge placement. |
+| Native/report interactions | Full custom↔native filter/highlight matrix, slicers, physical Ctrl-click, deselection/reset, aggregated mark provenance. |
+| Context menus and drill-through | Include/Exclude results and configured drill-through/report-page tooltip destinations. |
+| Bookmarks and recovery | Bookmark data state, save/reopen, timeline/pause state, undo/recovery, concurrent Desktop/external editing. |
+| Scaling and timing | Windows display scaling beside native visuals, multiple DPIs, native zoom recovery, long resize sessions. |
+| Animation | Every series/effect in both painters, reduced-motion in actual hosts, hidden-tab pause/resume, frame-rate budgets. |
+| Other output targets | Embedded/Fabric app runtime, standalone web, PDF/PowerPoint/image export, subscriptions, printing. |
+| Clients and environments | End-to-end authoring in every Claude/Codex client, other laptops/OSes, tenant policies, proxies, locked-down installs. |
+| Distribution/security | Full app dependency remediation, signed installer, Power BI certification, complete security/accessibility review. |
 
-### Canvas, SVG and animation: what users choose
+### Acceptance checklist for your own report
 
-Canvas and SVG are **drawing modes for the same visual**, not two different visualization types. You create one spec and keep the same bindings. **Canvas is the default** and is generally the better starting point for dense or heavily animated scenes. SVG is optional and can keep text/fine lines sharper under zoom; dense scenes may be slower.
+1. Work on a recoverable copy; preserve its report/model folder structure. Save Desktop work before external writes and follow the reload rules.
+2. Discover actual fields; run DAX at the intended grain/filter context. Compare preview and host values, including totals, ratios and distinct counts.
+3. Validate the spec, inspect the real-data preview and critique, commit to an existing page, then reload the actual report.
+4. Check the visual in its intended painter, at normal and extreme sizes, with long labels, empty/filter states and real data volume.
+5. Test beside a native visual and slicer: filter/highlight both ways, multi-select/clear, tooltips, context actions, bookmarks.
+6. Promote any visual-scoped measures to the model before sharing; then test the actual deployment target (Service, Publish to web, export). A successful upload or PNG is not final acceptance.
+7. Record **Tested**, **Partially tested**, **Not tested**, **Blocked** or **Fail**, with versions, platform, data/filter context and evidence.
 
-In Power BI, select a Vilsem visual, then **Format visual > Appearance > Render mode** (renderer 4.43+). This control belongs to Vilsem, not to every built-in Power BI visual:
+## Rendering: canvas, SVG and animation
+
+Canvas and SVG are **drawing modes for the same visual**, not different visual types. **Canvas is the default** and generally better for dense or heavily animated scenes. SVG can keep text and fine lines sharper under zoom; dense scenes may be slower.
+
+In Power BI, select a Vilsem visual, then **Format visual > Appearance > Render mode** (renderer 4.43+):
 
 | Setting | Behavior |
 | --- | --- |
 | Automatic (spec) | Uses `config.renderer` if authored; otherwise canvas. |
-| Canvas | Explicit pane override to use canvas. |
+| Canvas | Explicit override to canvas. |
 | SVG | Requests SVG; canvas-only effects can trigger an explicit fallback. |
 
-A spec can set `config.renderer:"svg"`. Manually saved pane values override authored defaults; inspect/reset that override if a prompt change appears ineffective. Most supported ECharts/expression visuals share both painters, but **all visual/effect combinations have not been verified**. DOM adapters are outside this headless rendering path.
+Renderer 4.43 accounts for Power BI page zoom in the canvas backing store, clamps the effective pixel ratio to 1–4, and debounces surface recreation. Manually saved pane values override authored defaults; reset that override if a prompt change seems ineffective.
 
-Ordinary charts can animate their **entrance and data updates** without a race or changing years. Declarative `template.animation` requires `template.meta.formatVersion:4`; use the contracts in `vilsem://docs/spec-format` rather than inserting executable callbacks. The normal-chart demo uses fixed data, no timeline, and settles after the entrance. Re-entering/reloading the page replays its entrance. Timeline/race animation instead changes the displayed period and has playback controls. An author should request the intended behavior explicitly; animations must respect reduced-motion settings, and static previews/exports do not prove live motion.
+Ordinary charts can animate their **entrance and data updates** without a race. Declarative `template.animation` requires `template.meta.formatVersion:4`; use the contracts in `vilsem://docs/spec-format`. Timeline/race animation changes the displayed period and has playback controls. Animations respect reduced-motion settings; static previews and exports do not prove live motion.
 
-### Acceptance checklist for your own report
+### Upgrading an existing report
 
-1. Work on a recoverable copy; preserve its report/model folder structure. Save Desktop work before external writes and follow the first-registration/reload rules.
-2. Discover actual fields; run DAX at the intended grain/filter context. Compare the preview and host values, including totals, ratios and distinct counts.
-3. Validate the spec, inspect the real-data preview and critique, commit to an existing page, then open/reload the actual report.
-4. Check the exact visual in its intended painter, at normal and extreme sizes, with long labels, empty/filter states and your real data volume.
-5. Test it beside a native visual and slicer: filter/highlight in both directions, multi-select/clear, tooltips, context actions and bookmarks.
-6. Save/reopen, test the actual deployment/export target, and check ordinary/timeline animation separately. A successful API upload or PNG is not final acceptance.
-7. Record **Tested**, **Partially tested**, **Not tested**, **Blocked** or **Fail**, together with app/renderer versions, platform, data/filter context and evidence. Do not convert an untested item into PASS.
-
-
-## Generic prompts for your own data
-
-The [prompt cookbook](docs/author-from-scratch.md) works with Claude or Codex and contains:
-
-- A shared setup message that discovers the actual model, report and page.
-- A completely new visual from scratch, with real bindings and a checked preview.
-- A trend with prior-period comparisons and explicit calendar semantics.
-- A dual-axis bar/line visual with independent units and a real target/reference.
-- A page of complementary visuals without overlaps or native-object changes.
-- Detailed formatting edits that preserve bindings and manual overrides.
-- Hierarchy, Sankey and bounded custom-geometry examples with prerequisite checks.
-- Reuse of your own design against a different model, plus manual interaction/resize QA.
-
-Replace only the marked placeholders and use fields discovered from `get_schema`. No prompt relies on QA table names, a fixed Desktop port or embedded business values. These are example requests, not promises that every model contains suitable dates, hierarchies or targets.
-
-## Development and verification
-
-Run `npm run build` and `npm test`. Tests cover spec resolution, deterministic SVG/PNG rendering, custom-only PBIR insertion/validation and a real stdio client/server round trip. Live Fabric credentials, Desktop query access, reload prompts and host interactions need environment-backed acceptance; passing fixture tests alone does not establish those results.
-
-For an independent test, follow [author a visual from scratch](docs/author-from-scratch.md).
-
-## Stress round2 examples (0.4.0)
-
-111 freshly authored stress examples passed the actual validate/explain/preview/commit
-workflow and individual Desktop rendering inspection at900x600. Nine capabilities
-remain explicit refusals, documented with sandbox/asset requirements. This is not
-exhaustive formatting, resize, cloud-target or interaction certification.
-See the [120-case results](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/stress2/results.md)
-and [format additions](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/stress2/format-additions.md).
-
-Use core0.6.0 and the bundled renderer4.35. Existing reports keep the same GUID
-and primitiveSpec property. New features enforce renderer version floors rather
-than silently replacing an existing report resource. `list_templates` retains
-the template contract and includes `exampleSpec`: use that complete envelope to
-preserve query-only `measures`, theme and instance parameters.
-
-The catalog includes the nine original examples below plus111 stress examples.
-Failed authored probes are kept under `docs/expressiveness/`, never listed as
-working templates. Word packing, swarm and partition label bounds require their
-declared fixed plot dimensions; density/cohort/statistical assumptions and limits
-are documented in `vilsem://docs/spec-format`.
-
-## Original expressiveness examples (0.3.0)
-
-Nine new standalone `.vilsem-visual.json` specs ship in `templates/` and are listed by `list_templates`. They cover Sankey, Gantt, running-total waterfall, sunburst, bullet, radial progress, dual-axis reference measures, facets and a relationship network. Bind their declared slots to your own schema; no model data is embedded. Use core 0.3.0 / renderer 4.14.2.0+. The [expressiveness report](docs/expressiveness-gaps.md) records the live workflow, bounds and the deliberately unsupported Marimekko custom callback.
+Save Desktop work first. With no pending external changes, use **Home > More visuals > From my files**, select `<vilsemDir>/node_modules/@vilsem/core/assets/renderer.pbiviz`, accept **Update**, then save, close and reopen. The GUID and `objects.semantica.primitiveSpec` stay unchanged. `commit_visual` intentionally preserves a registered renderer; installing a new MCP/core package alone does not upgrade old reports.
 
 ### Theme, formatting and preview locale
 
-Visual backgrounds default to transparent and use the report/host foreground and
-palette. `canvasTheme` is an explicit override. `preview_visual` accepts
-`theme:"report"|"light"|"dark"|<theme JSON>`; a supplied reportDir selects the
-referenced registered theme by default. Desktop's Appearance pane can override
-the background/transparency or force report-theme inheritance.
-
-Directly bound model and query-scoped measure formats apply to labels, value axes and
-native tooltips, including heatmap cell labels and bound-field tooltips. Percent, grouping, currency, decimal precision, comma scaling
-and date patterns use the same bounded converter in core. This is a supported
-subset of Excel/Power BI formatting, not a claim to implement every conditional,
-scientific or dynamic model-format expression.
-
-Derived counts, densities, coordinates and ratios can have different units from
-their input measure. They require an authored formatter when units change;
-the renderer does not blindly apply the source currency/percent format to them.
-SSR can read the report JSON's font family. Automatic inheritance of an arbitrary
-report font in Desktop is not yet verified; the current native default is Segoe UI.
-
-Desktop uses the host viewer locale. SSR defaults to `locale:"en-US"`; pass the
-viewer locale (for example `"en-IN"` or `"de-DE"`) to preview_visual when matching
-regional grouping, decimal separators or month names. The result reports
-formattingLocale. A report's model culture alone does not determine each
-viewer's regional display settings. Values and calculations are unchanged.
-
-`preview_visual.interactions` describes supported host routes and known limits;
-it is not evidence that SSR exercised native selection, report-page tooltips or
-bookmarks. Native acceptance is recorded separately in the QA interaction log.
-
-### Deterministic template thumbnails
-
-`npm run thumbnails` rebuilds all shipped light-theme example PNGs using the same
-synthetic fixtures as the rendering regressions. `node scripts/render-thumbnails.mjs
---dark` checks the alternative host background. Each theme directory under
-`templates/thumbnails/` includes a manifest with source/PNG hashes and failures.
-These thumbnails contain synthetic demonstration values, not model/client data.
-
-
-### PNG typography
-
-The isolated PNG worker expands the pixel-font shorthand emitted by ECharts to
-CSS longhand before rasterizing. This preserves requested font sizes, weight and
-style in previews (including large KPI callouts). Unknown shorthand is left
-unchanged; literal chart text is never rewritten. Installed fonts still determine
-font fallback. The SVG option and native chart typography are unchanged. The adapter workaround
-addresses [resvg-js font shorthand support](https://github.com/thx/resvg-js/issues/404).
-
-
-Default plain treemap labels use padded top-left placement and black/white text
-chosen from the actual mapped opaque node fill, including rgba colours with
-alpha1. Explicit label colours, authored positions/alignment and existing rich
-markup retain their authored treatment. Unknown/translucent paints require an
-explicit readable text style; no automatic contrast guarantee is claimed for them.
-
-### Core0.5 native verification limits
-
-Light/dark native rendering, percentage host tooltips, full currency labels and
-plain treemap headers were checked against the owned AdventureWorks QA report.
-The complete source suites pass. Physical mouse Ctrl-click and the final
-stale-selection-to-slicer transition still need manual verification: Windows
-Computer Use lost its native pipe and could not recover after retry/reset.
-Keyboard additive selection and the other documented native interactions passed;
-Ctrl/clear/highlight/stale-identity paths also have host regression coverage.
-These are explicit verification limits, not claims that every native interaction,
-report font, Service/Fabric target or historical screenshot was retested.
-
+- Visual backgrounds default to transparent and use the report/host foreground and palette. `canvasTheme` is an explicit override. `preview_visual` accepts `theme:"report"|"light"|"dark"|<theme JSON>`; a supplied `reportDir` selects the referenced registered theme.
+- Directly bound model and query-scoped measure formats apply to labels, value axes and native tooltips. Percent, grouping, currency, decimal precision, comma scaling and date patterns use a bounded converter — a supported subset, not every conditional/scientific/dynamic format.
+- Derived counts, densities, coordinates and ratios need an authored formatter when units change.
+- Desktop uses the host viewer locale. Previews default to `locale:"en-US"`; pass the viewer locale (e.g. `"en-IN"`, `"de-DE"`) to match separators and month names.
+- Contrast feedback uses 4.5 for normal text and 3 for text estimated at 24 px or larger, informed by [W3C guidance](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html). It is review assistance, not a WCAG compliance result.
 
 ## Editable specifications and governance
 
-New commits carry specVersion0.7; readers migrate specs from0.1 onward, including round2 string measure definitions into {expression,format} objects. version:1 remains the separate wire envelope. Migrations are pure, forward-only and tested; unknown future versions are explicitly rejected. Maintaining readable historical specs is a release requirement, not a guarantee that unknown future formats run in an older renderer.
+- New commits carry `specVersion` 0.7; readers migrate specs from 0.1 onward. `version:1` remains the separate wire envelope. Migrations are pure, forward-only and tested; unknown future versions are rejected.
+- The 0.7 shared formatting contract has 71 properties (theme/background, animation/reduce motion, title, chart text, palette, labels, legend, axes, lines, border). Desktop pane objects override only the corresponding properties. Legacy DOM adapters expose only Appearance, Title and Border.
+- Queries and committed bindings use their connecting/viewing identities; Power BI owns RLS, workspace access, sensitivity labels, report filters and refresh.
+- The write flow stores bindings and specifications, not model rows. Author literals are possible in JSON, so review specs before sharing. The spec lives in PBIR and can be versioned with the report in git.
+- The template library uses OS user data, or an approved shared `VILSEM_TEMPLATES_DIR` folder.
 
-The0.7 shared formatting contract has71properties: theme/background, animation/reduce motion, title, chart text, series palette, labels, legend, category/primary/secondary axes, lines and border. Author spec.formatting or patch individual properties; separate Desktop pane objects override only the corresponding properties. Changing secondary-axis percentage formatting preserves a primary currency axis. Common controls apply to ECharts compositions/templates; legacy DOM adapters currently expose only Appearance, Title and Border. Native pane controls do not yet cover every specialized ECharts property. Series palette input currently accepts comma-separated hex colours.
+## Troubleshooting
 
-Visual-scoped measures: **yes**. Persistent model measures/changes: **via Microsoft's Power BI Modeling MCP**. Queries and committed bindings use their respective connecting/viewing identities; Power BI owns RLS, workspace access, sensitivity labels, report filters and refresh. A preview query does not replay report-level filters or certify policies.
+| Symptom | Fix |
+| --- | --- |
+| `claude: command not found` | Use the bundled `claude.exe` or the JSON method in [Claude Code](#claude-code). |
+| Vilsem tools missing in the agent | Check the server path exists (`Test-Path`), restart/reload the client, run `/mcp` (Claude Code). Use the full `node.exe` path if `node` is not found. |
+| `npm` fails in PowerShell | Use `npm.cmd`. |
+| `schemaOnly:true` / previews have no data | Open the model in Desktop and reconnect with `kind:"desktop"` (and `port`). |
+| "A connection cannot be made" | Desktop was reopened and its port changed; reconnect. Old `connectionId`s are dead. |
+| "To see this custom visual, add it to this report first" | First Vilsem visual: close without saving and reopen the `.pbip`. |
+| Visual blurry in Desktop | Upgrade the report's renderer to 4.43; try SVG render mode for text-heavy visuals. |
+| Publish to web: `PowerBIAnonymousExtensionSchemaException` | Visual-scoped measures. Promote to model measures and republish. |
+| Build pane shows no fields | Same cause and fix. |
+| Python crashes printing template metadata | Set `PYTHONIOENCODING=utf-8`. |
+| Renderer-version refusal | Upgrade the registered renderer; do not change its GUID. |
+| Custom visuals blocked | An administrator policy may restrict custom visuals; use the approved policy rather than bypassing it. |
 
-The write flow stores bindings/specifications, not returned model rows. Author literals/annotations are possible in JSON, so review specs before sharing. The plain spec lives in PBIR and can be versioned with the report in git; ownership belongs to the report, rather than a lost chat or developer's compiled project. The0.7 template library uses OS user data, or an approved shared VILSEM_TEMPLATES_DIR folder. The MCP does not add a second manifest or list_recent tool.
+## Development and verification
 
-Core0.6 and MCP0.6 verification is recorded in the [Round3 GroupB log](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/stress3/group-b-status.md). Source/host and real-data SSR editing pass; final native Sankey/manual-pane acceptance is UNVERIFIED because ComputerUse cannot connect and Desktop snapshots are blank/time out. Automatic common-axis bounds can be reset with autoMin/autoMax. Native aggregate-column bindings outside the supported Measure/NativeMeasure shapes are reported as unsupported rather than guessed.
+Clone the repository, run `npm install` (its `prepare` step builds the server), then `npm run build` and `npm test`. Tests cover spec resolution, deterministic SVG/PNG rendering, custom-only PBIR insertion/validation and a real stdio client/server round trip. Live Fabric credentials, Desktop query access, reload prompts and host interactions need environment-backed acceptance.
 
+The 0.8 prerelease depends on the immutable public `core-v0.8.0` release tarball. For local core development only, install a locally packed core tarball; restore the public release URL before distributing.
 
-Contrast feedback uses4.5for normal text and3for text estimated at24px or larger, informed by [W3C contrast guidance](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html). It deliberately does not relax the threshold for smaller bold text, and it compares against the preview page rather than proving the paint behind every label. This is review assistance, not a WCAG compliance result.
+- `npm run thumbnails` rebuilds the shipped light-theme example PNGs from synthetic fixtures; `node scripts/render-thumbnails.mjs --dark` checks the dark background. Each theme directory under `templates/thumbnails/` includes a manifest with source/PNG hashes.
+- Motion benchmark: `npm run build` then `node scripts/benchmark-motion.mjs`. It launches only an owned sandboxed headless browser, queries no model, keeps 5,000 points and animation enabled, and writes `test-results/benchmarks/motion-options.json`. Exit code 1 means the 57 fps / 20 ms p95 tolerance was not met. Not a Power BI host benchmark.
 
-## GroupC0.7 prerelease status and limits
+For an independent test, follow [author a visual from scratch](docs/author-from-scratch.md).
 
-This prerelease implements the bounded expression series language, declarative
-race/timeline motion, reusable user/shared template memory, and image-statistics
-reference workflows. Published0.6 releases retain their documented0.6 behavior.
+## Release history
 
-Install the tagged prerelease with its matching core dependency. Source, host,
-real-data previews and installed-package checks are separate from native
-interaction, export and performance acceptance. See the [verification ledger](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/stress3/candidate-verification.md).
+<details>
+<summary>0.7.x — expression language, motion, templates, viewport panels, container declarations</summary>
 
-Expression renderItem is a closed JSON AST, not arbitrary JavaScript. It shares
-one bounded interpreter between renderer and previews. The11 former(c) visual
-families have real-model tool passes, including weighted Voronoi. Venn circles
-are schematic; arbitrary exact area-proportional Euler fitting is still absent.
-Native Desktop acceptance is separate from SSR and successful commits.
+**0.7 (Group C prerelease).** Bounded expression series language, declarative race/timeline motion, reusable user/shared template memory and image-statistics reference workflows. Expression `renderItem` is a closed JSON AST sharing one bounded interpreter between renderer and previews. The 11 former (c) visual families have real-model tool passes, including weighted Voronoi. `preview_visual` `motion:auto` can capture enter/stagger/timeline animation in a fresh headless Chrome/Edge/Chromium profile with a controlled clock and blocked network; `motion:states` avoids a browser launch; APNG ≤ 3 seconds / 2 MiB. See `docs/motion-capture.md`. The real-clock 5,000-point probes missed 60 fps (about 25 fps headless). Native gestures, motion/export acceptance and the final currency-axis native recheck remained UNVERIFIED. Renderer 4.40 completes hidden Sankey entry clips and includes exact-group context-menu fixes. See the [verification ledger](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/stress3/candidate-verification.md).
 
-preview_visual motion:auto can capture actual enter/stagger/timeline canvas
-animation in a fresh headless Chrome/Edge/Chromium profile. It uses the same
-shipped core resolver, a controlled clock and blocked page HTTP/WebSocket
-requests/service workers. No model credentials/Node bridge enter the page.
-Install no browser through this package: use an installed browser, or set
-VILSEM_PREVIEW_BROWSER_PATH to its executable. It never attaches to user tabs.
-motion:states avoids browser launch; motion:browser requires it. Auto fallback
-is explicit. APNG <=3seconds/2MiB; contact sheets label timeline states, rather
-than claiming they are captured interpolation. Capture is not an FPS benchmark.
-See docs/motion-capture.md. No app checkout or VILSEM_APP_PATH is required.
+**0.7.1.** `viewportWidth` and `viewportHeight` expression operations for resize-aware panels (renderer 4.41). 300/300 MCP tests; 1,355 app-core tests each; fresh archive install with audit 0, SDK handshake, 19 tools / 1 prompt. Benchmark still failing: canvas 11.22 fps, dirty-rectangle 12.52, SVG 8.62 vs idle 60.42.
 
-The separate real-clock5000-point animated-canvas probes missed60fps on this
-laptop (about25RAFfps in normal headless Chromium; also failed Electron
-offscreen). This target remains OPEN. The owned Desktop report has been reopened
-with clean state. Native static captures were inspected for all11 expression
-examples and the reference examples; this does not verify physical interactions.
-Sankey motion captures remain partial or blank despite visible charts reported
-by the user. Window automation is unavailable (native pipe, os error2), so native
-gestures, motion/export acceptance and the final currency-axis native recheck
-remain UNVERIFIED. Renderer4.40 completes hidden Sankey entry clips through the
-engine's completion callbacks; a real-browser regression compares the result
-pixel-for-pixel with a settled static graph. It preserves permanent clips and
-includes exact-group context-menu fixes; those tests are distinct from native
-acceptance. Physical click/Ctrl-click, native slicer/highlight, drill-through,
-report-page tooltips, bookmarks and Edit Interactions None still need the
-Desktop checklist. Do not interpret this prerelease as certification or
-production-readiness completion.
+**0.7.2.** Axis-label/name contrast fix for light reference cards in dark reports; core 0.7.2 / renderer 4.42 preserves authored opacity for silent annotation leaves during selection. 303/303 MCP tests; 1,357 app-core tests each. Static viewport decorations no longer produce phantom zero-measure feedback.
 
-To reproduce the synthetic motion benchmark from a source checkout:
+**0.7.3.** Desktop can save visuals with a newer 2.x schema declaration. Read/edit/validation preserve it; payloads are accepted only when their full field structure passes the bundled 2.7 contract, with an explicit diagnostic. New commits keep the vendored 2.7 schema.
+</details>
 
-```sh
-npm run build
-node scripts/benchmark-motion.mjs
-```
+<details>
+<summary>0.6 and earlier — stable line, stress rounds, original examples</summary>
 
-It launches only an owned sandboxed headless browser, queries no model, keeps
-5000points and animation enabled, and records idle/canvas/dirty-rectangle/SVG
-measurements in `test-results/benchmarks/motion-options.json`. Exit code1 means
-the57RAFfps/20ms-p95 tolerance was not met. This is not a Power BI host benchmark.
+**0.6.** Core 0.6.0 / renderer 4.35. Existing reports keep the same GUID and `primitiveSpec` property; new features enforce renderer version floors. `list_templates` includes `exampleSpec`. Verification: [Round 3 Group B log](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/stress3/group-b-status.md). Final native Sankey/manual-pane acceptance was UNVERIFIED.
 
-### Responsive reference panels in0.7.1
+**0.5 native verification limits.** Light/dark rendering, percentage tooltips, currency labels and treemap headers checked against an owned AdventureWorks QA report. Physical Ctrl-click and the stale-selection-to-slicer transition still need manual verification.
 
-Two bounded expression operations, viewportWidth and viewportHeight, let an agent draw resize-aware panels using the same interpreter in preview and renderer4.41. The shipped Figma reference example includes its inset rounded white card. A real browser test checks resize/tiny bounds and confirms that the decoration cannot intercept bar clicks. This does not resolve the native-automation or5000-point animation limits above.
+**PNG typography.** The PNG worker expands ECharts pixel-font shorthand to CSS longhand before rasterizing ([resvg-js #404](https://github.com/thx/resvg-js/issues/404)). Default treemap labels choose black/white text from the actual opaque node fill.
 
-Verification for0.7.1:300/300 MCP tests pass against the downloaded public core0.7.1 package; private/public app-core each1355tests pass. The complete app/native/UI/Fabric/Electron/NSIS build passes. Fresh standalone archive install has audit0 and passes the SDK handshake,19tools/1prompt, viewport-spec validation and documentation-resource checks without an app path or development link. The repeated real-clock benchmark still fails: canvas11.22RAFfps, dirty-rectangle12.52fps, SVG8.62fps versus idle60.42; all5000points and animation remain enabled. These are browser measurements, not native-host acceptance.
+**0.4.0 (stress round 2).** 111 freshly authored stress examples passed validate/explain/preview/commit and Desktop inspection at 900×600; nine capabilities remain explicit refusals. See the [120-case results](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/stress2/results.md) and [format additions](https://github.com/bcsnpc/vilsem/blob/main/docs/qa/stress2/format-additions.md). Failed probes are kept under `docs/expressiveness/`.
 
-MCP0.7.2 corrects axis-label/name contrast when the explicitly light reference card is previewed in a dark report. It uses core0.7.2 / renderer4.42, which also preserves authored opacity for explicitly silent annotation leaves during selection/highlight. Ordinary marks still dim; no native interaction claim changes.
-
-Final0.7.2 validation:303/303 MCP tests pass against the published core0.7.2 archive with unchanged30second test deadlines. Both app/core checkouts pass1357tests. Static viewport decorations no longer produce phantom zero-measure/extra-series feedback; genuine zero data and data-driven annotations remain checked. Explicit opaque chart backgrounds are used for global contrast. Native physical acceptance remains blocked and the5000-point60fps target still fails; this remains an evaluation prerelease.
-
-### Desktop container declarations in0.7.3
-
-Desktop can save an existing visual with a newer2.x schema declaration before that schema is published. Read/edit/validation preserve the declaration. Existing payloads are accepted only when their complete field structure passes the bundled2.7 contract; an explicit known-2.7-contract diagnostic discloses that full validation against the declared schema was not performed. Unknown fields, malformed structures, other hosts/major versions and non-Vilsem visuals are refused. No remote schema is fetched and no fields are stripped. New commits continue using the vendored2.7 schema. Core0.7.2 / renderer4.42 remain the matching runtime.
-
-
-## Native canvas and SVG rendering (0.8)
-
-Native renderer 4.43 accounts for Power BI page zoom in the canvas backing store, clamps the effective pixel ratio to 1-4, and debounces surface recreation. `config.renderer` accepts `canvas` (default) or `svg`. The Desktop Appearance > Render mode dropdown overrides the spec; Automatic follows it. SVG is useful for text-heavy layouts; thousands of marks and animation may be slower. Canvas-only trail/blend effects fall back to canvas with an explicit critique/native warning. Preview SSR behavior is unchanged.
-
-**Upgrade an existing report explicitly:** save existing Desktop work before external edits. With no pending external changes, use Home > More visuals > From my files; select `<install>/node_modules/@vilsem/core/assets/renderer.pbiviz`, accept Update, then save, close and reopen the report. The GUID and `objects.semantica.primitiveSpec` remain unchanged. `commit_visual` intentionally preserves a registered renderer; installing a new MCP/core package alone does not upgrade old reports.
-
-For a one-shot native skill installation from the prebuilt GitHub package:
-
-```powershell
-npx.cmd --yes --package=https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.8.0/vilsem-mcp-0.8.0.tgz vilsem-mcp install-skill --target claude
-```
-
-Use `--target codex` or an explicit skills-root directory as needed. There is no unversioned npm-registry distribution; use the pinned release URL.
+**0.3.0.** Nine standalone `.vilsem-visual.json` specs in `templates/`: Sankey, Gantt, running-total waterfall, sunburst, bullet, radial progress, dual-axis reference measures, facets and a relationship network. Core 0.3.0 / renderer 4.14.2.0+. See the [expressiveness report](docs/expressiveness-gaps.md).
+</details>
