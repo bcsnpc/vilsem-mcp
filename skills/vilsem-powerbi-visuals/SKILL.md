@@ -19,7 +19,8 @@ vilsem deliberately does one job: preview, validate and write its own visuals. E
 | Read measure DAX, columns and relationships | You: the TMDL files, or the Modeling MCP |
 | Check the data's grain, ranges and sanity | You: `run_dax` |
 | Create pages | You: edit the PBIR files (`references/pbir-pages.md`) |
-| Fix data problems for one visual | You: visual-scoped measures in the spec |
+| Prototype measures for one visual | You: visual-scoped measures in the spec (preview only) |
+| Persist measures for a committed / shared visual | You: add them to a model measures table in TMDL (with the user's OK), or the Modeling MCP |
 | Fix the model itself | The Modeling MCP, **only if the user asks** |
 | Work around vilsem limitations | You: patterns in `references/spec-cookbook.md` |
 | Preview, validate, commit and update visuals | vilsem |
@@ -31,7 +32,7 @@ When you work around something, tell the user what you did and why, in one line.
 - **Preview before commit, always.** Never commit a spec you have not rendered against real data.
 - **Check the data before designing.** Most broken visuals come from grain, blanks or measure semantics, not chart code.
 - **Never silently replace a business measure.** If a model measure looks wrong (e.g. a rate above 100%), say so and explain what you used instead.
-- **Ask the user before touching the model.** Visual-scoped measures (in the spec) are fine; model changes are a separate, explicit request.
+- **Ask the user before touching the model, once, up front.** Ask: "Will this report be published or shared (Service, Publish to web, other authors)?" If yes, committed visuals should bind **model measures**, not visual-scoped ones (see "Measures for shareable reports"). Visual-scoped measures remain fine for previews and for private prototypes. Asking about sharing does not itself authorize a model change; obtain the user's OK for those edits.
 - **Keep the user's Desktop state safe.** After any file write, tell them to accept the reload prompt and not to save stale Desktop state over your changes.
 
 ## Workflow
@@ -117,12 +118,52 @@ Wrap `SUMMARIZECOLUMNS` in `FILTER(..., [m] > 0)` when measures return 0, or you
 
   | Situation | What the user sees | What the user must do |
   |---|---|---|
-  | **First vilsem visual in this report** (`commit_visual` returns `rendererRegistered: true`), or new pages were added | The visual fails to render: *"To see this custom visual, add it to this report first: semanticaRenderer…"* | **Close the report without saving and reopen the `.pbip`.** The renderer is registered in `report.json`, which Desktop only reads when it opens the project. |
+  | **First vilsem visual in this report** (`commit_visual` returns `rendererRegistered: true`) | The visual fails to render: *"To see this custom visual, add it to this report first: semanticaRenderer…"* | **Close the report without saving and reopen the `.pbip`.** The renderer is registered in `report.json`, which Desktop only reads when it opens the project. |
+  | **New pages added** | Desktop shows an external-changes prompt, or the page is missing | Try **apply / reload external changes** first; close without saving and reopen if the page is still missing. |
+  | **Model measures added or changed** (TMDL edits) | Nothing changes after "apply external changes" | **Close without saving and reopen.** External-change reload covers report files, not the semantic model. |
   | **Every later commit or update** (`rendererRegistered: false`) | Desktop shows a prompt about external changes to the project files | Click **apply / reload external changes** in that prompt. No restart needed. |
 
-  - In both cases: **don't save in Desktop before reloading or reopening**, or Desktop overwrites the new files with its stale state.
+  - In all cases: **don't save in Desktop before reloading or reopening**, or Desktop overwrites the new files with its stale state.
   - Alternative for the first time only: import `<install>/node_modules/@vilsem/core/assets/renderer.pbiviz` (Visualizations pane → ⋯ → Import a visual from a file), save, then commit.
   - Tell the user this **up front** with the first commit, so they don't think the visual is broken.
+
+### 9a. Measures for shareable reports
+
+Visual-scoped measures (`spec.measures`) are committed as `NativeMeasure` projections, which Power BI stores as report-level extensions. That has two consequences:
+
+- The **Build pane shows no fields** for those visuals.
+- **Publish to web fails** on every such visual with `PowerBIAnonymousExtensionSchemaException`. The signed-in Service still works, so this is easy to miss.
+
+So use `spec.measures` as a **preview scratchpad**, and commit model measures. Do it at commit time so there is no rework later:
+
+**Use the bundled script instead of writing your own.** Requires **Python 3.9+** (stdlib only); if Python is unavailable, follow the manual steps below. The target measures table must already exist; create it in Desktop and save before external edits. Save any existing Desktop work before running the script. `scripts/promote-measures.py` does steps 2–3 for every Vilsem visual in a report that still has visual-scoped measures. Ask the user before running it with `--apply`, because it changes the model files:
+
+Run these commands from the installed `vilsem-powerbi-visuals` skill folder, or use the script's absolute path. The npm package also contains it under `skills/vilsem-powerbi-visuals/scripts/`.
+
+    python scripts/promote-measures.py "<Name>.Report"                          # dry run: shows the plan, writes nothing
+    python scripts/promote-measures.py "<Name>.Report" --table "<Measures table>" --apply
+
+It backs up every file it changes, tags created measures `annotation VilsemOwned = true`, refuses name collisions with non-Vilsem measures, and is idempotent. Afterwards: close Desktop without saving, reopen, run `validate_visuals`.
+
+**Migrating an existing report** works the same way: run the script on it. (What it does: for each Vilsem `visual.json`, parse the `primitiveSpec` literal, take `spec.measures`, write them to TMDL as described below, then for each projection with `field.NativeMeasure` replace `field` with `{"Measure":{"Expression":{"SourceRef":{"Entity":"<Measures table>"}},"Property":"<name>"}}`, set `queryRef` to `"<Measures table>.<name>"` and `nativeQueryRef` to `"<name>"`, and drop `measures` from the spec.)
+
+**Manual equivalent (when Python is unavailable):**
+
+1. **Design and preview** with `spec.measures` as usual. Nothing is persisted.
+2. **When the visual is final**, write each measure into a measures table in the model's TMDL (e.g. `<Model>.SemanticModel/definition/tables/<Measures table>.tmdl`):
+   - `measure '<name>' = <DAX>` (use a ```` ``` ```` block for multi-line DAX)
+   - `formatString: "<format>"` (escape `"` as `""`)
+   - `displayFolder: "Vilsem\<page display name>"`
+   - a new `lineageTag: <uuid>`
+   - optional `/// Vilsem measure used by visual '<visualName>'` description
+   - Names must be unique across the model. Insert the measures before the table's first `column`/`partition`.
+3. **Commit the visual bound to the model measures**: bindings `{"table":"<Measures table>","name":"<name>"}`, and remove `measures` from the spec.
+4. **Batch:** model changes need Desktop to **close (without saving) and reopen**, so promote a batch of visuals and reopen once, not per visual.
+5. **Report back:** list the measures you added and their folder.
+
+If the model must not be changed (user says no), commit with `spec.measures` and tell the user up front: *"These visuals use visual-scoped measures: the Build pane won't list their fields and Publish to web won't render them. Promote them to model measures before publishing."*
+
+**Unloaded-measure verification is pending.** The order above is not yet verified for a new model measure written to TMDL while Desktop is still running its old model. On a test copy, check `validate_spec`, `commit_visual` and `validate_visuals` before reopening (see `docs/qa/model-measures-and-install.md`). If a tool rejects the unknown measure, use **write TMDL -> close without saving/reopen -> rediscover the port and reconnect -> preview -> commit**, batching promotions before one reopen. Re-preview model-bound specs after reconnecting; do not treat a scratchpad preview as proof that persisted bindings work.
 
 ### 10. Edit later
 
@@ -151,6 +192,9 @@ Tell the user:
 
 - **npm in PowerShell:** use `npm.cmd`, which avoids execution-policy errors. The warning `install-scripts … vilsem-mcp (prepare: npm run build)` is harmless for the release tarball, because `dist/` is prebuilt. Check that `node_modules/vilsem-mcp/dist/index.js` exists.
 - **`claude` CLI not on PATH** (common with the VS Code extension): the extension bundles it at `%USERPROFILE%\.vscode\extensions\anthropic.claude-code-*\resources\native-binary\claude.exe`. Use that to run `claude mcp add --scope user …`.
+  If no bundled binary exists either, add the server to `%USERPROFILE%\.claude.json` under a top-level `"mcpServers"` key, or a project `.mcp.json`:
+  `{"mcpServers":{"vilsem":{"type":"stdio","command":"node","args":["C:/Users/<you>/vilsem-mcp/node_modules/vilsem-mcp/dist/index.js"]}}}`
+  Edit by parsing the JSON, setting `mcpServers.vilsem` and writing it back, after backing up the file. Never splice strings. Close Claude Code first so it does not overwrite the file.
 - **New MCP servers need a client restart** (VS Code: Developer: Reload Window) before their tools appear.
 - **Python printing model data on Windows:** set `PYTHONIOENCODING=utf-8`, because template metadata contains emoji and the default code page will crash.
 - **The Power BI Modeling MCP can drop its connection,** especially after Desktop restarts. Reconnect with `ListLocalInstances` → `Connect`. If the server itself is down, fall back to the TMDL files and `run_dax`.
@@ -159,6 +203,8 @@ Tell the user:
 
 | Symptom | Cause | Workaround |
 |---|---|---|
+| Publish to web shows an error on every Vilsem visual (`PowerBIAnonymousExtensionSchemaException`) | Visual-scoped measures are report extensions, unsupported in anonymous embed | Promote to model measures and rebind (section 9a), republish |
+| Build pane shows no fields when a Vilsem visual is selected | Same: `NativeMeasure` projections | Same fix |
 | First vilsem visual shows "To see this custom visual, add it to this report first" | Renderer registration in `report.json` isn't live-reloaded | Close the report without saving and reopen it (one time per report). After that, applying the external-changes prompt is enough. |
 | Visual looks blurry in Desktop with an older renderer | Reports retain their registered renderer | Upgrade to renderer 4.43 (import the bundled renderer.pbiviz, save, close and reopen). Canvas accounts for page zoom; use `config.renderer:"svg"` or Appearance > Render mode for text-heavy layouts. Canvas-only trail/blend effects fall back with a warning. |
 | KPI shows `0.04` instead of `4.2%` | `lastLabel`, `sumLabel` and `deltaPctLabel` ignore the measure format | Draw the number as a hidden gauge's `detail` with `formatterTemplate:"{value:percent}"` (see the cookbook), or show it in a formatted data or axis label |
