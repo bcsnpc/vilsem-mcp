@@ -340,3 +340,19 @@ it('returns first/later reload guidance and scoped-measure warnings and validati
  value.visual.query.queryState.content=null
  await fs.writeFile(file,JSON.stringify(value));const invalid=await validateVisuals(root);expect(invalid.every(v=>v.nativeMeasures.length===0)).toBe(true);expect(invalid.find(v=>v.path===file)?.valid).toBe(false)
 })
+
+
+it('nudges all five tool results until a successful playbook read, independently per server',async()=>{
+ const client=await clientFor(adapter()),root=await fixture()
+ for(const read of [false,true]){
+  if(read)await client.callTool({name:'get_playbook',arguments:{}})
+  const connected=await client.callTool({name:'connect_model',arguments:{source:{kind:'desktop',port:12345}}}),connection=unpack(connected)
+  const calls=[connected,
+   await client.callTool({name:'get_schema',arguments:{connectionId:connection.connectionId}}),
+   await client.callTool({name:'preview_visual',arguments:{connectionId:connection.connectionId,spec:{type:'bar'},bindings}}),
+   await client.callTool({name:'preview_variants',arguments:{connectionId:connection.connectionId,specs:[{type:'bar'}],labels:['Bar'],bindings}}),
+   await client.callTool({name:'commit_visual',arguments:{reportDir:root,pageName:'page1',visualName:read?'after':'before',spec:{type:'bar'},bindings,layout:{x:100,y:100,width:500,height:350}}})]
+  for(const result of calls){expect(result.isError,JSON.stringify(result)).not.toBe(true);expect(unpack(result).playbookHint).toBe(read?undefined:'Call get_playbook (no arguments) before designing or committing visuals; it contains the required workflow and reload rules.')}
+ }
+ const other=await clientFor(adapter());expect(unpack(await other.callTool({name:'connect_model',arguments:{source:{kind:'desktop',port:12345}}})).playbookHint).toBeDefined()
+})

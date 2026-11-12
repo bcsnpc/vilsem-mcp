@@ -29,6 +29,9 @@ const packageVersion = createRequire(import.meta.url)('../package.json').version
 const bindings = z.object({ dimensions: z.array(z.object({ table: z.string().min(1), column: z.string().min(1) })).max(6).default([]), measures: z.array(z.object({ table: z.string().min(1), name: z.string().min(1) })).min(1).max(6) });
 const text = (value) => ({ content: [{ type: 'text', text: JSON.stringify(value, (_key, value) => typeof value === 'function' ? '[formatter]' : value) }] });
 export function createServer(models = new Models()) {
+    let playbookRead = false;
+    const hintTools = new Set(['connect_model', 'get_schema', 'preview_visual', 'preview_variants', 'commit_visual']);
+    const playbookHint = 'Call get_playbook (no arguments) before designing or committing visuals; it contains the required workflow and reload rules.';
     const server = new McpServer({ name: 'vilsem-mcp', version: packageVersion }, { instructions: AGENT_INSTRUCTIONS });
     server.registerPrompt('design_visual', { description: 'Get model context and a structured brief for the CALLING AGENT to design a new Vilsem visual or edit an existing one. Optional reference_image is a local PNG/JPEG path or data URI. No LLM/model/API key inside the MCP.', argsSchema: { intent: z.string().min(1), connectionId: z.string().uuid(), page: z.string().optional(), reportDir: z.string().optional(), reference_image: z.string().optional() } }, async ({ intent, connectionId, page, reportDir, reference_image }) => {
         const context = await models.schema(connectionId, { detail: 'summary' });
@@ -84,13 +87,16 @@ export function createServer(models = new Models()) {
     }
     const tool = (name, description, schema, handler, annotations) => server.registerTool(name, { description, inputSchema: schema.shape, ...(annotations ? { annotations } : {}) }, async (args) => {
         try {
-            return await handler(args);
+            const result = await handler(args);
+            if (!playbookRead && hintTools.has(name) && !result.isError)
+                result.content = result.content.map(item => item.type === 'text' ? { ...item, text: JSON.stringify({ ...JSON.parse(item.text), playbookHint }) } : item);
+            return result;
         }
         catch (error) {
             return { isError: true, content: [{ type: 'text', text: error.diagnostics ? JSON.stringify({ valid: false, errors: error.diagnostics, suggestions: error.suggestions }) : error.message }] };
         }
     });
-    tool('get_playbook', 'Return the Vilsem playbook the agent must follow before building or editing visuals. Call with no arguments first (compact core + index), then request sections such as `9a` or `cookbook:sankey` when needed. Read-only.', z.object({ section: z.string().optional() }), async ({ section }) => ({ content: [{ type: 'text', text: (await getPlaybook(section)).text }] }), { readOnlyHint: true, idempotentHint: true, openWorldHint: false, destructiveHint: false });
+    tool('get_playbook', 'Return the Vilsem playbook the agent must follow before building or editing visuals. Call with no arguments first (compact core + index), then request sections such as `9a` or `cookbook:sankey` when needed. Read-only.', z.object({ section: z.string().optional() }), async ({ section }) => { const result = await getPlaybook(section); playbookRead = true; return { content: [{ type: 'text', text: result.text }] }; }, { readOnlyHint: true, idempotentHint: true, openWorldHint: false, destructiveHint: false });
     async function previewData({ connectionId, spec, bindings, reportDir, theme, maxRows }) {
         const dimensions = bindings.dimensions.map(field => `${field.table}[${field.column}]`), measures = bindings.measures.map(field => field.name);
         const dax = buildVisualDax({ ...bindings, scopedMeasures: scopedMeasuresOf(spec), maxRows });
