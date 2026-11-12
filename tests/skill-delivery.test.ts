@@ -16,12 +16,12 @@ it('delivers short instructions and all packaged skill resources over actual std
  const client=new Client({name:'skill-delivery-test',version:'1'}),transport=new StdioClientTransport({command:process.execPath,args:[path.resolve('dist/index.js')],stderr:'pipe'})
  try{await client.connect(transport);expect(client.getInstructions()).toBe(AGENT_INSTRUCTIONS);expect(AGENT_INSTRUCTIONS.length).toBeLessThan(1500);expect(AGENT_INSTRUCTIONS.split('\n').length).toBeLessThanOrEqual(15)
  const resources=await client.listResources()
- for(const [name,file]of [['powerbi-visuals','SKILL.md'],['pbir-pages','references/pbir-pages.md'],['spec-cookbook','references/spec-cookbook.md']]){const uri='vilsem://skill/'+name;expect(resources.resources).toContainEqual(expect.objectContaining({uri,mimeType:'text/markdown'}));const read=await client.readResource({uri});expect(read.contents[0]).toMatchObject({mimeType:'text/markdown',text:await fs.readFile(path.join(skillSource,file),'utf8')});expect((read.contents[0] as any).text).toMatch(/^(---|#)/)}
- expect((await client.listTools()).tools.map(t=>t.name)).toContain('preview_visual')
+ for(const [name,file]of [['powerbi-visuals','SKILL.md'],['pbir-pages','references/pbir-pages.md'],['spec-cookbook','references/spec-cookbook.md'],['data-art-recipes','references/data-art-recipes.md']]){const uri='vilsem://skill/'+name;expect(resources.resources).toContainEqual(expect.objectContaining({uri,mimeType:'text/markdown'}));const read=await client.readResource({uri});expect(read.contents[0]).toMatchObject({mimeType:'text/markdown',text:await fs.readFile(path.join(skillSource,file),'utf8')});expect((read.contents[0] as any).text).toMatch(/^(---|#)/)}
+ const tools=(await client.listTools()).tools;expect(tools).toHaveLength(20);expect(tools.map(t=>t.name)).toContain('get_playbook');const core=await client.callTool({name:'get_playbook',arguments:{}});expect((core.content as any)[0].text).toContain('section: core');expect((await client.callTool({name:'get_playbook',arguments:{section:'9a'}})).isError).not.toBe(true)
  }finally{await client.close();await transport.close()}
 })
-it('copies all four skill files including the Python helper, refuses overwrite and allows force without deleting extra files',async()=>{
- expect(SKILL_FILES).toEqual(['SKILL.md','references/pbir-pages.md','references/spec-cookbook.md','scripts/promote-measures.py'])
+it('copies all five skill files including the Python helper, refuses overwrite and allows force without deleting extra files',async()=>{
+ expect(SKILL_FILES).toEqual(['SKILL.md','references/pbir-pages.md','references/spec-cookbook.md','scripts/promote-measures.py','references/data-art-recipes.md'])
  const root=await folder(),destination=skillDestination(root),first=await cli('install-skill','--target',root);expect(first.stdout).toBe('');expect(first.stderr).toContain(destination)
  for(const file of SKILL_FILES)expect(await fs.readFile(path.join(destination,file))).toEqual(await fs.readFile(path.join(skillSource,file)))
  await fs.writeFile(path.join(destination,'SKILL.md'),'User modified');await fs.writeFile(path.join(destination,'keep.txt'),'Keep')
