@@ -1,11 +1,13 @@
+import { safeEnvironmentPath, localRealpath } from './paths.js';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
 import { encodePreviewApng } from '@vilsem/core/images/decode';
 export function browserCandidates(env = process.env, platform = process.platform) {
-    if (env.VILSEM_PREVIEW_BROWSER_PATH)
-        return [path.resolve(env.VILSEM_PREVIEW_BROWSER_PATH)];
+    const configured = safeEnvironmentPath(env.VILSEM_PREVIEW_BROWSER_PATH, 'VILSEM_PREVIEW_BROWSER_PATH');
+    if (configured)
+        return [path.resolve(configured)];
     if (platform === 'win32')
         return ['C:/Program Files/Google/Chrome/Application/chrome.exe', 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe', 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'];
     if (platform === 'darwin')
@@ -45,7 +47,7 @@ async function captureMotion(spec, rows, option, width, height, context, count) 
     for (const candidate of browserCandidates())
         try {
             if ((await fs.stat(candidate)).isFile()) {
-                executablePath = await fs.realpath(candidate);
+                executablePath = await localRealpath(candidate, 'preview browser');
                 break;
             }
         }

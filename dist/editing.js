@@ -1,3 +1,4 @@
+import { localRealpath } from './paths.js';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -12,8 +13,8 @@ const parse = bytes => JSON.parse(bytes.toString('utf8').replace(/^\uFEFF/, ''))
 const segment = (value) => { if (!/^[a-zA-Z0-9_-]{1,128}$/.test(value))
     throw Error('Use an internal PBIR page/visual folder name from list_visuals'); return value; };
 export async function readStoredVisual(reportDir, pageName, visualName) {
-    const root = await fs.realpath(reportDir);
-    const file = await fs.realpath(path.join(root, 'definition', 'pages', segment(pageName), 'visuals', segment(visualName), 'visual.json'));
+    const root = await localRealpath(reportDir);
+    const file = await localRealpath(path.join(root, 'definition', 'pages', segment(pageName), 'visuals', segment(visualName), 'visual.json'));
     const relative = path.relative(root, file);
     if (relative.startsWith('..' + path.sep) || path.isAbsolute(relative))
         throw Error('Visual resolves outside the report');

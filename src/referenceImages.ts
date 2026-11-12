@@ -1,3 +1,4 @@
+import {assertLocalPath,localRealpath} from './paths.js'
 import fs from 'node:fs/promises'
 import {decodeDesignImage} from '@vilsem/core/images/decode'
 import {extractDesignTokens} from '@vilsem/core/images'
@@ -9,7 +10,9 @@ export async function referenceImage(image:string){
  const rawBase64=/^(?:iVBORw0KGgo|\/9j\/)[A-Za-z0-9+/=\r\n]+$/.test(image)?image.replace(/[\r\n]/g,''):null
  if(match||rawBase64){const encoded=match?.[2]||rawBase64!;if(encoded.length>Math.ceil(MAX_BYTES*4/3)+4)throw Error('Reference image exceeds8 MiB');bytes=Buffer.from(encoded,'base64')}
  else{
-  if(image.length>4096||/^https?:|^data:|^file:/i.test(image))throw Error('Use a local PNG/JPEG path or data:image/png|jpeg;base64 URI; remote resources are not fetched')
+  if(image.length>4096||/^https?:|^data:/i.test(image))throw Error('Use a local PNG/JPEG path or data:image/png|jpeg;base64 URI; remote resources are not fetched')
+  assertLocalPath(image,'image')
+  image=await localRealpath(image,'image')
   const stat=await fs.stat(image);if(!stat.isFile()||stat.size>MAX_BYTES)throw Error('Reference must be a regular PNG/JPEG file up to8 MiB');bytes=await fs.readFile(image)
  }
  const decoded=decodeDesignImage(bytes),tokens=extractDesignTokens({image:decoded})

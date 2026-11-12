@@ -1,3 +1,4 @@
+import {validateInputPaths} from './paths.js'
 import crypto from 'node:crypto'
 import { createConnector } from '@vilsem/core/connect'
 import { enrichSchema, schemaDetail } from '@vilsem/core/connect/context'
@@ -15,7 +16,7 @@ export class Models {
   private metadata=new Map<string,any>()
   private profiles=new Map<string,{expires:number,promise:Promise<any>}>()
   constructor(private adapter:ModelAdapter=new VilsemAdapter()){}
-  async connect(source:Source){const connection=await this.adapter.connect(source);const connectionId=crypto.randomUUID();this.connections.set(connectionId,connection);return {connectionId,kind:source.kind,schemaOnly:!!connection.schemaOnly,...(connection.discovery?{discovery:connection.discovery,...(connection.source.port?{port:connection.source.port}:{})}:{})}}
+  async connect(source:Source){await validateInputPaths({source});const connection=await this.adapter.connect(source);const connectionId=crypto.randomUUID();this.connections.set(connectionId,connection);return {connectionId,kind:source.kind,schemaOnly:!!connection.schemaOnly,...(connection.discovery?{discovery:connection.discovery,...(connection.source.port?{port:connection.source.port}:{})}:{})}}
   private get(id:string){const connection=this.connections.get(id);if(!connection)throw Error('Unknown connectionId; connect_model first');return connection}
   async query(id:string,dax:string,maxRows=200){
     // This endpoint is for DAX table queries, not XMLA/model commands.

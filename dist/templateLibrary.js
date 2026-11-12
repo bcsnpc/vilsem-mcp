@@ -1,3 +1,4 @@
+import { assertLocalPath, assertLocalLinks, safeEnvironmentPath } from './paths.js';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
@@ -5,7 +6,7 @@ import { constants } from 'node:fs';
 import { validateSpec } from './reports.js';
 const MAX_BYTES = 1048576;
 export function templatesDirectory(env = process.env) {
-    return path.resolve(env.VILSEM_TEMPLATES_DIR || path.join(process.platform === 'win32' ? (env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming')) : (env.XDG_DATA_HOME || path.join(os.homedir(), '.local', 'share')), 'vilsem', 'templates'));
+    return assertLocalPath(path.resolve(safeEnvironmentPath(env.VILSEM_TEMPLATES_DIR, 'VILSEM_TEMPLATES_DIR') || path.join(process.platform === 'win32' ? (env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming')) : (env.XDG_DATA_HOME || path.join(os.homedir(), '.local', 'share')), 'vilsem', 'templates')), 'template library');
 }
 function filename(name) {
     if (!/^[a-z0-9][a-z0-9_-]{0,79}$/.test(name) || /^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/i.test(name))
@@ -13,6 +14,7 @@ function filename(name) {
     return name + '.vilsem-visual.json';
 }
 export async function readUserTemplate(name, root = templatesDirectory()) {
+    await assertLocalLinks(root, 'template library');
     const file = path.join(root, filename(name)), stat = await fs.lstat(file, { bigint: true });
     if (!stat.isFile() || stat.isSymbolicLink() || stat.size > BigInt(MAX_BYTES))
         throw Error('User template must be a regular JSON file up to 1 MiB; symlinks are refused');
@@ -36,6 +38,7 @@ export async function readUserTemplate(name, root = templatesDirectory()) {
     return { ...saved, source: 'user', uri: `vilsem://templates/user/${name}` };
 }
 export async function saveUserTemplate({ name, description = '', spec, tags = [] }, root = templatesDirectory()) {
+    await assertLocalLinks(root, 'template library');
     const file = path.join(root, filename(name));
     validateSpec(spec);
     if (description.length > 2000 || tags.length > 20 || tags.some(t => typeof t !== 'string' || t.length > 80))
@@ -58,6 +61,7 @@ export async function saveUserTemplate({ name, description = '', spec, tags = []
     return { ...value, source: 'user', uri: `vilsem://templates/user/${name}` };
 }
 export async function listUserTemplates(root = templatesDirectory()) {
+    await assertLocalLinks(root, 'template library');
     let files;
     try {
         files = await fs.readdir(root);
@@ -80,6 +84,7 @@ export async function listUserTemplates(root = templatesDirectory()) {
     return results;
 }
 export async function deleteUserTemplate(name, root = templatesDirectory()) {
+    await assertLocalLinks(root, 'template library');
     const file = path.join(root, filename(name)), stat = await fs.lstat(file);
     if (!stat.isFile() || stat.isSymbolicLink())
         throw Error('Only regular user-template files can be deleted');
