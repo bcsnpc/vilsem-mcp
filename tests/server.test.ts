@@ -338,7 +338,12 @@ it('returns first/later reload guidance and scoped-measure warnings and validati
  const file=path.join(root,'definition/pages/page1/visuals/scoped/visual.json'),value=JSON.parse(await fs.readFile(file,'utf8'))
  for(const state of Object.values(value.visual.query.queryState) as any[])state.projections=(state.projections??[]).filter(p=>!p.field?.NativeMeasure)
  value.visual.query.queryState.content=null
- await fs.writeFile(file,JSON.stringify(value));const invalid=await validateVisuals(root);expect(invalid.every(v=>v.nativeMeasures.length===0)).toBe(true);expect(invalid.find(v=>v.path===file)?.valid).toBe(false)
+ await fs.writeFile(file,JSON.stringify(value));const invalid=await validateVisuals(root);expect(invalid.every(v=>v.nativeMeasures.length===0)).toBe(true)
+ // Hosted Windows may expose an 8.3 TEMP path while validation returns its
+ // expanded realpath. Compare filesystem identities, ignoring Windows casing.
+ const normalizedPath=async(value:string)=>{const resolved=path.resolve(await fs.realpath(value));return process.platform==='win32'?resolved.toLowerCase():resolved}
+ const expectedPath=await normalizedPath(file),normalized=await Promise.all(invalid.map(async v=>({...v,path:await normalizedPath(v.path)})))
+ expect(normalized.find(v=>v.path===expectedPath)?.valid).toBe(false)
 })
 
 
