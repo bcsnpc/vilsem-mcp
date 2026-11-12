@@ -3,14 +3,14 @@ import fs from'node:fs/promises'
 import fsSync from'node:fs'
 import path from'node:path'
 import{createRequire}from'node:module'
-import{chromium}from'playwright-core'
 import{browserCandidates}from'../src/motionBrowser.js'
 import{sharpnessSpec,mountNativeHost}from'./fixtures/native-renderer-host.mjs'
 const require=createRequire(import.meta.url),coreRequire=createRequire(require.resolve('@vilsem/core/pbir')),AdmZip=coreRequire('adm-zip'),asset=path.resolve(path.dirname(require.resolve('@vilsem/core/pbir')),'../../assets/renderer.pbiviz'),zip=new AdmZip(asset),metadata=JSON.parse(zip.getEntries().find(e=>e.entryName.endsWith('.pbiviz.json')).getData().toString())
-const executable=browserCandidates().find(p=>fsSync.existsSync(p))
+let playwrightAvailable=true;try{require.resolve('playwright-core')}catch{playwrightAvailable=false}
+const executable=playwrightAvailable?browserCandidates().find(p=>fsSync.existsSync(p)):undefined
 describe.skipIf(!executable)('actual packaged native painter in an owned browser (not Power BI)',()=>{
  let browser:any
- beforeAll(async()=>{browser=await chromium.launch({executablePath:executable,headless:true,chromiumSandbox:true,args:['--disable-extensions','--no-first-run','--disable-background-networking']})})
+ beforeAll(async()=>{const {chromium}=await import('playwright-core');browser=await chromium.launch({executablePath:executable,headless:true,chromiumSandbox:true,args:['--disable-extensions','--no-first-run','--disable-background-networking']})})
  afterAll(async()=>{await browser?.close()})
  async function fixture(mode:string,kind:string,dpr=1.5){
   const context=await browser.newContext({viewport:{width:2400,height:1500},deviceScaleFactor:dpr,serviceWorkers:'block'});await context.route('**/*',r=>r.abort());const page=await context.newPage(),errors:string[]=[];page.on('pageerror',e=>errors.push(e.message))

@@ -8,7 +8,9 @@ import {InMemoryTransport} from '@modelcontextprotocol/sdk/inMemory.js'
 import {createServer} from '../src/server.js'
 import {Models} from '../src/models.js'
 import {browserCandidates,browserEnvironment,motionCapturePlan} from '../src/motionBrowser.js'
-it.runIf(browserCandidates().some(file=>existsSync(file)))('settles the actual Sankey entry clip before a hidden first-frame canvas capture',async()=>{
+function previewBrowserAvailable(){try{createRequire(import.meta.url).resolve('playwright-core');return browserCandidates().some(file=>existsSync(file))}catch{return false}}
+
+it.runIf(previewBrowserAvailable())('settles the actual Sankey entry clip before a hidden first-frame canvas capture',async()=>{
  const {chromium}=await import('playwright-core'),require=createRequire(import.meta.url),browser=await chromium.launch({executablePath:browserCandidates().find(file=>existsSync(file)),headless:true,chromiumSandbox:true,env:browserEnvironment()})
  try{
   const page=await browser.newPage();await page.route('**/*',route=>route.abort());await page.setContent('<div id="animated" style="width:600px;height:350px"></div><div id="static" style="width:600px;height:350px"></div>')
@@ -33,7 +35,7 @@ it('bounds decoded pixels, frame count and virtual duration while including stag
  expect(plan.duration).toBe(1857);expect(plan.times[0]).toBe(16);expect(plan.times.at(-1)).toBe(1857)
  expect(motionCapturePlan({template:{animation:{enter:{duration:30000}}}},{},800,500,2).duration).toBe(3000);expect(()=>motionCapturePlan({}, {},2400,2400,12)).toThrow(/pixels/)
 })
-it.runIf(browserCandidates().some(file=>existsSync(file)))('returns actual browser APNG through the MCP SDK and labels/refuses missing-browser fallback',async()=>{
+it.runIf(previewBrowserAvailable())('returns actual browser APNG through the MCP SDK and labels/refuses missing-browser fallback',async()=>{
  const models=new Models({connect:async()=>({}),query:async()=>[{'Products[Category]':'A','[Revenue]':10},{'Products[Category]':'B','[Revenue]':20}],schema:async()=>({tables:[{name:'Products',columns:[{name:'Category',dataType:'string'}]}],measures:[{table:'Measures',name:'Revenue',formatString:'$#,0'}]})}),server=createServer(models),client=new Client({name:'browser-sdk-qa',version:'1'}),[a,b]=InMemoryTransport.createLinkedPair();await server.connect(a);await client.connect(b)
  const unpack=r=>JSON.parse(r.content.find(c=>c.type==='text').text)
  try{
@@ -43,7 +45,7 @@ it.runIf(browserCandidates().some(file=>existsSync(file)))('returns actual brows
   const required=await client.callTool({name:'preview_visual',arguments:args});expect(required.isError).toBe(true)
  }finally{vi.unstubAllEnvs();await client.close();await server.close()}
 },60000)
-it.runIf(browserCandidates().some(file=>existsSync(file)))('resumes a real retained canvas tween when replacing its hidden visibility controller',async()=>{
+it.runIf(previewBrowserAvailable())('resumes a real retained canvas tween when replacing its hidden visibility controller',async()=>{
  const {chromium}=await import('playwright-core'),require=createRequire(import.meta.url),browser=await chromium.launch({executablePath:browserCandidates().find(file=>existsSync(file)),headless:true,chromiumSandbox:true,env:browserEnvironment()})
  try{
   const page=await browser.newPage({viewport:{width:400,height:300}});await page.route('**/*',route=>route.abort());await page.setContent('<div id="chart" style="width:400px;height:300px"></div>')
