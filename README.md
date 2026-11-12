@@ -10,7 +10,7 @@ This is the custom-visual layer for agentic Power BI authoring. Use it alongside
 
 - [Release status](#release-status-08-evaluation)
 - [Quick start (Windows)](#quick-start-windows)
-- [Connect your agent](#connect-your-agent) — [Claude Code](#claude-code) · [Claude Desktop](#claude-desktop) · [Codex](#codex) · [Other clients](#other-mcp-clients)
+- [Connect your agent](#connect-your-agent) — [Claude Code](#claude-code) · [Claude Desktop](#claude-desktop) · [Codex](#codex) · [GitHub Copilot](#github-copilot-vs-code-agent-mode) ? [Other clients](#other-mcp-clients)
 - [First test prompt](#first-test-generate-a-new-visual-from-scratch)
 - [Measures: prototype vs publish](#measures-prototype-vs-publish)
 - [Desktop setup and reload rules](#desktop-setup-and-reload-rules)
@@ -22,7 +22,7 @@ This is the custom-visual layer for agentic Power BI authoring. Use it alongside
 
 ## Release status: 0.8 evaluation
 
-Current packages: **vilsem-mcp 0.8.1**, **@vilsem/core 0.8.0**, **Vilsem Renderer 4.43.0.0**. They are published evaluation prereleases, suitable for testing on copies of your reports. **Production readiness, certification and exhaustive cross-target parity have not been established.** The previous stable release remains 0.6.
+Prepared release: **vilsem-mcp 0.8.2**, **@vilsem/core 0.8.0**, **Vilsem Renderer 4.43.0.0**. MCP 0.8.2 is pending approval and publication; the installation URLs below become available after publication. The last published MCP is 0.8.1. These are evaluation prereleases, suitable for testing on copies of your reports. **Production readiness, certification and exhaustive cross-target parity have not been established.** The previous stable release remains 0.6.
 
 Read [what was verified](#what-was-verified-for-08), [known failures](#known-failures-and-workarounds) and [incomplete checks](#checks-that-remain-partial-or-not-tested) before relying on a result. Passing tests do not mean every visual, property, dataset, report interaction or export works. This README on `main` includes live checks performed after the original release archive was built; existing release tags and assets are not rewritten.
 
@@ -69,7 +69,7 @@ In PowerShell (no Git or source checkout needed):
 node --version
 $vilsemDir = Join-Path $env:USERPROFILE 'vilsem-mcp'
 New-Item -ItemType Directory -Force -Path $vilsemDir | Out-Null
-npm.cmd install --prefix "$vilsemDir" "https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.8.1/vilsem-mcp-0.8.1.tgz"
+npm.cmd install --prefix "$vilsemDir" "https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.8.2/vilsem-mcp-0.8.2.tgz"
 ```
 
 - `npm.cmd` avoids PowerShell execution-policy errors. If `node` is missing, reopen the terminal after installing Node.
@@ -81,10 +81,10 @@ npm.cmd install --prefix "$vilsemDir" "https://github.com/bcsnpc/vilsem-mcp/rele
 Compare the archive against the published checksums for the release:
 
 ```powershell
-$tgz = Join-Path $env:TEMP 'vilsem-mcp-0.8.1.tgz'
-Invoke-WebRequest "https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.8.1/vilsem-mcp-0.8.1.tgz" -OutFile $tgz
+$tgz = Join-Path $env:TEMP 'vilsem-mcp-0.8.2.tgz'
+Invoke-WebRequest "https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.8.2/vilsem-mcp-0.8.2.tgz" -OutFile $tgz
 (Get-FileHash $tgz -Algorithm SHA256).Hash.ToLower()
-# Compare with the vilsem-mcp-0.8.1.tgz line in SHA256SUMS-0.8.1.txt on the release page
+# Compare with the vilsem-mcp-0.8.2.tgz line in SHA256SUMS-0.8.2.txt on the release page
 ```
 
 If you verified a local copy, you can install from it instead: `npm.cmd install --prefix "$vilsemDir" "$tgz"`.
@@ -203,13 +203,40 @@ tool_timeout_sec = 600
 
 The longer tool timeout accommodates schema profiling and real-data previews on larger models. See the [Codex MCP configuration documentation](https://learn.chatgpt.com/docs/extend/mcp).
 
+### GitHub Copilot (VS Code agent mode)
+
+For VS Code's editor-managed MCP configuration, create `.vscode/mcp.json` in your workspace (or use the user-level MCP configuration). This file uses **`servers`**, not `mcpServers`:
+
+```json
+{
+  "servers": {
+    "vilsem": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["C:/Users/YOUR_NAME/vilsem-mcp/node_modules/vilsem-mcp/dist/index.js"]
+    }
+  }
+}
+```
+
+Trust the folder, start the server when VS Code asks, switch Copilot Chat to **Agent** mode, and check that the tools icon lists the Vilsem tools. Ask the agent to call `get_playbook` without arguments before authoring. Copilot does not read MCP resources automatically; the playbook comes through this tool.
+
+Configuration compatibility: newer Copilot harnesses also have a native `.mcp.json` / user `mcp-config.json` format using `mcpServers`. Do not mix that format with `.vscode/mcp.json`. See [Microsoft's MCP configuration reference](https://code.visualstudio.com/docs/agents/reference/mcp-configuration) for the active harness in your VS Code version.
+
+| Client | Status | Coverage |
+| --- | --- | --- |
+| Claude Code | Partially tested | Contoso authoring field run; exhaustive client/version coverage not established. |
+| Codex | Partially tested | Recorded Desktop/Service QA workflows; exhaustive coverage not established. |
+| Claude Desktop | Not fully tested | Setup documented; full current-version build run pending. |
+| GitHub Copilot | Partially tested | Connected, summarized the model and received instructions in 0.8.1, but could not read the resource-based playbook. Full live build run on 0.8.2 pending. |
+
 ### Other MCP clients
 
-The client must support local stdio tools, resources and image results. Use the same `node <server path>` command. Individual clients are not certified here.
+The client must support local stdio tools and image results. MCP resources are optional; `get_playbook` delivers the playbook through a tool. Use the same `node <server path>` command. Individual clients are not certified here.
 
 ### Optional: install the playbook as a native skill
 
-Agents receive the Vilsem playbook automatically through MCP server instructions and `vilsem://skill/*` resources; a client must read the linked resources to load the full playbook. To also install it as a native skill:
+Server instructions tell agents to call `get_playbook` without arguments first, then request on-demand sections. Existing `vilsem://skill/*` resources remain available for clients that can read them. To also install it as a native skill:
 
 ```powershell
 node "$env:USERPROFILE/vilsem-mcp/node_modules/vilsem-mcp/dist/index.js" install-skill --target claude
@@ -225,15 +252,15 @@ node "$env:USERPROFILE/vilsem-mcp/node_modules/vilsem-mcp/dist/index.js" install
 One-shot from the pinned release without a prior install:
 
 ```powershell
-npx.cmd --yes --package=https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.8.1/vilsem-mcp-0.8.1.tgz vilsem-mcp install-skill --target claude
+npx.cmd --yes --package=https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.8.2/vilsem-mcp-0.8.2.tgz vilsem-mcp install-skill --target claude
 ```
 
 ### Alternative: global install from the Git tag
 
 ```sh
-npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.8.1
+npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.8.2
 vilsem-mcp
-# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.8.1 vilsem-mcp
+# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.8.2 vilsem-mcp
 ```
 
 The process serves stdio JSON-RPC; diagnostics go to stderr. With a global install, point your client's `command` at `vilsem-mcp` instead of `node <path>`.
@@ -276,7 +303,7 @@ A Vilsem spec can declare **visual-scoped measures** (`spec.measures`). They are
 2. **At commit time** (or before publishing), write each measure into a model measures table and bind the visual to the model measure (`Measure` field, not `NativeMeasure`). Do this in the same step, so nothing has to be reworked later.
 3. Vilsem itself never writes the model. The agent adds the measures to the model's TMDL (with the user's agreement) or uses the Power BI Modeling MCP. Model changes need a Desktop **close and reopen** to load, so batch them: one reopen per batch of visuals, not per visual.
 
-See `vilsem://skill/powerbi-visuals` (section "Measures for shareable reports") for the exact agent procedure.
+Call `get_playbook` with `section:"9a"` (or read `vilsem://skill/powerbi-visuals`, section "Measures for shareable reports") for the exact agent procedure.
 
 ## Desktop setup and reload rules
 
@@ -332,10 +359,11 @@ For edits: `list_visuals` → `read_visual` → `update_visual(dryRun:true)` →
 
 ## Tools and resources
 
-**Tools:** `connect_model`, `get_schema`, `run_dax`, `list_templates`, `save_template`, `delete_template`, `validate_spec`, `explain_visual`, `preview_visual`, `preview_variants`, `list_pages`, `list_visuals`, `read_visual`, `diff_visual`, `update_visual`, `commit_visual`, `validate_visuals`, `extract_design_tokens`, `compare_preview`.
+**Tools (20):** `get_playbook`, `connect_model`, `get_schema`, `run_dax`, `list_templates`, `save_template`, `delete_template`, `validate_spec`, `explain_visual`, `preview_visual`, `preview_variants`, `list_pages`, `list_visuals`, `read_visual`, `diff_visual`, `update_visual`, `commit_visual`, `validate_visuals`, `extract_design_tokens`, `compare_preview`.
 **Prompt:** `design_visual`.
 **Resources:** `vilsem://skill/*`, `vilsem://templates/<template-id>`, `vilsem://docs/spec-format`, `vilsem://docs/design-guide`, `vilsem://docs/workflow`, `vilsem://docs/expression-language`.
 
+- **get_playbook** is read-only and offline. No arguments returns a compact core plus an index. Fetch `9a`, `commit`, `edit`, `known-issues`, `gotchas`, `pbir-pages`, `cookbook:<slug>` or `art:<slug>` as needed. `cookbook` and `art` list available patterns; `all` returns the complete skill. Sections are read from packaged Markdown at runtime. The four skill resources remain available, including `vilsem://skill/data-art-recipes`.
 - **get_schema** defaults to summary (no expressions or relationship graph); use `full` for business calculation and join semantics. Exact cardinality/BLANK share/ranges are cached for 60 seconds with at most 10 samples. Full profiling of large models can take minutes; prefer targeted `run_dax`. Permission/provider failures are explicit; internal engine row identities are skipped. `page`/`reportDir` adds read-only page query bindings without editing or validating native visuals.
 - **Preview critique** checks measured SVG text bounds, ellipses, axis rotation, categorical palette size, null/zero series, empty required slots, missing formats, page-background text contrast, legend/plot intersections, pie slice count and dual-axis review, with actionable paths/fixes and explicit coverage limits. It is not analytical correctness, accessibility or host-interaction certification.
 - **preview_variants** makes one identical data query for up to 4 candidate specs and returns compact results; scoped definitions must match. Prefer it to `preview_visual` when you don't need the full option JSON, which can be very large.
@@ -344,6 +372,10 @@ For edits: `list_visuals` → `read_visual` → `update_visual(dryRun:true)` →
 - **list_pages** reads all visual positions to help avoid overlap. **validate_visuals** examines only the stable Vilsem Renderer GUID. **commit_visual** adds one new visual, rejects collisions and updates only missing renderer resources/registration; it does not rebuild or serialize other report content.
 - **list_templates** output is very large; save it to a file and extract `meta.id`, `meta.description` and `slots` with a script.
 
+Commits always return `nextStep`: relay it verbatim. First renderer registration requires closing Desktop **without saving** and reopening the `.pbip`; later commits and non-dry-run updates require **Apply external changes**. `measureWarning` lists visual-scoped measures when present. `validate_visuals` returns its existing results array as the first text block, now with `nativeMeasures` on each visual; a second JSON text block contains `summary` (`visualCount`, `visualsWithNativeMeasures`, `nativeMeasureCount`). Counts cover Vilsem visuals only; no model changes are performed.
+
+[Contoso reference examples](docs/examples/contoso/) and [data-art recipes](skills/vilsem-powerbi-visuals/references/data-art-recipes.md) are model-specific examples, not `list_templates` entries. Adapt bindings and calculations to your own schema. Native skill installation copies five skill files; the example JSON files stay in the installed MCP package's `docs/examples/contoso/`.
+
 ### Interactions
 
 Rendered Vilsem ECharts visuals cross-filter through Power BI selection IDs, accept cross-highlights, support drill-through/context-menu requests, native tooltips and bookmark selection restoration. Those host contracts have automated harness tests. Availability depends on bound field identities and report configuration; report-page tooltips, drill-through destinations and bookmarks need testing in the actual report. A PNG preview does not verify interactions. DOM-adapter visuals and every template transform have not been certified for interaction parity.
@@ -351,7 +383,7 @@ Rendered Vilsem ECharts visuals cross-filter through Power BI selection IDs, acc
 ### What this does NOT do
 
 - Create, edit or validate native Power BI visuals.
-- Create pages, slicers, filters, bookmarks or themes (the agent can create pages by editing PBIR; see `vilsem://skill/pbir-pages`).
+- Create pages, slicers, filters, bookmarks or themes (the agent can create pages by editing PBIR; call `get_playbook` section `pbir-pages`, or read `vilsem://skill/pbir-pages`).
 - Change semantic models or model metadata. To persist measures, the agent edits TMDL with the user's agreement or uses Microsoft's Power BI Modeling MCP — see [Measures: prototype vs publish](#measures-prototype-vs-publish).
 - Read or write PBIX files. Existing enhanced PBIR report folders are required.
 
@@ -359,7 +391,7 @@ Headless previews support the core ECharts composition types and declarative tem
 
 ## Current report and visual limitations
 
-This table describes **MCP 0.8.1 with core 0.8.0 / renderer 4.43**. A tool PASS or saved `visual.json` is not evidence that every report, visual state or Power BI target works.
+This table describes **MCP 0.8.2 with core 0.8.0 / renderer 4.43**. A tool PASS or saved `visual.json` is not evidence that every report, visual state or Power BI target works.
 
 | Area | Current boundary / what to check |
 | --- | --- |
@@ -508,6 +540,8 @@ The 0.8 prerelease depends on the immutable public `core-v0.8.0` release tarball
 For an independent test, follow [author a visual from scratch](docs/author-from-scratch.md).
 
 ## Release history
+
+**0.8.2 (prepared, not published)** ? Adds `get_playbook` so clients without MCP resource support (e.g. GitHub Copilot) receive the playbook; compact core + on-demand sections. Explicit commit/reload and visual-scoped-measure guidance, validation counts, Copilot setup, and Contoso cookbook/data-art lessons. Core 0.8.0 / renderer 4.43 unchanged. See [verification and remaining manual checks](docs/qa/playbook-082.md).
 
 **0.8.1** — documentation and skill update; no runtime, renderer or spec-format changes (core 0.8.0 / renderer 4.43 unchanged). Clearer install guide, including Claude Code setup without the `claude` CLI and download checksum verification. The skill now steers shareable reports toward **model measures** instead of visual-scoped measures, which fail under Publish to web and hide fields in the Build pane (new section 9a), and bundles `scripts/promote-measures.py` to move existing visual-scoped measures into the model. 344/344 tests pass.
 
