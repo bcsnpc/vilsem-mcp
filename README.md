@@ -10,7 +10,7 @@ This is the custom-visual layer for agentic Power BI authoring. Use it alongside
 
 - [Release status](#release-status-09-evaluation)
 - [Quick start (Windows)](#quick-start-windows)
-- [Connect your agent](#connect-your-agent) — [Claude Code](#claude-code) · [Claude Desktop](#claude-desktop) · [Codex](#codex) · [GitHub Copilot](#github-copilot-vs-code-agent-mode) · [Other clients](#other-mcp-clients)
+- [Connect your agent](#connect-your-agent) — [Claude Code plugin](#claude-code-plugin-easiest) · [Claude Code](#claude-code) · [Claude Desktop](#claude-desktop) · [Codex](#codex) · [GitHub Copilot](#github-copilot-vs-code-agent-mode) · [Other clients](#other-mcp-clients)
 - [First test prompt](#first-test-generate-a-new-visual-from-scratch)
 - [Measures: prototype vs publish](#measures-prototype-vs-publish)
 - [Desktop setup and reload rules](#desktop-setup-and-reload-rules)
@@ -55,11 +55,22 @@ This does not imply native Power BI visuals require custom coding. Microsoft's c
 
 You can use this with any report; the shipped examples are not tied to the QA model. Use your own fields discovered by `get_schema`.
 
+> **Using Claude Code? Install in two lines instead of steps 2–5.** In a Claude Code session:
+>
+> ```text
+> /plugin marketplace add bcsnpc/vilsem-mcp
+> /plugin install vilsem@vilsem-mcp
+> ```
+>
+> **VS Code extension:** type `/plugins`, add `bcsnpc/vilsem-mcp` on the **Marketplaces** tab, then click **Install** on *vilsem*. **Claude desktop app (Code tab):** click **+** next to the prompt box → **Add plugins**. A plugin installed in any of these is available in the others on the same PC.
+>
+> This adds the MCP server and the Vilsem playbook skill. The first start downloads and verifies the pinned release (about 30 seconds, once). Then continue at [6. Prepare a test report](#6-prepare-a-test-report). Details: [Claude Code plugin](#claude-code-plugin-easiest).
+
 ### 1. Prerequisites
 
 - Node.js **22.12+, 24, or 26+**
 - Power BI Desktop (August 2026 or later recommended for live external reload)
-- A local MCP-capable agent: Claude Code, Claude Desktop or Codex
+- A local MCP-capable agent: Claude Code, Claude Desktop, Codex or GitHub Copilot
 
 The MCP server and Desktop must run on the **same Windows machine** for Desktop mode. The Vilsem Electron app is not required. There is no npm-registry publication; always install a pinned GitHub release.
 
@@ -136,7 +147,29 @@ For animated browser previews, install Chrome/Edge/Chromium or set `VILSEM_PREVI
 
 Vilsem is **not tied to one client**. The same installed server and prompts work with Claude Code, Claude Desktop and Codex. The agent designs the visual; Vilsem supplies model access, validation, previews and scoped report edits.
 
-The current distribution is a **local stdio server**, not a hosted HTTP connector or a Claude `.mcpb` desktop extension. Pasting a local path into a browser-only chat does not connect it. For Desktop mode the server must run on the Windows machine containing the open Power BI model; a cloud/remote agent needs a local execution connection. Client setup follows official documentation; not every client UI version has been tested end to end.
+Vilsem is a **local stdio server**, not a hosted HTTP connector, because it must reach Power BI Desktop on your PC. For Claude Code there is a packaged install with no manual configuration: the [Claude Code plugin](#claude-code-plugin-easiest). Pasting a local path into a browser-only chat does not connect it. For Desktop mode the server must run on the Windows machine containing the open Power BI model; a cloud/remote agent needs a local execution connection. Client setup follows official documentation; not every client UI version has been tested end to end.
+
+### Claude Code plugin (easiest)
+
+Needs Windows, Node.js 22.12+ with npm, and Claude Code. The plugin installs the MCP server **and** the Vilsem playbook skill; quick-start steps 2–5 are not needed. In a Claude Code session:
+
+```text
+/plugin marketplace add bcsnpc/vilsem-mcp
+/plugin install vilsem@vilsem-mcp
+```
+
+Or in one step on Claude Code 2.1.275 or later: `/plugin install vilsem --marketplace bcsnpc/vilsem-mcp`. From a terminal, use `claude plugin marketplace add bcsnpc/vilsem-mcp` then `claude plugin install vilsem@vilsem-mcp`. Restart Claude Code or run `/reload-plugins`, then check `/mcp`.
+
+- **VS Code extension:** type `/plugins` in the prompt box to open **Manage plugins**. On the **Marketplaces** tab add `bcsnpc/vilsem-mcp`, then on the **Plugins** tab click **Install** on *vilsem*.
+- **Claude desktop app, Code tab (local session):** click **+** next to the prompt box → **Add plugins** (or **Plugins → Browse plugins**). Plugins are not available in cloud or WSL sessions, and Vilsem needs Power BI Desktop on the same Windows PC anyway.
+- The terminal, the VS Code extension and the desktop app's local sessions share the same settings, so a user-scope install in one is available in the others. Start a new session (or run `/reload-plugins`) to pick it up.
+
+- On its **first start** the plugin downloads the pinned, CI-built release archive, verifies its SHA-256 against the value in [`claude-plugin/launcher.mjs`](claude-plugin/launcher.mjs) (the same value as the release's `SHA256SUMS` file), and installs it with its locked dependencies into the plugin's data folder. This takes about 30 seconds once; later starts take about 2. If `/mcp` reports a failed start the first time, reconnect it there.
+- The skill is available as `/vilsem:vilsem-powerbi-visuals`.
+- Update with `/plugin marketplace update vilsem-mcp`, then `/plugin update vilsem@vilsem-mcp`.
+- If you also added Vilsem manually (below), remove one of them to avoid duplicate tools.
+
+### Manual configuration
 
 All examples use `C:/Users/YOUR_NAME/...`. Replace it with your profile path, or paste the `$server` value printed in step 4. Use forward slashes.
 
@@ -572,6 +605,11 @@ Use `npm ci` for the exact tested dependency tree in `npm-shrinkwrap.json`. `npm
 CI runs Windows/Node 24 build/tests/npm audit plus Linux OSV and Semgrep scans; the latter Docker tools require Linux runners. Actions use commit SHA pins. Browser tests run with the runner's installed Chrome/Edge, and exact skipped test names are reported when the browser or optional Playwright is unavailable.
 
 Clone the repository, run `npm install` (its `prepare` step builds the server), then `npm run build` and `npm test`. Tests cover spec resolution, deterministic SVG/PNG rendering, custom-only PBIR insertion/validation and a real stdio client/server round trip. Live Fabric credentials, Desktop query access, reload prompts and host interactions need environment-backed acceptance.
+
+**Claude packaging.**
+- `node scripts/build-mcpb.mjs` (after `npm run build`) stages the built server with `npm ci --omit=dev --ignore-scripts`, lists the tools from the staged server into `manifest.json` (template: [`mcpb/manifest.template.json`](mcpb/manifest.template.json)) and packs `artifacts/vilsem-mcp-<version>.mcpb` with the pinned `@anthropic-ai/mcpb` CLI. The release workflow runs it and checksums and attests the bundle.
+- The Claude Code plugin lives in [`claude-plugin/`](claude-plugin/), listed by [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json). Its skill is an exact copy of `skills/vilsem-powerbi-visuals`: run `node scripts/sync-plugin-skill.mjs` after editing the skill (tests fail if the copies differ).
+- **Release checklist:** after CI publishes `vX.Y.Z`, update `VERSION` and `SHA256` in `claude-plugin/launcher.mjs` and `version` in `claude-plugin/.claude-plugin/plugin.json` to the new release, taking the hash from its `SHA256SUMS` file, and merge that as a follow-up. Plugin users stay on the previous verified release until then.
 
 This release depends on the immutable public `core-v0.8.1` release tarball. For local core development only, install a locally packed core tarball; restore the public release URL before distributing.
 

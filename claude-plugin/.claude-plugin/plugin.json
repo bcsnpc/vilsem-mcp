@@ -1,0 +1,17 @@
+{
+  "name": "vilsem",
+  "displayName": "Vilsem for Power BI",
+  "version": "0.9.1",
+  "description": "Author custom Power BI visuals on your live Desktop model: preview on real data, self-review, and commit into PBIP reports. Includes the Vilsem playbook skill.",
+  "author": { "name": "bcsnpc", "url": "https://github.com/bcsnpc" },
+  "homepage": "https://github.com/bcsnpc/vilsem-mcp",
+  "repository": "https://github.com/bcsnpc/vilsem-mcp",
+  "license": "MIT",
+  "keywords": ["power-bi", "pbip", "pbir", "custom-visuals", "dax", "mcp"],
+  "mcpServers": {
+    "vilsem": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/launcher.mjs"]
+    }
+  }
+}

@@ -9,3 +9,5 @@ test-results/
 test-results.json
 semgrep.json
 artifacts/
+build/
+*.mcpb
