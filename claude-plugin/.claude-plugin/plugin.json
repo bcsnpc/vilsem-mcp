@@ -1,7 +1,7 @@
 {
   "name": "vilsem",
   "displayName": "Vilsem for Power BI",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "description": "Author custom Power BI visuals on your live Desktop model: preview on real data, self-review, and commit into PBIP reports. Includes the Vilsem playbook skill.",
   "author": {
     "name": "bcsnpc",

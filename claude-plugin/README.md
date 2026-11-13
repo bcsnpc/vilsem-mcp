@@ -29,8 +29,8 @@ Vilsem works with local Desktop models only. Online Power BI Service / Fabric co
 
 **On first start (one time, about 30 seconds).** The MCP server is started as `node ${CLAUDE_PLUGIN_ROOT}/launcher.mjs`. Because the server depends on a package that is published on GitHub rather than npm, the launcher:
 
-1. downloads the pinned release archive `vilsem-mcp-0.9.1.tgz` from `https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.9.1/` (built and published by GitHub Actions, with build provenance);
-2. verifies its **SHA-256** against the value hard-coded in `launcher.mjs` (identical to the release's `SHA256SUMS-0.9.1.txt`), and refuses to install on any mismatch;
+1. downloads the pinned release archive `vilsem-mcp-0.9.2.tgz` from `https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.9.2/` (built and published by GitHub Actions, with build provenance);
+2. verifies its **SHA-256** against the value hard-coded in `launcher.mjs` (identical to the release's `SHA256SUMS-0.9.2.txt`), and refuses to install on any mismatch;
 3. runs `npm install` of that verified archive, using the dependency versions and integrity hashes locked in its `npm-shrinkwrap.json`, into the plugin data folder (`${CLAUDE_PLUGIN_DATA}`). This downloads those exact dependencies from the npm registry and from the `@vilsem/core` GitHub release;
 4. starts the installed server. Later starts reuse the verified install and make no downloads.
 
