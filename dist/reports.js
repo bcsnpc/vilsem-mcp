@@ -13,7 +13,7 @@ export function committedGuidance(rendererRegistered, spec) {
     return { nextStep: rendererRegistered
             ? "FIRST VILSEM VISUAL IN THIS REPORT: tell the user to close Power BI Desktop WITHOUT saving, then reopen the .pbip. 'Apply external changes' is not enough this time."
             : "Tell the user to click 'Apply' on Power BI Desktop's external-changes prompt (no restart needed). Do not save in Desktop before applying.",
-        ...(names.length ? { measureWarning: `This visual uses visual-scoped measures (${names.join(', ')}). They hide fields in the Build pane and FAIL under Publish to web. For reports that will be shared, persist them as model measures: see get_playbook section '9a' or run the bundled scripts/promote-measures.py (ask the user first, it edits the model).` } : {}) };
+        ...(names.length ? { measureWarning: `This visual uses visual-scoped measures (${names.join(', ')}). They hide fields in the Build pane and FAIL under Publish to web. For reports that will be shared, persist them as model measures: see get_playbook section '9a' or run the bundled scripts/promote-measures.py (ask the user first, it edits the model). If a measure only scales a value for display (e.g. DIVIDE([Sales],1e9) for $9.9B), drop it and bind the model measure with formatterTemplate {value:compact} instead.` } : {}) };
 }
 function nativeMeasureNames(value) {
     const names = new Set();

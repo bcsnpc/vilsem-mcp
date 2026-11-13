@@ -107,6 +107,8 @@ The query returns categories in query order, not by value. To sort, use the `top
   {"type":"scatter","xAxisIndex":2,"yAxisIndex":2,"data":"$slot.canc.pairsSwapped"}]
 ```
 
+To label those `[value, category]` points, use `"label":{"show":true,"formatterTemplate":"{value.0:percent}"}`: plain `{value}` prints the category. For compact money on the bars, use `{value:compact}` (renderer 4.45+), which gives `$9.9B` from a `$#,0.00` measure.
+
 **Reference lines (average/limits):** `markLine` with `type:"average"` can render at 0 in renderer 4.43. The reliable pattern is a flat `line` series. Compute the value with a `stat` transform (`sum` and `count`, then `calculate` sum/count; don't rely on `mean`), and repeat it across `$calc.x.values` as its data, with `symbol:"none"`, a dashed `lineStyle` and `silent:true`.
 
 - Use one grid per column, all with `inverse:true` y-axes that share `$calc.order.categories`.
