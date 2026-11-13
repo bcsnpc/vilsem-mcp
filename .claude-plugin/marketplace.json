@@ -1,0 +1,14 @@
+{
+  "name": "vilsem-mcp",
+  "owner": { "name": "bcsnpc", "url": "https://github.com/bcsnpc" },
+  "description": "Vilsem: custom Power BI visuals authored by your AI agent on live Desktop models.",
+  "plugins": [
+    {
+      "name": "vilsem",
+      "source": "./claude-plugin",
+      "description": "Author custom Power BI visuals on your live Desktop model: preview on real data, self-review, and commit into PBIP reports. Windows + Power BI Desktop + Node.js required.",
+      "category": "data",
+      "tags": ["power-bi", "data-visualization", "mcp"]
+    }
+  ]
+}

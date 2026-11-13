@@ -1,0 +1,30 @@
+{
+  "manifest_version": "0.3",
+  "name": "vilsem-mcp",
+  "display_name": "Vilsem for Power BI",
+  "version": "__VERSION__",
+  "description": "Let Claude author custom Power BI visuals on your live Desktop model: previews on real data, self-review, and commits into PBIP reports.",
+  "long_description": "Vilsem connects read-only to the semantic model open in Power BI Desktop on this PC. Claude can run DAX to check the data, render a preview of a custom visual on real values with an automatic critique (overlapping labels, contrast, ordering, empty data), fix its own mistakes, and then add the visual to your PBIP report as a declarative spec drawn by one shared Vilsem renderer. Later you can ask for edits in plain language.\n\nRequirements: Windows, Power BI Desktop, and a report saved as a PBIP project (enhanced PBIR). Local Desktop models only; online Service/Fabric connections are disabled. Vilsem never changes your model and has no telemetry. Start by asking Claude to call get_playbook. Evaluation release: try it on copies of your reports first.",
+  "author": { "name": "bcsnpc", "url": "https://github.com/bcsnpc" },
+  "repository": { "type": "git", "url": "https://github.com/bcsnpc/vilsem-mcp" },
+  "homepage": "https://github.com/bcsnpc/vilsem-mcp",
+  "documentation": "https://github.com/bcsnpc/vilsem-mcp#readme",
+  "support": "https://github.com/bcsnpc/vilsem-mcp/issues",
+  "icon": "icon.png",
+  "license": "MIT",
+  "keywords": ["power-bi", "pbip", "pbir", "custom-visuals", "dax", "data-visualization"],
+  "server": {
+    "type": "node",
+    "entry_point": "dist/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/dist/index.js"],
+      "env": {}
+    }
+  },
+  "compatibility": {
+    "platforms": ["win32"],
+    "runtimes": { "node": ">=22.12.0" }
+  },
+  "tools": "__TOOLS__"
+}
