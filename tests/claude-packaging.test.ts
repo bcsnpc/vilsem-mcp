@@ -32,6 +32,14 @@ describe('Claude Code plugin', () => {
     expect(plugin.mcpServers.vilsem.args).toEqual(['${CLAUDE_PLUGIN_ROOT}/launcher.mjs'])
   })
 
+  it('discloses the pinned download in the plugin README, matching the launcher', () => {
+    const readme = readFileSync(path.join(root, 'claude-plugin', 'README.md'), 'utf8')
+    expect(readme.split(/\s+/).length).toBeGreaterThan(40)
+    expect(readme).toContain(`vilsem-mcp-${launcherVersion}.tgz`)
+    expect(readme).toContain(`releases/download/v${launcherVersion}/`)
+    expect(readme).toContain(`SHA256SUMS-${launcherVersion}.txt`)
+  })
+
   it('has no package.json in the plugin folder (Claude Code would try to install it)', () => {
     expect(existsSync(path.join(root, 'claude-plugin', 'package.json'))).toBe(false)
   })

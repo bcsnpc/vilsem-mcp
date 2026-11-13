@@ -609,7 +609,7 @@ Clone the repository, run `npm install` (its `prepare` step builds the server), 
 **Claude packaging.**
 - `node scripts/build-mcpb.mjs` (after `npm run build`) stages the built server with `npm ci --omit=dev --ignore-scripts`, lists the tools from the staged server into `manifest.json` (template: [`mcpb/manifest.template.json`](mcpb/manifest.template.json)) and packs `artifacts/vilsem-mcp-<version>.mcpb` with the pinned `@anthropic-ai/mcpb` CLI. The release workflow runs it and checksums and attests the bundle.
 - The Claude Code plugin lives in [`claude-plugin/`](claude-plugin/), listed by [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json). Its skill is an exact copy of `skills/vilsem-powerbi-visuals`: run `node scripts/sync-plugin-skill.mjs` after editing the skill (tests fail if the copies differ).
-- **Release checklist:** after CI publishes `vX.Y.Z`, update `VERSION` and `SHA256` in `claude-plugin/launcher.mjs` and `version` in `claude-plugin/.claude-plugin/plugin.json` to the new release, taking the hash from its `SHA256SUMS` file, and merge that as a follow-up. Plugin users stay on the previous verified release until then.
+- **Release checklist:** after CI publishes `vX.Y.Z`, update `VERSION` and `SHA256` in `claude-plugin/launcher.mjs`, `version` in `claude-plugin/.claude-plugin/plugin.json` and the version in `claude-plugin/README.md` to the new release, taking the hash from its `SHA256SUMS` file, and merge that as a follow-up. Plugin users stay on the previous verified release until then.
 
 This release depends on the immutable public `core-v0.8.1` release tarball. For local core development only, install a locally packed core tarball; restore the public release URL before distributing.
 
