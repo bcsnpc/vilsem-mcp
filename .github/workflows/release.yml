@@ -72,7 +72,10 @@ jobs:
         run: |
           Copy-Item -LiteralPath $env:PROVENANCE_BUNDLE -Destination "artifacts/provenance-$env:RELEASE_VERSION.json"
           $releaseArgs = @('release', 'create', $env:GITHUB_REF_NAME, '--verify-tag', '--title', "vilsem-mcp $env:RELEASE_VERSION", '--generate-notes')
-          if ([int]($env:RELEASE_VERSION.Split('.')[0]) -lt 1 -or $env:RELEASE_VERSION.Contains('-')) { $releaseArgs += '--prerelease' }
+          # Only suffixed versions (e.g. 1.0.0-rc.1) are pre-releases. Plain 0.x versions are
+          # normal releases marked Latest, so GitHub and directories (e.g. Glama) show the
+          # current version; the README and notes still describe the evaluation status.
+          if ($env:RELEASE_VERSION.Contains('-')) { $releaseArgs += '--prerelease' } else { $releaseArgs += '--latest' }
           $releaseArgs += @("artifacts/vilsem-mcp-$env:RELEASE_VERSION.tgz", "artifacts/vilsem-mcp-$env:RELEASE_VERSION.mcpb", "artifacts/SHA256SUMS-$env:RELEASE_VERSION.txt", "artifacts/provenance-$env:RELEASE_VERSION.json")
           & gh @releaseArgs
           if ($LASTEXITCODE -ne 0) { throw 'GitHub release failed' }
