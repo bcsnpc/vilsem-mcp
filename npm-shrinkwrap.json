@@ -1,17 +1,17 @@
 {
   "name": "vilsem-mcp",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "lockfileVersion": 3,
   "requires": true,
   "packages": {
     "": {
       "name": "vilsem-mcp",
-      "version": "0.9.2",
+      "version": "0.9.3",
       "license": "MIT",
       "dependencies": {
         "@modelcontextprotocol/sdk": "^1.32.2",
         "@resvg/resvg-js": "^2.6.2",
-        "@vilsem/core": "https://github.com/bcsnpc/vilsem/releases/download/core-v0.8.2/vilsem-core-0.8.2.tgz",
+        "@vilsem/core": "https://github.com/bcsnpc/vilsem/releases/download/core-v0.8.3/vilsem-core-0.8.3.tgz",
         "echarts": "6.1.0",
         "fast-json-patch": "^3.1.1",
         "zod": "^4.6.7"
@@ -1094,9 +1094,9 @@
       }
     },
     "node_modules/@vilsem/core": {
-      "version": "0.8.2",
-      "resolved": "https://github.com/bcsnpc/vilsem/releases/download/core-v0.8.2/vilsem-core-0.8.2.tgz",
-      "integrity": "sha512-LZsYEAHmmYU6Cc6Mn/Wj/Yu95NVMJkDPauojlrX/NkKOxluL9GRb7CFg45o6CzmQO1wmQClmujuhfP1uUi04Zw==",
+      "version": "0.8.3",
+      "resolved": "https://github.com/bcsnpc/vilsem/releases/download/core-v0.8.3/vilsem-core-0.8.3.tgz",
+      "integrity": "sha512-kNas7bKlonOHtnPUN+tHCnNxoE3yYoJouAvAOifx1GSvn3hhxNSdmkQY9tLRuF6UF8VdYkUVSx7ySxZ63OSqZw==",
       "license": "MIT",
       "dependencies": {
         "adm-zip": "^0.6.1",

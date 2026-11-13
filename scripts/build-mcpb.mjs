@@ -4,7 +4,8 @@
 // The bundle carries the built server and its exact locked dependency tree
 // (npm-shrinkwrap.json, production only, no install scripts). The optional
 // playwright-core is left out: motion capture falls back to sampled states.
-import {cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync} from 'node:fs'
+import {cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync} from 'node:fs'
+import {buildNotices} from './notices-lib.mjs'
 import {spawn, spawnSync} from 'node:child_process'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
@@ -53,12 +54,35 @@ function listTools(entry) {
 if (!existsSync(path.join(root, 'dist', 'index.js'))) throw new Error('dist/ missing: run npm run build first')
 rmSync(stage, {recursive: true, force: true})
 mkdirSync(stage, {recursive: true})
-for (const f of ['dist', 'docs', 'templates', 'skills', 'SECURITY.md', 'LICENSE', 'README.md', 'package.json', 'npm-shrinkwrap.json'])
+for (const f of ['dist', 'docs', 'templates', 'skills', 'SECURITY.md', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'README.md', 'package.json', 'npm-shrinkwrap.json'])
   cpSync(path.join(root, f), path.join(stage, f), {recursive: true})
 cpSync(path.join(root, 'assets', 'icon.png'), path.join(stage, 'icon.png'))
 
 npm(['ci', '--omit=dev', '--ignore-scripts', '--no-audit', '--no-fund', '--loglevel=error'], stage)
 rmSync(path.join(stage, 'node_modules', 'playwright-core'), {recursive: true, force: true})
+
+// Complete notices for everything this bundle redistributes: every package in its
+// node_modules plus what the motion runtime bundles. Replaces the package-level file.
+function packageDirs(dir, out = []) {
+  if (!existsSync(dir)) return out
+  for (const name of readdirSync(dir)) {
+    if (name.startsWith('.')) continue
+    const full = path.join(dir, name)
+    if (name.startsWith('@')) { packageDirs(full, out); continue }
+    if (existsSync(path.join(full, 'package.json'))) out.push(full)
+    packageDirs(path.join(full, 'node_modules'), out)
+  }
+  return out
+}
+const motionList = path.join(root, 'build', 'motion-runtime.packages.json')
+if (!existsSync(motionList)) throw Error('build/motion-runtime.packages.json missing: run npm run build first')
+const bundleNotices = buildNotices([...packageDirs(path.join(stage, 'node_modules')), ...JSON.parse(readFileSync(motionList, 'utf8'))], {
+  title: `Third-party notices: vilsem-mcp ${pkg.version} Claude Desktop extension`,
+  intro: 'vilsem-mcp is MIT-licensed (see LICENSE). This extension bundle redistributes the third-party components below: every package in its node_modules folder and everything bundled into dist/motion-runtime.js. Each component remains under its own license. The Power BI renderer inside node_modules/@vilsem/core carries its own NOTICE and THIRD_PARTY_NOTICES.md.',
+  exclude: ['vilsem-mcp', '@vilsem/core'],
+})
+writeFileSync(path.join(stage, 'THIRD_PARTY_NOTICES.md'), bundleNotices.text)
+console.log(`bundle notices: ${bundleNotices.packages.length} packages`)
 
 const tools = await listTools(path.join(stage, 'dist', 'index.js'))
 const manifest = JSON.parse(readFileSync(path.join(root, 'mcpb', 'manifest.template.json'), 'utf8'))

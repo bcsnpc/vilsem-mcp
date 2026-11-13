@@ -26,7 +26,7 @@ This is the custom-visual layer for agentic Power BI authoring. Use it alongside
 
 Read [SECURITY.md](SECURITY.md) for local-mode boundaries, AI-provider disclosure, sample opt-out and vulnerability reporting.
 
-Current release: **vilsem-mcp 0.9.2**, **@vilsem/core 0.8.2**, **Vilsem Renderer 4.45.0.0**. Releases are built and published by CI, with SHA-256 checksums and verifiable [build provenance](#3-verify-the-download-recommended). These are evaluation prereleases, suitable for testing on copies of your reports. **Production readiness, certification and exhaustive cross-target parity have not been established.** The previous stable release remains 0.6.
+Current release: **vilsem-mcp 0.9.3**, **@vilsem/core 0.8.3**, **Vilsem Renderer 4.46.0.0**. Releases are built and published by CI, with SHA-256 checksums and verifiable [build provenance](#3-verify-the-download-recommended). These are evaluation prereleases, suitable for testing on copies of your reports. **Production readiness, certification and exhaustive cross-target parity have not been established.** The previous stable release remains 0.6.
 
 Read [what was verified](#what-was-verified-for-08), [known failures](#known-failures-and-workarounds) and [incomplete checks](#checks-that-remain-partial-or-not-tested) before relying on a result. Passing tests do not mean every visual, property, dataset, report interaction or export works. This README on `main` includes live checks performed after the original release archive was built; existing release tags and assets are not rewritten.
 
@@ -84,22 +84,22 @@ In PowerShell (no Git or source checkout needed):
 node --version
 $vilsemDir = Join-Path $env:USERPROFILE 'vilsem-mcp'
 New-Item -ItemType Directory -Force -Path $vilsemDir | Out-Null
-npm.cmd install --prefix "$vilsemDir" "https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.9.2/vilsem-mcp-0.9.2.tgz"
+npm.cmd install --prefix "$vilsemDir" "https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.9.3/vilsem-mcp-0.9.3.tgz"
 ```
 
 - `npm.cmd` avoids PowerShell execution-policy errors. If `node` is missing, reopen the terminal after installing Node.
 - The warning `install-scripts … vilsem-mcp (prepare: npm run build)` is harmless for the release tarball: `dist/` is prebuilt.
-- Installation downloads core 0.8.2 and renderer 4.45 automatically; no application-path environment variable is needed.
+- Installation downloads core 0.8.3 and renderer 4.46 automatically; no application-path environment variable is needed.
 
 ### 3. Verify the download (recommended)
 
 Compare the archive against the published checksums for the release:
 
 ```powershell
-$tgz = Join-Path $env:TEMP 'vilsem-mcp-0.9.2.tgz'
-Invoke-WebRequest "https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.9.2/vilsem-mcp-0.9.2.tgz" -OutFile $tgz
+$tgz = Join-Path $env:TEMP 'vilsem-mcp-0.9.3.tgz'
+Invoke-WebRequest "https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.9.3/vilsem-mcp-0.9.3.tgz" -OutFile $tgz
 (Get-FileHash $tgz -Algorithm SHA256).Hash.ToLower()
-# Compare with the vilsem-mcp-0.9.2.tgz line in SHA256SUMS-0.9.2.txt on the release page
+# Compare with the vilsem-mcp-0.9.3.tgz line in SHA256SUMS-0.9.3.txt on the release page
 # Optional, with the GitHub CLI: confirm the archive was built by this repository's release workflow
 gh attestation verify $tgz --repo bcsnpc/vilsem-mcp
 ```
@@ -301,15 +301,15 @@ node "$env:USERPROFILE/vilsem-mcp/node_modules/vilsem-mcp/dist/index.js" install
 One-shot from the pinned release without a prior install:
 
 ```powershell
-npx.cmd --yes --package=https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.9.2/vilsem-mcp-0.9.2.tgz vilsem-mcp install-skill --target claude
+npx.cmd --yes --package=https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.9.3/vilsem-mcp-0.9.3.tgz vilsem-mcp install-skill --target claude
 ```
 
 ### Alternative: global install from the Git tag
 
 ```sh
-npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.9.2
+npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.9.3
 vilsem-mcp
-# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.9.2 vilsem-mcp
+# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.9.3 vilsem-mcp
 ```
 
 The process serves stdio JSON-RPC; diagnostics go to stderr. With a global install, point your client's `command` at `vilsem-mcp` instead of `node <path>`.
@@ -462,7 +462,7 @@ Headless previews support the core ECharts composition types and declarative tem
 
 **Local Desktop models only in 0.9.** Online models are disabled by default. See the experimental section above.
 
-This table describes **MCP 0.9.2 with core 0.8.2 / renderer 4.45**. A tool PASS or saved `visual.json` is not evidence that every report, visual state or Power BI target works.
+This table describes **MCP 0.9.3 with core 0.8.3 / renderer 4.46**. A tool PASS or saved `visual.json` is not evidence that every report, visual state or Power BI target works.
 
 | Area | Current boundary / what to check |
 | --- | --- |
@@ -607,7 +607,9 @@ Save Desktop work first. With no pending external changes, use **Home > More vis
 
 ## Development and verification
 
-Use `npm ci` for the exact tested dependency tree in `npm-shrinkwrap.json`. `npm-shrinkwrap.json` ships in the tarball and includes integrity hashes for the core archive and transitive dependencies. Releases are built and attested by [.github/workflows/release.yml](.github/workflows/release.yml) from approved `v*` tags on main; do not upload laptop-built release archives. Verify provenance with `gh attestation verify ./vilsem-mcp-0.9.2.tgz --repo bcsnpc/vilsem-mcp` as well as checking SHA256SUMS.
+**Third-party notices.** vilsem-mcp is MIT-licensed. [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) lists the open-source components bundled into `dist/motion-runtime.js` (Apache ECharts, zrender, d3, tslib) with their license texts; it is generated by the build and also embedded at the top of that file. The Claude Desktop extension ships a complete notices file for everything it contains, and the Power BI renderer's notices ship with `@vilsem/core`.
+
+Use `npm ci` for the exact tested dependency tree in `npm-shrinkwrap.json`. `npm-shrinkwrap.json` ships in the tarball and includes integrity hashes for the core archive and transitive dependencies. Releases are built and attested by [.github/workflows/release.yml](.github/workflows/release.yml) from approved `v*` tags on main; do not upload laptop-built release archives. Verify provenance with `gh attestation verify ./vilsem-mcp-0.9.3.tgz --repo bcsnpc/vilsem-mcp` as well as checking SHA256SUMS.
 
 CI runs Windows/Node 24 build/tests/npm audit plus Linux OSV and Semgrep scans; the latter Docker tools require Linux runners. Actions use commit SHA pins. Browser tests run with the runner's installed Chrome/Edge, and exact skipped test names are reported when the browser or optional Playwright is unavailable.
 
@@ -619,7 +621,7 @@ Clone the repository, run `npm install` (its `prepare` step builds the server), 
 - **Release checklist:** after CI publishes `vX.Y.Z`, update `VERSION` and `SHA256` in `claude-plugin/launcher.mjs`, `version` in `claude-plugin/.claude-plugin/plugin.json` and the version in `claude-plugin/README.md` to the new release, taking the hash from its `SHA256SUMS` file, and merge that as a follow-up. Plugin users stay on the previous verified release until then.
 - **MCP Registry:** the server is listed as `io.github.bcsnpc/vilsem-mcp` from [`server.json`](server.json). After each release, set `version`, the `.mcpb` URL and `fileSha256` (from `SHA256SUMS`), then run `mcp-publisher publish` while logged in as the repository owner (`mcp-publisher login github`).
 
-This release depends on the immutable public `core-v0.8.2` release tarball. For local core development only, install a locally packed core tarball; restore the public release URL before distributing.
+This release depends on the immutable public `core-v0.8.3` release tarball. For local core development only, install a locally packed core tarball; restore the public release URL before distributing.
 
 - `npm run thumbnails` rebuilds the shipped light-theme example PNGs from synthetic fixtures; `node scripts/render-thumbnails.mjs --dark` checks the dark background. Each theme directory under `templates/thumbnails/` includes a manifest with source/PNG hashes.
 - Motion benchmark: `npm run build` then `node scripts/benchmark-motion.mjs`. It launches only an owned sandboxed headless browser, queries no model, keeps 5,000 points and animation enabled, and writes `test-results/benchmarks/motion-options.json`. Exit code 1 means the 57 fps / 20 ms p95 tolerance was not met. Not a Power BI host benchmark.
@@ -627,6 +629,8 @@ This release depends on the immutable public `core-v0.8.2` release tarball. For 
 For an independent test, follow [author a visual from scratch](docs/author-from-scratch.md).
 
 ## Release history
+
+**0.9.3** — Licensing and attribution; no functional changes. Depends on **core 0.8.3 / renderer 4.46**, whose renderer now carries the full notices for the 37 open-source packages it bundles (Apache ECharts, React, d3 and others). This package ships a generated `THIRD_PARTY_NOTICES.md` (also embedded in `dist/motion-runtime.js`), and the Claude Desktop extension ships a complete notices file covering all 117 packages it contains. Existing reports can keep renderer 4.45; importing 4.46 only adds the embedded notices.
 
 **0.9.2** — Fixes from a fresh-install test on a 10M-row model. Depends on **core 0.8.2 / renderer 4.45**.
 - **Compact numbers:** a new `{value:compact}` formatter shows `$9.9B` / `14.6K` from the model measure's own format, so no scaled visual-scoped measure is needed (Publish-to-web safe). It needs renderer 4.45; older reports get a clear upgrade message.
