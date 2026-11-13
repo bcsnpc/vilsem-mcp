@@ -48,12 +48,14 @@ When you work around something, tell the user what you did and why, in one line.
 ### 2. Connect
 
 1. Try `connect_model` with `{"kind":"report","reportDir":...}`.
-2. **Check `schemaOnly` in the result.** If it is `true`, previews and DAX will not work. Reconnect with `{"kind":"desktop","port":<port>}`. Get the port from the Modeling MCP's `ListLocalInstances`, or use `{"kind":"desktop"}` to auto-detect when only one model is open.
+2. **Check `schemaOnly` in the result.** If it is `true`, previews and DAX will not work. Reconnect with `{"kind":"desktop","port":<port>}`. `{"kind":"desktop"}` auto-detects when only one model is open; with several open, the error lists each open session's **port and `.pbip` path**, so pick the right port from it (or use the Modeling MCP's `ListLocalInstances`).
+   - If the error says the model **has no model loaded yet**, the report is still opening in Desktop (large models take a minute). Wait and retry; don't switch strategy.
 3. **Ports change every time Desktop reopens.** If calls fail with "A connection cannot be made", find the new port and reconnect. Old `connectionId`s are dead.
 
 ### 3. Understand the model cheaply
 
-- **Do not run `get_schema` with full profiling on large models** (hundreds of columns). It profiles every column and can take minutes.
+- **On large models, call `get_schema` with `profile:false` first.** It returns tables, columns, measures and their format strings in seconds without running any query. Then profile only what you need: `get_schema` with `tables:["Product","Date"]`.
+- Default profiling stops after about 20 seconds; columns it didn't reach are marked `profileSkipped` and the result has `profileIncomplete`. Results are cached until `refresh:true`, so don't call it repeatedly.
 - Prefer, in order:
   1. The TMDL files under `<Name>.SemanticModel/definition/tables/` (column names; `grep` for `column` / `measure`).
   2. The Modeling MCP: list measures, get specific measure DAX, and `GetStats` for table and measure counts.
@@ -75,11 +77,15 @@ Check four things:
 
 Wrap `SUMMARIZECOLUMNS` in `FILTER(..., [m] > 0)` when measures return 0, or you will get thousands of empty rows.
 
+**Two traps worth checking on every measure you plot:**
+- **The same value on every row** (e.g. `$6.4M` for every year) means the measure ignores that dimension (often an `ALL()` inside it). Don't plot it; pick another measure or tell the user.
+- **Time-intelligence % measures** (`YoY %`, `MoM %`) often return **-100%** for empty or future periods. Guard with a visual-scoped measure: `IF(ISBLANK([Base]), BLANK(), [Base YoY %])`. Never silently drop the period without saying why.
+
 **Check comparisons in total and within each group.** If an overall rate and the per-category rates point in opposite directions (Simpson's paradox), show both and say so. For example, one booking method had the lower no-show rate overall but the higher rate within the largest appointment type.
 
 ### 5. Pick the design
 
-- Call `list_templates` once. **Its output is very large (about 550K characters):** save it to a file and extract `meta.id`, `meta.description` and `slots` with a script instead of reading it raw.
+- Call `list_templates` (no arguments) for a compact list: id, name, description and slots. Use `search:"sankey"` to filter, and `id:"<id>"` to get one complete template with its `exampleSpec`. Avoid `full:true`: it returns every template in full (about 550K characters).
 - Start from the closest shipped template and adapt it. For custom layouts, see `references/spec-cookbook.md`.
 - **Limits:** at most 6 dimensions and 6 measures per visual. Power BI sends at most about 2,000 rows to the visual. Aggregate or limit with visual-scoped measures.
 
@@ -98,8 +104,10 @@ Wrap `SUMMARIZECOLUMNS` in `FILTER(..., [m] > 0)` when measures return 0, or you
   - Bind them with `{"table":"<an existing table>","name":"name"}`. Every scoped binding uses the first measure binding's table.
   - Use them for windows (return BLANK outside a date range), top-N (`IF([rank] <= 15, ...)`), constants broadcast to every row, and numeric copies of text measures.
 - Formatting:
-  - Show large values in compact units by default ($5.1B, $5,067M, 14.6K): scale in DAX and put the unit **once**, either in the measure's format string or in the formatter, never both. Check a label in the preview: `$14.6MM` means the unit was applied twice.
-  - Use `formatterTemplate` with `{value:thousands}`, `{value:percent}`, `{value:date}`, `{name}`, `{label}`, `{d}`.
+  - **Show large values in compact units by default with `{value:compact}`** ($9.9B, 14.6K, 950): it scales K/M/B/T and keeps only the bound measure's currency symbol, so **no scaled visual-scoped measure is needed** (that keeps the visual Publish-to-web safe). Use it on labels and value axes (`axisLabel.formatterTemplate`). It needs renderer 4.45+; `commit_visual` refuses older registered renderers with an upgrade message.
+  - Use `formatterTemplate` with `{value}`, `{value:compact}`, `{value:thousands}`, `{value:percent}`, `{value:date}`, `{name}`, `{label}`, `{d}`.
+  - **Tuple data** (`.pairs`, `.pairsSwapped`, points) holds `[value, category]`: plain `{value}` prints the **last** element (the category). Use `{value.0:percent}` / `{value.0:compact}` to pick the number.
+  - If a unit is already in the measure format (e.g. `$0.0"M"`), don't add it again in the formatter: `$14.6MM` in a preview means the unit was applied twice.
   - Functions and JavaScript strings are rejected.
 
 ### 7. Validate, preview and iterate
@@ -210,20 +218,21 @@ Tell the user:
 - **Python printing model data on Windows:** set `PYTHONIOENCODING=utf-8`, because template metadata contains emoji and the default code page will crash.
 - **The Power BI Modeling MCP can drop its connection,** especially after Desktop restarts. Reconnect with `ListLocalInstances` → `Connect`. If the server itself is down, fall back to the TMDL files and `run_dax`.
 
-## Known vilsem issues and workarounds (renderer 4.44 / core 0.8.x)
+## Known vilsem issues and workarounds
+
+Applies to renderer 4.45 / core 0.8.2.
 
 | Symptom | Cause | Workaround |
 |---|---|---|
 | Publish to web shows an error on every Vilsem visual (`PowerBIAnonymousExtensionSchemaException`) | Visual-scoped measures are report extensions, unsupported in anonymous embed | Promote to model measures and rebind (section 9a), republish |
 | Build pane shows no fields when a Vilsem visual is selected | Same: `NativeMeasure` projections | Same fix |
 | First vilsem visual shows "To see this custom visual, add it to this report first" | Renderer registration in `report.json` isn't live-reloaded | Close the report without saving and reopen it (one time per report). After that, applying the external-changes prompt is enough. |
-| Report still on renderer 4.43 or older | Reports keep the renderer they registered; installing a new MCP does not change them | Tell the user once: import the bundled renderer.pbiviz (Home > More visuals > From my files, accept Update, save, close and reopen) to get the 4.44 security fix. Never edit the GUID or replace registered resources yourself. |
+| Report on an older renderer, or `commit_visual` says the visual requires a newer renderer | Reports keep the renderer they registered; installing a new MCP does not change them. `{value:compact}` needs 4.45; the HTML-measure security fix needs 4.44 | Tell the user once: import the bundled renderer.pbiviz (Home > More visuals > From my files, accept Update, save, close and reopen). Never edit the GUID or replace registered resources yourself. Until then, avoid `{value:compact}` in that report. |
 | Visual looks blurry in Desktop with an older renderer | Reports retain their registered renderer | Upgrade to renderer 4.43 or later (import the bundled renderer.pbiviz, save, close and reopen). Canvas accounts for page zoom; use `config.renderer:"svg"` or Appearance > Render mode for text-heavy layouts. Canvas-only trail/blend effects fall back with a warning. |
 | KPI shows `0.04` instead of `4.2%` | `lastLabel`, `sumLabel` and `deltaPctLabel` ignore the measure format | Draw the number as a hidden gauge's `detail` with `formatterTemplate:"{value:percent}"` (see the cookbook), or show it in a formatted data or axis label |
 | Previews have no data after connecting by `reportDir` | Silent fallback to `schemaOnly` | Reconnect with `kind:"desktop"` and the port |
 | "Connection cannot be made" | Desktop was reopened and its port changed | List the instances and reconnect |
-| `list_templates` overflows the context | Huge output | Parse it from a file with a script |
-| `get_schema` takes minutes | Profiles every column | Use TMDL, the Modeling MCP or targeted DAX instead |
+| `get_schema` is slow on a large model | Column profiling (about 110 s on 10M rows before 0.9.2) | `profile:false` first, then `tables:[...]`; default profiling stops after about 20 s |
 | Years/months render in the wrong order in races, timelines and custom series | Rows arrive in **query order**; plain `dimension` slots aren't sorted chronologically | Bind the year/month field to a slot with `"kind":"time"`. For text periods ("Q1-2017", "Sep 2025") bind a numeric sort column (e.g. `YearMonthNumber`, `MonthNumber`) and supply labels separately. |
 | Two items drawn on top of each other in rank-based layouts | `RANKX` ties caused by floating-point noise in the value | Wrap **both** the expression and the explicit value argument in `ROUND(…, 0)`: `RANKX(ALLSELECTED(T[c]), ROUND(CALCULATE(…),0), ROUND(CALCULATE(…),0))` |
 | A rank meant to be global restarts within each category | The category is still in filter context inside `RANKX` | Remove it inside the ranked table, e.g. `CALCULATETABLE(VALUES(Product[Sub]), REMOVEFILTERS(Product[Sub], Product[Category]))` |

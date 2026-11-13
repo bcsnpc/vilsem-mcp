@@ -49,6 +49,20 @@ describe('agent schema context through MCP',()=>{
   expect(second.tables[0].columns[0].sampleValues).not.toContain('changed')
   await models.schema(b.connectionId);expect(model.schema).toHaveBeenCalledTimes(2)
  })
+ it('get_schema profile:false runs no queries; tables limits profiling; results stay cached until refresh',async()=>{
+  const model=adapter(),{client,connectionId}=await clientFor(model)
+  const fast=unpack(await client.callTool({name:'get_schema',arguments:{connectionId,profile:false}}))
+  expect(model.query).not.toHaveBeenCalled()
+  expect(fast.tables[0].columns.find((c:any)=>c.name==='Category').profileSkipped).toBe('Not profiled (profile:false)')
+  unpack(await client.callTool({name:'get_schema',arguments:{connectionId,tables:['Sales']}}))
+  const after=model.query.mock.calls.length
+  expect(after).toBeGreaterThan(0)
+  for(const [_connection,dax] of model.query.mock.calls)expect(dax).toContain("'Sales'")
+  unpack(await client.callTool({name:'get_schema',arguments:{connectionId,tables:['sales']}}))
+  expect(model.query.mock.calls.length).toBe(after)
+  unpack(await client.callTool({name:'get_schema',arguments:{connectionId,tables:['Sales'],refresh:true}}))
+  expect(model.query.mock.calls.length).toBeGreaterThan(after)
+ })
  it('adds read-only page bindings including native queries without modifying report files',async()=>{
   const root=await fs.mkdtemp(path.join(os.tmpdir(),'vilsem-context-'));temporary.push(root)
   const pages=path.join(root,'definition/pages');await fs.mkdir(path.join(pages,'p1/visuals/native-card'),{recursive:true})

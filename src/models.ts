@@ -61,16 +61,20 @@ export class Models {
     return rows.slice(0,maxRows)
   }
   reportDir(id:string){return this.get(id).reportDir as string|undefined}
-  async schema(id:string,{detail='summary',refresh=false,samples=process.env.VILSEM_SCHEMA_SAMPLES!=='0'}:{detail?:'summary'|'full',refresh?:boolean,samples?:boolean}={}){
+  async schema(id:string,{detail='summary',refresh=false,samples=process.env.VILSEM_SCHEMA_SAMPLES!=='0',profile=process.env.VILSEM_SCHEMA_PROFILE!=='0',tables}:{detail?:'summary'|'full',refresh?:boolean,samples?:boolean,profile?:boolean,tables?:string[]}={}){
     const connection=this.get(id)
-    if(refresh){this.metadata.delete(id);this.profiles.delete(id)}
-    let entry=this.profiles.get(id)
-    if(!entry || entry.expires<Date.now()){
+    if(refresh){this.metadata.delete(id);for(const key of [...this.profiles.keys()])if(key.startsWith(id+'|'))this.profiles.delete(key)}
+    // Profiles are cached per connection and options until refresh:true or reconnect;
+    // profiling a large model is expensive and the model rarely changes mid-session.
+    const key=[id,profile,samples,(tables||[]).map(t=>t.toLowerCase()).sort().join(',')].join('|')
+    let entry=this.profiles.get(key)
+    if(!entry){
       const next={expires:Infinity,promise:Promise.resolve(null) as Promise<any>}
-      next.promise=this.fields(id,refresh).then(schema=>enrichSchema(schema,(dax,maxRows)=>this.query(id,dax,maxRows),{schemaOnly:!!connection.schemaOnly})).then(value=>{next.expires=Date.now()+60000;return value}).catch(error=>{if(this.profiles.get(id)===next)this.profiles.delete(id);throw error})
-      this.profiles.set(id,next);entry=next
+      next.promise=this.fields(id,refresh).then(schema=>enrichSchema(schema,(dax,maxRows)=>this.query(id,dax,maxRows),{schemaOnly:!!connection.schemaOnly,profile,samples,tables})).catch(error=>{if(this.profiles.get(key)===next)this.profiles.delete(key);throw error})
+      this.profiles.set(key,next);entry=next
     }
     const result=schemaDetail(structuredClone(await entry.promise),detail)
+    // Older core versions ignore the samples option; never return samples the caller declined.
     if(!samples)for(const table of result.tables)for(const column of table.columns)delete column.sampleValues
     return result
   }

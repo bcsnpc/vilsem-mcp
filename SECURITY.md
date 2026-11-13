@@ -27,7 +27,7 @@ Use `get_schema` with `samples:false`, or set `VILSEM_SCHEMA_SAMPLES=0` in the M
 Install a pinned release archive. Compute its SHA-256 digest with `Get-FileHash -Algorithm SHA256` and compare it with the matching `SHA256SUMS-<version>.txt` asset. From 0.9.0, the release workflow builds the archive and generates GitHub build-provenance attestations; verify a downloaded archive with:
 
 ```powershell
-gh attestation verify ./vilsem-mcp-0.9.1.tgz --repo bcsnpc/vilsem-mcp
+gh attestation verify ./vilsem-mcp-0.9.2.tgz --repo bcsnpc/vilsem-mcp
 ```
 
 A checksum verifies matching bytes; provenance additionally identifies the repository/workflow/commit that built them. Neither proves that every dependency or behavior is safe. Installed dependency versions and integrity hashes are locked by `npm-shrinkwrap.json`.
@@ -38,4 +38,4 @@ Use [GitHub private vulnerability reporting](https://github.com/bcsnpc/vilsem-mc
 
 ## Core and renderer follow-ups
 
-From 0.9.1 this MCP depends on core 0.8.1 / renderer 4.44. The renderer sanitizes its legacy raw-HTML measure fallback through DOMPurify with an explicit allowlist, and the local bridge loads ADOMD only from the official `Microsoft.MicrosoftPowerBIDesktop` package or `C:\Program Files\Microsoft Power BI Desktop\bin`. Reports keep the renderer they registered: re-import the bundled `renderer.pbiviz` (accept Update, save, close and reopen) to apply the renderer fix to an existing report. Online refresh-token storage and the axios dependency are online-only paths, disabled by default in 0.9.x, and remain open follow-ups. Prefer declarative Vilsem specs over raw-HTML measures.
+From 0.9.1 this MCP depends on core 0.8.1+ / renderer 4.44+ (0.9.2: core 0.8.2 / renderer 4.45). The renderer sanitizes its legacy raw-HTML measure fallback through DOMPurify with an explicit allowlist, and the local bridge loads ADOMD only from the official `Microsoft.MicrosoftPowerBIDesktop` package or `C:\Program Files\Microsoft Power BI Desktop\bin`. Reports keep the renderer they registered: re-import the bundled `renderer.pbiviz` (accept Update, save, close and reopen) to apply the renderer fix to an existing report. Online refresh-token storage and the axios dependency are online-only paths, disabled by default in 0.9.x, and remain open follow-ups. Prefer declarative Vilsem specs over raw-HTML measures.

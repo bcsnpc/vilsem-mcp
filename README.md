@@ -12,7 +12,7 @@ This is the custom-visual layer for agentic Power BI authoring. Use it alongside
 
 - [Release status](#release-status-09-evaluation)
 - [Quick start (Windows)](#quick-start-windows)
-- [Connect your agent](#connect-your-agent) — [Claude Code plugin](#claude-code-plugin-easiest) · [Claude Code](#claude-code) · [Claude Desktop](#claude-desktop) · [Codex](#codex) · [GitHub Copilot](#github-copilot-vs-code-agent-mode) · [Other clients](#other-mcp-clients)
+- [Connect your agent](#connect-your-agent) — [Claude Code plugin](#claude-code-plugin-easiest) · [Claude Desktop extension](#claude-desktop-extension-mcpb) · [Claude Code](#claude-code) · [Claude Desktop](#claude-desktop) · [Codex](#codex) · [GitHub Copilot](#github-copilot-vs-code-agent-mode) · [Other clients](#other-mcp-clients)
 - [First test prompt](#first-test-generate-a-new-visual-from-scratch)
 - [Measures: prototype vs publish](#measures-prototype-vs-publish)
 - [Desktop setup and reload rules](#desktop-setup-and-reload-rules)
@@ -26,7 +26,7 @@ This is the custom-visual layer for agentic Power BI authoring. Use it alongside
 
 Read [SECURITY.md](SECURITY.md) for local-mode boundaries, AI-provider disclosure, sample opt-out and vulnerability reporting.
 
-Current release: **vilsem-mcp 0.9.1**, **@vilsem/core 0.8.1**, **Vilsem Renderer 4.44.0.0**. Releases are built and published by CI, with SHA-256 checksums and verifiable [build provenance](#3-verify-the-download-recommended). These are evaluation prereleases, suitable for testing on copies of your reports. **Production readiness, certification and exhaustive cross-target parity have not been established.** The previous stable release remains 0.6.
+Current release: **vilsem-mcp 0.9.2**, **@vilsem/core 0.8.2**, **Vilsem Renderer 4.45.0.0**. Releases are built and published by CI, with SHA-256 checksums and verifiable [build provenance](#3-verify-the-download-recommended). These are evaluation prereleases, suitable for testing on copies of your reports. **Production readiness, certification and exhaustive cross-target parity have not been established.** The previous stable release remains 0.6.
 
 Read [what was verified](#what-was-verified-for-08), [known failures](#known-failures-and-workarounds) and [incomplete checks](#checks-that-remain-partial-or-not-tested) before relying on a result. Passing tests do not mean every visual, property, dataset, report interaction or export works. This README on `main` includes live checks performed after the original release archive was built; existing release tags and assets are not rewritten.
 
@@ -84,22 +84,22 @@ In PowerShell (no Git or source checkout needed):
 node --version
 $vilsemDir = Join-Path $env:USERPROFILE 'vilsem-mcp'
 New-Item -ItemType Directory -Force -Path $vilsemDir | Out-Null
-npm.cmd install --prefix "$vilsemDir" "https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.9.1/vilsem-mcp-0.9.1.tgz"
+npm.cmd install --prefix "$vilsemDir" "https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.9.2/vilsem-mcp-0.9.2.tgz"
 ```
 
 - `npm.cmd` avoids PowerShell execution-policy errors. If `node` is missing, reopen the terminal after installing Node.
 - The warning `install-scripts … vilsem-mcp (prepare: npm run build)` is harmless for the release tarball: `dist/` is prebuilt.
-- Installation downloads core 0.8.1 and renderer 4.44 automatically; no application-path environment variable is needed.
+- Installation downloads core 0.8.2 and renderer 4.45 automatically; no application-path environment variable is needed.
 
 ### 3. Verify the download (recommended)
 
 Compare the archive against the published checksums for the release:
 
 ```powershell
-$tgz = Join-Path $env:TEMP 'vilsem-mcp-0.9.1.tgz'
-Invoke-WebRequest "https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.9.1/vilsem-mcp-0.9.1.tgz" -OutFile $tgz
+$tgz = Join-Path $env:TEMP 'vilsem-mcp-0.9.2.tgz'
+Invoke-WebRequest "https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.9.2/vilsem-mcp-0.9.2.tgz" -OutFile $tgz
 (Get-FileHash $tgz -Algorithm SHA256).Hash.ToLower()
-# Compare with the vilsem-mcp-0.9.1.tgz line in SHA256SUMS-0.9.1.txt on the release page
+# Compare with the vilsem-mcp-0.9.2.tgz line in SHA256SUMS-0.9.2.txt on the release page
 # Optional, with the GitHub CLI: confirm the archive was built by this repository's release workflow
 gh attestation verify $tgz --repo bcsnpc/vilsem-mcp
 ```
@@ -130,8 +130,8 @@ A stdio server does not open a website; the MCP client starts it.
 - The report must use **enhanced PBIR** (`<name>.Report/definition/pages/`). Convert it in Desktop if needed.
 - Enable **Detect and reload external PBIP changes** (see [Desktop setup](#desktop-setup-and-reload-rules)) and restart Desktop.
 - Optionally create an empty test page in Desktop, then save.
-- **Keep only this report open in Power BI Desktop** while the agent works. With several Desktop windows open, 0.9.1 cannot always tell which model to use (see [Connecting from an existing report binding](#connecting-from-an-existing-report-binding)).
-- On large models (10M+ rows) the first `get_schema` can take one to two minutes while it profiles columns. That is expected; see [Troubleshooting](#troubleshooting) if your client times out.
+- **Let the report finish loading in Desktop** before the agent connects. Large models take a minute; until then the connection reports that no model is loaded yet.
+- On large models the agent should call `get_schema` with `profile:false` first, then profile only the tables it needs. Default profiling stops after about 20 seconds.
 
 ### 7. Build, commit and check
 
@@ -149,7 +149,7 @@ For animated browser previews, install Chrome/Edge/Chromium or set `VILSEM_PREVI
 
 Vilsem is **not tied to one client**. The same installed server and prompts work with Claude Code, Claude Desktop and Codex. The agent designs the visual; Vilsem supplies model access, validation, previews and scoped report edits.
 
-Vilsem is a **local stdio server**, not a hosted HTTP connector, because it must reach Power BI Desktop on your PC. For Claude Code there is a packaged install with no manual configuration: the [Claude Code plugin](#claude-code-plugin-easiest). Pasting a local path into a browser-only chat does not connect it. For Desktop mode the server must run on the Windows machine containing the open Power BI model; a cloud/remote agent needs a local execution connection. Client setup follows official documentation; not every client UI version has been tested end to end.
+Vilsem is a **local stdio server**, not a hosted HTTP connector, because it must reach Power BI Desktop on your PC. For Claude there are two packaged ways to install it with no manual configuration: the [Claude Code plugin](#claude-code-plugin-easiest) and the [Claude Desktop extension](#claude-desktop-extension-mcpb). Pasting a local path into a browser-only chat does not connect it. For Desktop mode the server must run on the Windows machine containing the open Power BI model; a cloud/remote agent needs a local execution connection. Client setup follows official documentation; not every client UI version has been tested end to end.
 
 ### Claude Code plugin (easiest)
 
@@ -170,6 +170,10 @@ Or in one step on Claude Code 2.1.275 or later: `/plugin install vilsem --market
 - The skill is available as `/vilsem:vilsem-powerbi-visuals`.
 - Update with `/plugin marketplace update vilsem-mcp`, then `/plugin update vilsem@vilsem-mcp`.
 - If you also added Vilsem manually (below), remove one of them to avoid duplicate tools.
+
+### Claude Desktop extension (.mcpb)
+
+From 0.9.2, each [release](https://github.com/bcsnpc/vilsem-mcp/releases) includes `vilsem-mcp-<version>.mcpb`, a one-file Claude Desktop extension. CI builds it, lists its checksum in `SHA256SUMS`, and covers it with build provenance. Download it, then double-click it (or drag it into **Claude Desktop → Settings → Extensions**) and approve the install. It bundles the server and its locked dependencies; Claude Desktop provides Node.js. Windows only.
 
 ### Manual configuration
 
@@ -297,15 +301,15 @@ node "$env:USERPROFILE/vilsem-mcp/node_modules/vilsem-mcp/dist/index.js" install
 One-shot from the pinned release without a prior install:
 
 ```powershell
-npx.cmd --yes --package=https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.9.1/vilsem-mcp-0.9.1.tgz vilsem-mcp install-skill --target claude
+npx.cmd --yes --package=https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.9.2/vilsem-mcp-0.9.2.tgz vilsem-mcp install-skill --target claude
 ```
 
 ### Alternative: global install from the Git tag
 
 ```sh
-npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.9.1
+npm install -g git+https://github.com/bcsnpc/vilsem-mcp.git#v0.9.2
 vilsem-mcp
-# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.9.1 vilsem-mcp
+# Or: npx --yes --package=git+https://github.com/bcsnpc/vilsem-mcp.git#v0.9.2 vilsem-mcp
 ```
 
 The process serves stdio JSON-RPC; diagnostics go to stderr. With a global install, point your client's `command` at `vilsem-mcp` instead of `node <path>`.
@@ -395,7 +399,7 @@ No credentials are read from another repository's `.env` or Electron workspace s
 
 `connect_model` with `source:{kind:"report",reportDir:...}` follows the report's `definition.pbir` without changing it:
 
-- `datasetReference.byPath`: core matches the local semantic-model path to an open Desktop session. With **one** Desktop model open this works automatically. With several open, 0.9.1 can fail with `Desktop must expose exactly one model` (or `Multiple Desktop models are open; specify source.port`); close the other reports, or connect with `source:{kind:"desktop",port:<port>}` using the port finder below. Automatic matching with several windows open is tracked for 0.9.2. With Desktop closed it reads the local TMDL or BIM definitions and returns `schemaOnly:true`. Schema-only connections cannot run DAX or preview live values; open the model and reconnect.
+- `datasetReference.byPath`: core matches the local semantic-model path to an open Desktop session. It matches the right Desktop window by its `.pbip` project, so other open reports don't interfere. If the model is still loading, the connection says so; wait and retry. `{kind:"desktop"}` without a port auto-detects a single open model; with several open, the error lists each session's port and `.pbip` path. With Desktop closed it reads the local TMDL or BIM definitions and returns `schemaOnly:true`. Schema-only connections cannot run DAX or preview live values; open the model and reconnect.
 - `datasetReference.byConnection`: **disabled by default in 0.9**. With the unsupported `VILSEM_ENABLE_ONLINE=1` override, a Power BI XMLA URL identifies the workspace and semantic model. Core resolves them through the configured Fabric credentials. It does not try to discover a local Desktop port. The identity needs access to list the workspace and model, execute queries and inspect its definition. Windows-integrated SSAS bindings use the local ADOMD bridge and Windows identity; cloud credentials are never forwarded to arbitrary servers.
 
 **Find the port of an open Desktop model** (the most recently opened report is listed first):
@@ -458,7 +462,7 @@ Headless previews support the core ECharts composition types and declarative tem
 
 **Local Desktop models only in 0.9.** Online models are disabled by default. See the experimental section above.
 
-This table describes **MCP 0.9.1 with core 0.8.1 / renderer 4.44**. A tool PASS or saved `visual.json` is not evidence that every report, visual state or Power BI target works.
+This table describes **MCP 0.9.2 with core 0.8.2 / renderer 4.45**. A tool PASS or saved `visual.json` is not evidence that every report, visual state or Power BI target works.
 
 | Area | Current boundary / what to check |
 | --- | --- |
@@ -588,10 +592,11 @@ Save Desktop work first. With no pending external changes, use **Home > More vis
 | `npm` fails in PowerShell | Use `npm.cmd`. |
 | `schemaOnly:true` / previews have no data | Open the model in Desktop and reconnect with `kind:"desktop"` (and `port`). |
 | "A connection cannot be made" | Desktop was reopened and its port changed; reconnect. Old `connectionId`s are dead. |
-| `Desktop must expose exactly one model` / `Multiple Desktop models are open; specify source.port` | Several Desktop windows are open. Close the other reports, or connect with `kind:"desktop"` and the port from the [port finder](#connecting-from-an-existing-report-binding). |
-| `get_schema` takes minutes or the client times out | Column profiling on a large model (about 110 s on 10M rows). Raise the client's tool timeout (Codex: `tool_timeout_sec`; Claude Code: `MCP_TOOL_TIMEOUT` in milliseconds) and let the agent probe with targeted `run_dax`. A faster no-profiling mode is planned for 0.9.2. |
-| Agent context fills up after `list_templates` | Its output is about 550 KB. Ask the agent to author from `get_schema` instead, or to save the output to a file and read only ids and descriptions. A compact list is planned for 0.9.2. |
-| Label on a `[value, category]` point shows the category | Use `{value.0}` (or `{value.0:percent}`) in `formatterTemplate` to pick the numeric part of the pair. |
+| "has no model loaded yet" | The report is still opening in Desktop (large models take a minute). Wait, then retry. Older versions showed `Desktop must expose exactly one model` for the same situation. |
+| `Multiple Desktop models are open (…)` | You connected with `kind:"desktop"` and no port. Use `kind:"report"` with the `.Report` folder (it matches the right window), or a port from the list in the error. |
+| `get_schema` is slow or the client times out | Column profiling on a large model. Use `profile:false`, then `tables:[...]`; default profiling stops after about 20 s. If needed, raise the client's tool timeout (Codex: `tool_timeout_sec`; Claude Code: `MCP_TOOL_TIMEOUT` in milliseconds). |
+| `commit_visual`: "requires vilsem Renderer 4.45" | The spec uses `{value:compact}` and the report registers an older renderer. [Upgrade the report's renderer](#upgrading-an-existing-report), or format without `compact`. |
+| Label on a `[value, category]` point shows the category | Use `{value.0}` (or `{value.0:percent}`, `{value.0:compact}`) in `formatterTemplate` to pick the numeric part of the pair. |
 | "To see this custom visual, add it to this report first" | First Vilsem visual: close without saving and reopen the `.pbip`. |
 | Visual blurry in Desktop | Upgrade the report's renderer to 4.43 or later; try SVG render mode for text-heavy visuals. |
 | Publish to web: `PowerBIAnonymousExtensionSchemaException` | Visual-scoped measures. Promote to model measures and republish. |
@@ -602,7 +607,7 @@ Save Desktop work first. With no pending external changes, use **Home > More vis
 
 ## Development and verification
 
-Use `npm ci` for the exact tested dependency tree in `npm-shrinkwrap.json`. `npm-shrinkwrap.json` ships in the tarball and includes integrity hashes for the core archive and transitive dependencies. Releases are built and attested by [.github/workflows/release.yml](.github/workflows/release.yml) from approved `v*` tags on main; do not upload laptop-built release archives. Verify provenance with `gh attestation verify ./vilsem-mcp-0.9.1.tgz --repo bcsnpc/vilsem-mcp` as well as checking SHA256SUMS.
+Use `npm ci` for the exact tested dependency tree in `npm-shrinkwrap.json`. `npm-shrinkwrap.json` ships in the tarball and includes integrity hashes for the core archive and transitive dependencies. Releases are built and attested by [.github/workflows/release.yml](.github/workflows/release.yml) from approved `v*` tags on main; do not upload laptop-built release archives. Verify provenance with `gh attestation verify ./vilsem-mcp-0.9.2.tgz --repo bcsnpc/vilsem-mcp` as well as checking SHA256SUMS.
 
 CI runs Windows/Node 24 build/tests/npm audit plus Linux OSV and Semgrep scans; the latter Docker tools require Linux runners. Actions use commit SHA pins. Browser tests run with the runner's installed Chrome/Edge, and exact skipped test names are reported when the browser or optional Playwright is unavailable.
 
@@ -613,7 +618,7 @@ Clone the repository, run `npm install` (its `prepare` step builds the server), 
 - The Claude Code plugin lives in [`claude-plugin/`](claude-plugin/), listed by [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json). Its skill is an exact copy of `skills/vilsem-powerbi-visuals`: run `node scripts/sync-plugin-skill.mjs` after editing the skill (tests fail if the copies differ).
 - **Release checklist:** after CI publishes `vX.Y.Z`, update `VERSION` and `SHA256` in `claude-plugin/launcher.mjs`, `version` in `claude-plugin/.claude-plugin/plugin.json` and the version in `claude-plugin/README.md` to the new release, taking the hash from its `SHA256SUMS` file, and merge that as a follow-up. Plugin users stay on the previous verified release until then.
 
-This release depends on the immutable public `core-v0.8.1` release tarball. For local core development only, install a locally packed core tarball; restore the public release URL before distributing.
+This release depends on the immutable public `core-v0.8.2` release tarball. For local core development only, install a locally packed core tarball; restore the public release URL before distributing.
 
 - `npm run thumbnails` rebuilds the shipped light-theme example PNGs from synthetic fixtures; `node scripts/render-thumbnails.mjs --dark` checks the dark background. Each theme directory under `templates/thumbnails/` includes a manifest with source/PNG hashes.
 - Motion benchmark: `npm run build` then `node scripts/benchmark-motion.mjs`. It launches only an owned sandboxed headless browser, queries no model, keeps 5,000 points and animation enabled, and writes `test-results/benchmarks/motion-options.json`. Exit code 1 means the 57 fps / 20 ms p95 tolerance was not met. Not a Power BI host benchmark.
@@ -621,6 +626,16 @@ This release depends on the immutable public `core-v0.8.1` release tarball. For 
 For an independent test, follow [author a visual from scratch](docs/author-from-scratch.md).
 
 ## Release history
+
+**0.9.2** — Fixes from a fresh-install test on a 10M-row model. Depends on **core 0.8.2 / renderer 4.45**.
+- **Compact numbers:** a new `{value:compact}` formatter shows `$9.9B` / `14.6K` from the model measure's own format, so no scaled visual-scoped measure is needed (Publish-to-web safe). It needs renderer 4.45; older reports get a clear upgrade message.
+- **Faster `get_schema`:** `profile:false` (no queries), `tables:[...]`, `samples:false` that skips the queries, a 20 s default budget, and caching until `refresh:true` (was about 110 s on 10M rows).
+- **Compact `list_templates`:** about 44 KB instead of 1.2 MB by default, plus `id`, `search` and `full:true`.
+- **Clearer connect errors:** a still-loading model is reported as such; several open sessions are listed with ports and project paths.
+- **Playbook:** compact units, `{value.N}` for pair labels, measures that ignore a dimension, and guarding −100% time-intelligence results.
+- **Claude Desktop extension:** the release now includes a CI-built `.mcpb`.
+
+Existing reports keep their renderer until you [re-import it](#upgrading-an-existing-report).
 
 **0.9.1** — Depends on **core 0.8.1 / renderer 4.44** (security Part 2): the renderer sanitizes the legacy raw-HTML measure fallback with an explicit allowlist (no scripts, event handlers, frames or navigation/resource markup), and the local Desktop bridge loads ADOMD only from the official Power BI Desktop package or its standard Program Files install. GUID, spec format and tools unchanged. Release checksum files now use LF endings so `sha256sum -c` works on Linux/macOS. **Existing reports keep their registered renderer:** to get the renderer fix, [re-import the bundled renderer](#upgrading-an-existing-report) (accept Update, save, close and reopen). New reports get 4.44 on their first `commit_visual`. Live check: all 20 visuals of a 5-page report rendered and cross-filtered on 4.44 in Desktop.
 

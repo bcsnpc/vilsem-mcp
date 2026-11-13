@@ -39,8 +39,9 @@ it('exposes save/list/read/delete and expression docs through the actual MCP SDK
  await server.connect(a);await client.connect(b)
  try{
   const saved:any=await client.callTool({name:'save_template',arguments:{name:'sdk-bar',spec:{type:'bar'},tags:['team']}});expect(saved.isError).not.toBe(true)
-  const listed:any=await client.callTool({name:'list_templates',arguments:{}}),items=JSON.parse(listed.content[0].text)
-  expect(items.some(t=>t.source==='shipped')).toBe(true);expect(items.find(t=>t.name==='sdk-bar')).toMatchObject({source:'user',spec:{type:'bar'}})
+  const listed:any=await client.callTool({name:'list_templates',arguments:{}}),items=JSON.parse(listed.content[0].text).templates
+  expect(items.some(t=>t.source==='shipped')).toBe(true);expect(items.find(t=>t.id==='sdk-bar')).toMatchObject({source:'user',tags:['team']})
+  const full:any=await client.callTool({name:'list_templates',arguments:{id:'sdk-bar'}});expect(JSON.parse(full.content[0].text)).toMatchObject({source:'user',spec:{type:'bar'}})
   const resource:any=await client.readResource({uri:'vilsem://templates/user/sdk-bar'});expect(JSON.parse(resource.contents[0].text).name).toBe('sdk-bar')
   const docs:any=await client.readResource({uri:'vilsem://docs/expression-language'});expect(docs.contents[0].text).toContain('vilsem-expression')
   const deleted:any=await client.callTool({name:'delete_template',arguments:{name:'sdk-bar'}});expect(JSON.parse(deleted.content[0].text).deleted).toBe(true)
