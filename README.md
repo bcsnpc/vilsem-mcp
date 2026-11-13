@@ -4,6 +4,8 @@ Author Vilsem custom visuals from chat into an existing Power BI report, using r
 
 vilsem-mcp doesn't make charts. Claude Code and Codex make charts; vilsem-mcp gives them your model, real data, eyes, and a safe pen. The MCP contains no model and needs no LLM API key. The calling agent's own service or account may have its own costs.
 
+**See what it can build:** the [Vilsem Prompt Book](https://chiranjeevibhogireddy.com/vilsem-prompt-book/) has 104 visuals on Contoso, AdventureWorks and cricket data, each with the exact prompt that built it. Copy a prompt, point your agent at your own model and adapt the fields.
+
 This is the custom-visual layer for agentic Power BI authoring. Use it alongside Microsoft's Power BI Report skill for native visuals and the Power BI Modeling MCP for model changes. The shared, installed renderer executes trusted application code; the authored spec is declarative JSON, not executable source.
 
 **Contents**
