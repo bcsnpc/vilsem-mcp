@@ -8,13 +8,15 @@
     "source": "github"
   },
   "websiteUrl": "https://github.com/bcsnpc/vilsem-mcp#readme",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.9.2/vilsem-mcp-0.9.2.mcpb",
-      "fileSha256": "42ecdc46274e0bf5d8ac61a61a9f6129686cf6b36b02530077dc59e164089f32",
-      "transport": { "type": "stdio" }
+      "identifier": "https://github.com/bcsnpc/vilsem-mcp/releases/download/v0.9.3/vilsem-mcp-0.9.3.mcpb",
+      "fileSha256": "34d9eb990ee8dc3b15ceca303b9af64a7c86b615e656bc6f50ac79c46c666d26",
+      "transport": {
+        "type": "stdio"
+      }
     }
   ]
 }

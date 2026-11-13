@@ -17,8 +17,8 @@ import path from 'node:path'
 import {pathToFileURL} from 'node:url'
 
 // Updated after each CI release (see README "Release checklist").
-const VERSION = '0.9.2'
-const SHA256 = '30fe6e988868d1453903cfe807dee37708e0d240d66b1aeb7f8e6a25867927f0'
+const VERSION = '0.9.3'
+const SHA256 = '779120c4e283b7d3040f6e9ab5118c3e9ae61ff8f12525ac69f11961ffdd81d7'
 const ARCHIVE = `vilsem-mcp-${VERSION}.tgz`
 const URL = `https://github.com/bcsnpc/vilsem-mcp/releases/download/v${VERSION}/${ARCHIVE}`
 
